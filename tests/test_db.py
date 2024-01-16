@@ -1,12 +1,10 @@
+from confiacim_api.models import Simulation
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from confiacim_api.models import Simulation
-
 
 def test_create_simulation(session: Session):
-
-    new_simulation = Simulation(tag='simulation_1')
+    new_simulation = Simulation(tag="simulation_1")
     session.add(new_simulation)
     session.commit()
 
@@ -21,5 +19,4 @@ def test_create_simulation(session: Session):
 
 
 def test_str(simulation):
-
     assert str(simulation) == simulation.tag

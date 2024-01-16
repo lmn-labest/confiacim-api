@@ -78,14 +78,16 @@ pretty = true
 src = "confiacim_api"
 
 [tool.taskipy.tasks]
-fmt_black = {cmd="poetry run black {src}", help="Chamando do black.", use_vars = true}
-fmt_ruff= {cmd="poetry run ruff {src} --fix", help="Chamando do ruff.", use_vars = true}
+fmt_black = {cmd="poetry run black {src} tests", help="Chamando do black.", use_vars = true}
+fmt_ruff= {cmd="poetry run ruff {src} tests --fix", help="Chamando do ruff.", use_vars = true}
+
 fmt = {cmd="task fmt_ruff && task fmt_black", help="Formatador do código."}
 
-lin_ruff = {cmd="poetry run ruff check {src}", help="Linter com o Ruff.", use_vars = true}
-linter = {cmd="task lin_ruff", help="Linter."}
+lin_ruff = {cmd="poetry run ruff check {src} tests", help="Linter com o Ruff.", use_vars = true}
 
-lin_mypy = {cmd="mypy --package tests --package {src}", help="Analiasador estatico de tipos.", use_vars = true}
+lin_mypy = {cmd="mypy --package tests --package {src}", help="Analisador estático de tipos.", use_vars = true}
+
+linter = {cmd="task lin_ruff && task lin_mypy", help="Linter."}
 
 tests = {cmd="pytest --cov={src}", help="Rodando os testes.", use_vars = true}
 tests_report = {cmd="pytest --cov-report html --cov={src}", help="Rodando os testes com cobertura.", use_vars = true}
