@@ -11,4 +11,5 @@ def get_session():
     with Session(engine) as session:
         yield session
 
+
 ActiveSession = Annotated[Session, Depends(get_session)]
