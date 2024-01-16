@@ -1,0 +1,79 @@
+services:
+
+  database:
+    container_name: confiacim-api-db
+    image: postgres:16.1-alpine
+    restart: 'no'
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    environment:
+      - LC_ALL=C.UTF-8
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_USER=confiacim_api_user
+      - POSTGRES_DB=confiacim_api_db
+    ports:
+      - 5432:5432
+
+  # app:
+  #   container_name: pyheat1d_web
+  #   build:
+  #     dockerfile: ./Dockerfile.dev
+  #   image: pyheat1d_web:dev
+  #   volumes:
+  #     - ./:/home/app/
+  #   restart: 'no'
+  #   stdin_open: true
+  #   tty: true
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     PYTHONBREAKPOINT: ipdb.set_trace
+  #     DATABASE_URL: postgres://pyheat1d_web_user:123456@database:5432/pyheat1d_web_db
+  #   ports:
+  #     - 8000:8000
+  #   depends_on:
+  #     - database
+  #     - broker
+
+  # broker:
+  #   container_name: pyheat1d_web_broker
+  #   image: redis:7.2-alpine
+
+  #   ports:
+  #     - 6379:6379
+
+  # worker_1:
+  #   image: pyheat1d_web:dev
+  #   command: watchfiles --filter python 'celery -A pyheat1d_web.celery worker  -n 'worker@1' --concurrency=2 -l INFO'
+  #   depends_on:
+  #     - broker
+  #   volumes:
+  #     - ./:/home/app/
+  #   environment:
+  #     WATCHFILES_FORCE_POLLING: true
+  #     DATABASE_URL: postgres://pyheat1d_web_user:123456@database:5432/pyheat1d_web_db
+  #     CELERY_BROKER_URL: redis://broker:6379
+  #     CELERY_RESULT_BACKEND: redis://broker:6379
+
+  # worker_2:
+  #   image: pyheat1d_web:dev
+  #   command: watchfiles --filter python 'celery -A pyheat1d_web.celery worker -n 'worker@2' --concurrency=2 -l INFO'
+  #   depends_on:
+  #     - broker
+  #   volumes:
+  #     - ./:/home/app/
+  #   environment:
+  #     WATCHFILES_FORCE_POLLING: true
+  #     DATABASE_URL: postgres://pyheat1d_web_user:123456@database:5432/pyheat1d_web_db
+  #     CELERY_BROKER_URL: redis://broker:6379
+  #     CELERY_RESULT_BACKEND: redis://broker:6379
+
+  # flower:
+  #   image: pyheat1d_web:dev
+  #   command: celery --broker=redis://broker:6379/0 flower --port=5555
+
+  #   ports:
+  #     - 5555:5555
+
+volumes:
+  pg_data:
