@@ -1,10 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import select
 
-from confiacim_api.database import get_session, ActiveSession
+from confiacim_api.database import ActiveSession
 from confiacim_api.models import Simulation
 from confiacim_api.schemas import SimulationList, SimulationPublic
-
 
 router = APIRouter(prefix="/simulation", tags=["Simulation"])
 
