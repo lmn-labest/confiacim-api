@@ -1,0 +1,99 @@
+[tool.poetry]
+name = "confiacim-api"
+version = "0.1.0"
+description = "Api para o confiacim-core"
+authors = ["Henrique C. C. de Andrade <henrique.ccda@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.109.0"
+uvicorn = {extras = ["standard"], version = "^0.25.0"}
+gunicorn = "^21.2.0"
+sqlalchemy = "^2.0.25"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.4"
+black = "^23.12.1"
+ruff = "^0.1.13"
+taskipy = "^1.12.2"
+mypy = "^1.8.0"
+coverage = "^7.4.0"
+pytest-cov = "^4.1.0"
+httpx = "^0.26.0"
+
+
+[tool.poetry.group.ipython.dependencies]
+ipdb = "^0.13.13"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.black]
+line-length = 120
+exclude = '''
+/(
+      \.eggs
+    | \.git
+    | \.venv
+)/
+'''
+
+[tool.pytest.ini_options]
+addopts = "-ra -vv"
+
+markers=[
+    "unit: marks unity tests",
+    "integration: marks integration testes",
+]
+
+[tool.ruff]
+line-length = 120
+
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+]
+
+exclude = [
+    ".venv"
+]
+
+src = ["src"]
+
+[tool.mypy]
+warn_return_any = true
+warn_unused_configs = true
+pretty = true
+
+
+[tool.taskipy.variables]
+src = "confiacim_api"
+
+[tool.taskipy.tasks]
+fmt_black = {cmd="poetry run black {src}", help="Chamando do black.", use_vars = true}
+fmt_ruff= {cmd="poetry run ruff {src} --fix", help="Chamando do ruff.", use_vars = true}
+fmt = {cmd="task fmt_ruff && task fmt_black", help="Formatador do código."}
+
+lin_ruff = {cmd="poetry run ruff check {src}", help="Linter com o Ruff.", use_vars = true}
+linter = {cmd="task lin_ruff", help="Linter."}
+
+lin_mypy = {cmd="mypy --package tests --package {src}", help="Analiasador estatico de tipos.", use_vars = true}
+
+tests = {cmd="pytest --cov={src}", help="Rodando os testes.", use_vars = true}
+tests_report = {cmd="pytest --cov-report html --cov={src}", help="Rodando os testes com cobertura.", use_vars = true}
+
+report_server = {cmd="python -m http.server 8001 -d htmlcov", help="Mostrando o relatorio de cobertura de teste."}
+
+clean = {cmd="rm -rvf .ruff_cache && rm -v .coverage && rm -rfv .pytest_cache && rm -rvf htmlcov && find confiacim-api -name '*.pyc' -exec rm -vf {} \\;", help="Limpa o projeto."}
+
+server = {cmd="uvicorn confiacim_api.app:app --reload", help="Subindo o servidor local uvicorn."}
+
+db = {cmd="docker compose up database -d", help="Subindo o contanier do DB."}
