@@ -2,24 +2,22 @@ from typing import Generator
 
 import pytest
 from confiacim_api.app import app
+from confiacim_api.conf import settings
 from confiacim_api.database import get_session
 from confiacim_api.models import Base, Simulation
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
-from sqlalchemy.pool import StaticPool
 
 
 @pytest.fixture
 def session():
-    engine = create_engine(
-        "sqlite:///:memory:",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-    Session = sessionmaker(bind=engine)
+    engine = create_engine(f"{settings.DATABASE_URL}_test")
+    Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     Base.metadata.create_all(engine)
-    yield Session()
+    with Session() as session:
+        yield session
+        session.rollback()
     Base.metadata.drop_all(engine)
 
 
