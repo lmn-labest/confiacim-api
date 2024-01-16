@@ -4,7 +4,9 @@ from fastapi import Depends
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-engine = create_engine("sqlite:///database.db")
+from confiacim_api.conf import settings
+
+engine = create_engine(settings.DATABASE_URL, echo=settings.SQLALCHEMY_ECHO)
 
 
 def get_session():
