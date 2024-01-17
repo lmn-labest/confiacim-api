@@ -44,6 +44,16 @@ def simulation(session: Session):
 
 
 @pytest.fixture
+def outher_simulation(session: Session, simulation):
+    new_simulation = Simulation(tag="simulation_2")
+    session.add(new_simulation)
+    session.commit()
+    session.refresh(new_simulation)
+
+    return new_simulation
+
+
+@pytest.fixture
 def simulation_list(session: Session):
     list_ = (
         Simulation(tag="simulation_1"),
