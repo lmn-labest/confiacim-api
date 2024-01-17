@@ -2,6 +2,16 @@
 
 API web para o confiacim-core.
 
+## Subindo a aplicação com docker
+
+### Desenvolvimento
+
+Subindo aplicação com as configurações de desenvolvimento
+
+```bash
+docker compose up -d
+```
+
 ## Configurando o ambiente de desenvolvimento local
 
 Instalando todas as dependencias
