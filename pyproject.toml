@@ -98,6 +98,7 @@ report_server = {cmd="python -m http.server 8001 -d htmlcov", help="Mostrando o 
 
 clean = {cmd="rm -rvf .ruff_cache && rm -v .coverage && rm -rfv .pytest_cache && rm -rvf htmlcov && find confiacim-api -name '*.pyc' -exec rm -vf {} \\;", help="Limpa o projeto."}
 
-server = {cmd="uvicorn confiacim_api.app:app --reload", help="Subindo o servidor local uvicorn."}
+server_api = {cmd="uvicorn confiacim_api.app:app --reload", help="Subindo o servidor local uvicorn."}
 
-db = {cmd="docker compose up database -d", help="Subindo o contanier do DB."}
+up_db = {cmd="docker compose up database -d", help="Subindo o contanier do DB."}
+down_db = {cmd="docker compose down database", help="Parando o contanier do DB."}
