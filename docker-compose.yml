@@ -15,26 +15,24 @@ services:
     ports:
       - 5432:5432
 
-  # app:
-  #   container_name: pyheat1d_web
-  #   build:
-  #     dockerfile: ./Dockerfile.dev
-  #   image: pyheat1d_web:dev
-  #   volumes:
-  #     - ./:/home/app/
-  #   restart: 'no'
-  #   stdin_open: true
-  #   tty: true
-  #   env_file:
-  #     - .env
-  #   environment:
-  #     PYTHONBREAKPOINT: ipdb.set_trace
-  #     DATABASE_URL: postgres://pyheat1d_web_user:123456@database:5432/pyheat1d_web_db
-  #   ports:
-  #     - 8000:8000
-  #   depends_on:
-  #     - database
-  #     - broker
+  app:
+    container_name: confiacim_api
+    build:
+      dockerfile: ./Dockerfile.dev
+    image: confiacim_api:dev
+    volumes:
+      - ./:/home/app/
+    restart: 'no'
+    stdin_open: true
+    tty: true
+    environment:
+      PYTHONBREAKPOINT: ipdb.set_trace
+      DATABASE_URL: postgresql://confiacim_api_user:confiacim_api_password@database:5432/confiacim_api
+    ports:
+      - 8000:8000
+    depends_on:
+      - database
+  #    - broker
 
   # broker:
   #   container_name: pyheat1d_web_broker
