@@ -1,5 +1,7 @@
 # Confiacim-api
 
+API web para o confiacim-core.
+
 ## Configurando o ambiente de desenvolvimento local
 
 Instalando todas as dependencias
@@ -20,7 +22,7 @@ Subindo o banco de dados POSTGRES via `docker compose`.
 poetry run task up_db
 ```
 
-O docker compose irá criar dois banco de dados na primeira vez, os `confiacim_api` e `confiacim_api_test`. Essa funcionalidade e provida pelo script[create-databases.sh](./postgres/create-databases.sh). Além disso no `confiacim_api` será criado as tabelas utilizando o scrip [create_tables.sql](./postgres/create_tables.sql).
+O docker compose irá criar dois banco de dados na primeira vez, os `confiacim_api` e `confiacim_api_test`. Essa funcionalidade e provida pelo script [create-databases.sh](./postgres/create-databases.sh). Além disso no `confiacim_api` será criado as tabelas utilizando o scrip [create_tables.sql](./postgres/create_tables.sql).
 
 Para configurar o banco bastas configura a variavel de ambiente `DATABASE_URL`.
 
@@ -36,8 +38,8 @@ Subindo a api com `uvicorn`.
 poetry run task server_api
 ```
 
-O serviço fica disponivel [http://localhost:8000/](http://localhost:8000/). A documentação [http://localhost:8000/docs/](http://localhost:8000/docs/)
-ou [http://localhost:8000/redoc/](http://localhost:8000/redoc/)
+O serviço fica disponível [http://localhost:8000/](http://localhost:8000/). A documentação [http://localhost:8000/docs](http://localhost:8000/docs)
+ou [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
 ## Teste, formatadores e linters
 
