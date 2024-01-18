@@ -86,6 +86,7 @@ pretty = true
 [[tool.mypy.overrides]]
 module = [
     "celery",
+    "celery.result",
 ]
 ignore_missing_imports = true
 
