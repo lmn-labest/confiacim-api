@@ -1,9 +1,16 @@
 from fastapi import APIRouter, HTTPException, Response, status
 from sqlalchemy import select
 
+from confiacim_api.celery import simulation_run as simulation_run_task
 from confiacim_api.database import ActiveSession
 from confiacim_api.models import Simulation
-from confiacim_api.schemas import SimulationCreate, SimulationList, SimulationPublic, SimulationUpdate
+from confiacim_api.schemas import (
+    Message,
+    SimulationCreate,
+    SimulationList,
+    SimulationPublic,
+    SimulationUpdate,
+)
 
 router = APIRouter(prefix="/simulation", tags=["Simulation"])
 
@@ -86,3 +93,15 @@ def simulation_patch(session: ActiveSession, simulation_id: int, payload: Simula
     session.refresh(db_simulation)
 
     return db_simulation
+
+
+@router.get("/{simulation_id}/run", response_model=Message, tags=["celery"])
+def simulation_run(session: ActiveSession, simulation_id: int):
+    db_simulation = session.scalar(select(Simulation).where(Simulation.id == simulation_id))
+
+    if not db_simulation:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Simulation not found.")
+
+    simulation_run_task.delay(simulation_id=simulation_id)
+
+    return {"message": f"Simulação {db_simulation.tag} foi mandada para a fila."}

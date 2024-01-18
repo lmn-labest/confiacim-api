@@ -1,6 +1,10 @@
 from pydantic import BaseModel, Field
 
 
+class Message(BaseModel):
+    message: str
+
+
 class SimulationCreate(BaseModel):
     tag: str = Field(max_length=30)
 

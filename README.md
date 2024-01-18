@@ -6,13 +6,20 @@ API web para o confiacim-core.
 
 ### Desenvolvimento
 
-Subindo aplicação com as configurações de desenvolvimento
+Subindo aplicação completa com as configurações de desenvolvimento
 
 ```bash
-docker compose up -d
+docker compose up
 ```
 
+Esse comando irá subir o `uvicorn`, `postgres`, `redis`, `worker_1`, `worker_2` e `flower`.
+
+O api fica disponível em [localhost:8000/](http://localhost:8000/). A documentação em [localhost:8000/docs](http://localhost:8000/docs)
+ou [localhost:8000/redoc](http://localhost:8000/redoc). O Flower fica no [localhost:5555](http://localhost:5555)
+
 ## Configurando o ambiente de desenvolvimento local
+
+A seguir as instruções Caso você queria trabalhar com o codido da api fora do ambiente docker.
 
 Instalando todas as dependencias
 
@@ -26,30 +33,57 @@ Para facilitar o processo de desenvolvimento foi utilizado a biblioteca `taskipy
 poetry run task -l
 ```
 
-Subindo o banco de dados POSTGRES via `docker compose`.
+Subindo o banco de dados `POSTGRES` via `docker compose`.
 
 ```bash
-poetry run task up_db
+docker compose up database -d
 ```
 
-O docker compose irá criar dois banco de dados na primeira vez, os `confiacim_api` e `confiacim_api_test`. Essa funcionalidade e provida pelo script [create-databases.sh](./postgres/create-databases.sh). Além disso no `confiacim_api` será criado as tabelas utilizando o scrip [create_tables.sql](./postgres/create_tables.sql).
+O docker compose irá criar dois banco de dados na primeira vez, os `confiacim_api` e `confiacim_api_test`. Essa funcionalidade e provida pelo script [create-databases.sh](./postgres/create-databases.sh). Além disso no `confiacim_api` será criado as tabelas utilizando o script [create_tables.sql](./postgres/create_tables.sql).
 
-Para configurar o banco bastas configura a variavel de ambiente `DATABASE_URL`.
+Para configurar o banco bastas usar variável de ambiente `DATABASE_URL`.
 
 ```bash
 export DATABASE_URL="postgresql://confiacim_api_user:confiacim_api_password@localhost:5432/confiacim_api"
 ```
 
-ou defini-la em um arquivo `.env` como está no aquivo `.env_sam`.
+ou defini-la em um arquivo `.env` como está no aquivo `.env_sample`.
+
+Subindo o redis
+
+```bash
+docker compose up broker -d
+```
+
+O `worker`pode ser inicializado locamente com
+
+```bash
+watchfiles --filter python 'celery -A confiacim_api.celery worker --concurrency=2  -l INFO'
+```
+
+E o serviço `flower` pode se inicializado localmente com:
+
+```bash
+celery --broker=redis://localhost:6379/0 flower --port=5555
+```
+
+Mas eles tão podem ser inicializados via `docker compose` com:
+
+```bash
+docker compose up worker_1 flower -d
+```
+
+Todo os serviços exceto a api pobem ser inicializados via `docker compose` com:
+
+```bash
+docker compose up database borker worker_1 flower
+```
 
 Subindo a api com `uvicorn`.
 
 ```bash
 poetry run task server_api
 ```
-
-O serviço fica disponível [http://localhost:8000/](http://localhost:8000/). A documentação [http://localhost:8000/docs](http://localhost:8000/docs)
-ou [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
 ## Teste, formatadores e linters
 
