@@ -25,6 +25,10 @@ def test_positive_list(client: TestClient, simulation_list: list[Simulation]):
     for s, e in zip(simulations_list_from_api, simulation_list):
         assert s["id"] == e.id
         assert s["tag"] == e.tag
+        if e.celery_task_id:
+            assert s["celery_task_id"] == str(e.celery_task_id)
+        else:
+            assert s["celery_task_id"] is None
 
 
 def test_positive_list_empty(client: TestClient):
@@ -92,7 +96,7 @@ def test_positive_patch(client: TestClient, simulation: Simulation, session):
 
     session.refresh(simulation)
 
-    assert body == {"id": simulation.id, "tag": payload["tag"]}
+    assert body == {"id": simulation.id, "tag": payload["tag"], "celery_task_id": None}
 
     assert simulation.tag == payload["tag"]
 
@@ -144,7 +148,7 @@ def test_positive_patch_update_to_same_tag_name(client: TestClient, simulation: 
 
     session.refresh(simulation)
 
-    assert body == {"id": simulation.id, "tag": payload["tag"]}
+    assert body == {"id": simulation.id, "tag": payload["tag"], "celery_task_id": None}
 
     assert simulation.tag == payload["tag"]
 
