@@ -1,4 +1,5 @@
 from typing import Generator
+from uuid import uuid4
 
 import pytest
 from confiacim_api.app import app
@@ -12,8 +13,8 @@ from sqlalchemy.orm import Session, sessionmaker
 
 @pytest.fixture
 def session():
-    engine = create_engine(f"{settings.DATABASE_URL}_test")
-    Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    engine = create_engine(f"{settings.DATABASE_URL}_test", echo=settings.SQLALCHEMY_ECHO)
+    Session = sessionmaker(autocommit=False, autoflush=True, bind=engine)
     Base.metadata.create_all(engine)
     with Session() as session:
         yield session
@@ -57,7 +58,7 @@ def outher_simulation(session: Session, simulation):
 def simulation_list(session: Session):
     list_ = (
         Simulation(tag="simulation_1"),
-        Simulation(tag="simulation_2"),
+        Simulation(tag="simulation_2", celery_task_id=uuid4()),
         Simulation(tag="simulation_3"),
     )
 
