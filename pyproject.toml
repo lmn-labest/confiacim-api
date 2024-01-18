@@ -13,6 +13,8 @@ gunicorn = "^21.2.0"
 sqlalchemy = "^2.0.25"
 pydantic-settings = "^2.1.0"
 psycopg2 = "^2.9.9"
+celery = {extras = ["redis"], version = "^5.3.6"}
+flower = "^2.0.1"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -24,6 +26,7 @@ mypy = "^1.8.0"
 coverage = "^7.4.0"
 pytest-cov = "^4.1.0"
 httpx = "^0.26.0"
+watchfiles = "^0.21.0"
 
 
 [tool.poetry.group.ipython.dependencies]
@@ -46,6 +49,11 @@ exclude = '''
 
 [tool.pytest.ini_options]
 addopts = "-ra -vv"
+
+testpaths = [
+    "tests",
+    "--strict-markers",
+]
 
 markers=[
     "unit: marks unity tests",
@@ -74,6 +82,12 @@ src = ["src"]
 warn_return_any = true
 warn_unused_configs = true
 pretty = true
+
+[[tool.mypy.overrides]]
+module = [
+    "celery",
+]
+ignore_missing_imports = true
 
 
 [tool.taskipy.variables]
