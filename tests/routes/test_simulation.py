@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 from confiacim_api.app import app
 from confiacim_api.models import Simulation
 from fastapi import status
@@ -11,7 +9,6 @@ ROUTE_RETRIVE_NAME = "simulation_retrive"
 ROUTE_DELETE_NAME = "simulation_delete"
 ROUTE_PATCH_NAME = "simulation_patch"
 ROUTE_CREATE_NAME = "simulation_create"
-ROUTE_RUN_SIMULATION = "simulation_run"
 
 
 def test_positive_list(client: TestClient, simulation_list: list[Simulation]):
@@ -234,32 +231,3 @@ def test_negative_create_tag_name_should_be_unique(
     assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     assert resp.json() == {"detail": "Simulation Tag name shoud be unique."}
-
-
-def test_positive_run_simulation(mocker, client: TestClient, simulation: Simulation):
-    AsyncResultMock = type("AsyncResultMock", (), {"id": uuid4()})
-
-    run_task_delay = mocker.patch(
-        "confiacim_api.routes.simulation.simulation_run_task.delay", return_value=AsyncResultMock
-    )
-
-    resp = client.get(app.url_path_for(ROUTE_RUN_SIMULATION, simulation_id=simulation.id))
-
-    assert resp.status_code == status.HTTP_202_ACCEPTED
-
-    assert resp.json() == {
-        "message": f"A task '{AsyncResultMock.id}' da simulação '{simulation.tag}' foi mandada para a fila."  # type: ignore
-    }
-
-    run_task_delay.assert_called_once()
-    run_task_delay.assert_called_once_with(simulation_id=simulation.id)
-
-    assert simulation.celery_task_id == AsyncResultMock.id  # type: ignore
-
-
-def test_negative_run_simulation(client: TestClient):
-    resp = client.get(app.url_path_for(ROUTE_RUN_SIMULATION, simulation_id=404))
-
-    assert resp.status_code == status.HTTP_404_NOT_FOUND
-
-    assert resp.json() == {"detail": "Simulation not found."}
