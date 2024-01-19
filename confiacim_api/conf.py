@@ -8,8 +8,8 @@ class Settings(BaseSettings):
     )
 
     DATABASE_URL: str
-    CELERY_BROKER: str
-    CELERY_BACKEND: str
+    CELERY_BROKER_URL: str
+    CELERY_RESULT_BACKEND: str
     SQLALCHEMY_ECHO: bool = False
 
 
