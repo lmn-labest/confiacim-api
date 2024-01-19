@@ -1,0 +1,43 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0  # Use the ref you want to point at
+    hooks:
+    - id: trailing-whitespace
+    - id: mixed-line-ending
+    - id: end-of-file-fixer
+    - id: debug-statements
+
+  - repo: local
+    hooks:
+      - id: black
+        name: fmt black
+        entry: poetry run black confiacim_api
+        language: python
+        types_or: [python, pyi]
+
+  - repo: local
+    hooks:
+      - id: ruff
+        name: fmt ruff
+        entry: poetry run ruff check confiacim_api --fix
+        language: python
+        pass_filenames: false
+        always_run: true
+
+  - repo: local
+    hooks:
+      - id: linter
+        name: linter ruff
+        entry: poetry run ruff check confiacim_api
+        language: python
+        pass_filenames: false
+        always_run: true
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: pytest
+        language: python
+        pass_filenames: false
+        always_run: true
