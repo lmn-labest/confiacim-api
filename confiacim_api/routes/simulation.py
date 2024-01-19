@@ -99,7 +99,7 @@ def simulation_patch(session: ActiveSession, simulation_id: int, payload: Simula
     return db_simulation
 
 
-@router.get("/{simulation_id}/run", response_model=Message, tags=["celery"])
+@router.get("/{simulation_id}/run", response_model=Message, tags=["celery"], status_code=status.HTTP_202_ACCEPTED)
 def simulation_run(session: ActiveSession, simulation_id: int):
     db_simulation = session.scalar(select(Simulation).where(Simulation.id == simulation_id))
 
@@ -112,7 +112,7 @@ def simulation_run(session: ActiveSession, simulation_id: int):
     session.add(db_simulation)
     session.commit()
 
-    return {"message": f"Simulação {db_simulation.tag} foi mandada para a fila."}  # retorna o id da task
+    return {"message": f"A task '{AsyncResult.id}' da simulação '{db_simulation.tag}' foi mandada para a fila."}
 
 
 @router.get("/celery/{task_id}/status", tags=["celery"])
