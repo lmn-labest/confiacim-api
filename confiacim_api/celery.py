@@ -4,8 +4,8 @@ from confiacim_api.conf import settings
 
 celery_app = Celery(
     __name__,
-    broker=settings.CELERY_BROKER,
-    backend=settings.CELERY_BACKEND,
+    broker=settings.CELERY_BROKER_URL,
+    backend=settings.CELERY_RESULT_BACKEND,
     broker_connection_retry_on_startup=True,  # TODO: Pesquisar essa configuração.
 )
 

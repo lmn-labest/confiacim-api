@@ -9,13 +9,23 @@ API web para o confiacim-core.
 Subindo aplicação completa com as configurações de desenvolvimento
 
 ```bash
-docker compose up
+docker compose -f docker-compose-dev.yml up -d
 ```
 
-Esse comando irá subir o `uvicorn`, `postgres`, `redis`, `worker_1`, `worker_2` e `flower`.
+Esse comando irá subir o `api`, `postgres`, `redis`, `worker_1`, `worker_2` e `flower`.
 
 O api fica disponível em [localhost:8000/](http://localhost:8000/). A documentação em [localhost:8000/docs](http://localhost:8000/docs)
 ou [localhost:8000/redoc](http://localhost:8000/redoc). O Flower fica no [localhost:5555](http://localhost:5555)
+
+### Produção
+
+Subindo um aplocação que simula o ambiente de produção.
+
+```bash
+docker compose -f docker-compose-prod.yml up -d
+```
+
+A agora apenas as dependencias de produção são instaladas na imagem da api. Além disso servidor de aplicação não é mais o `uvicorn` é sim `gunicorn` com 3 `workers`. Também temos `nginx` agindo como proxy reverso para a `api` e `flower`. Todos os serviços estão rodando na rede interna do docker é não tem mais acesso direto externo. A `api` agora fica [localhost:80/](http://localhost:80/) e o `flower` [localhost:80/flower](http://localhost:80/flower).
 
 ## Configurando o ambiente de desenvolvimento local
 
@@ -36,7 +46,7 @@ poetry run task -l
 Subindo o banco de dados `POSTGRES` via `docker compose`.
 
 ```bash
-docker compose up database -d
+docker compose -f docker-compose-dev.yml up database -d
 ```
 
 O docker compose irá criar dois banco de dados na primeira vez, os `confiacim_api` e `confiacim_api_test`. Essa funcionalidade e provida pelo script [create-databases.sh](./postgres/create-databases.sh). Além disso no `confiacim_api` será criado as tabelas utilizando o script [create_tables.sql](./postgres/create_tables.sql).
@@ -52,7 +62,7 @@ ou defini-la em um arquivo `.env` como está no aquivo `.env_sample`.
 Subindo o redis
 
 ```bash
-docker compose up broker -d
+docker compose -f docker-compose-dev.yml up broker -d
 ```
 
 O `worker`pode ser inicializado locamente com
@@ -70,13 +80,13 @@ celery --broker=redis://localhost:6379/0 flower --port=5555
 Mas eles tão podem ser inicializados via `docker compose` com:
 
 ```bash
-docker compose up worker_1 flower -d
+docker compose -f docker-compose-dev.yml up worker_1 flower -d
 ```
 
 Todo os serviços exceto a api pobem ser inicializados via `docker compose` com:
 
 ```bash
-docker compose up database borker worker_1 flower
+docker compose -f docker-compose-dev.yml up database borker worker_1 flower
 ```
 
 Subindo a api com `uvicorn`.
@@ -114,5 +124,5 @@ O relátorio fica disponivel no [http://0.0.0.0:8001/](http://0.0.0.0:8001/)
 Para atualizar o esquema do banco de dados é preciso fazer a modificação necessária no arquivo `create_tables.sql` e gerar uma nova imagem com:
 
 ```bash
-docker compose build database
+docker compose -f docker-compose-dev.yml build database
 ```
