@@ -1,6 +1,6 @@
 # Confiacim-api
 
-API web para o confiacim-core.
+API web para o `confiacim-core`.
 
 ## Subindo a aplicação com docker
 
@@ -12,10 +12,12 @@ Subindo aplicação completa com as configurações de desenvolvimento
 docker compose -f docker-compose-dev.yml up -d
 ```
 
-Esse comando irá subir o `api`, `postgres`, `redis`, `worker_1`, `worker_2` e `flower`.
+Esse comando irá subir o `api`, `postgres`, `boker`, `worker_1`, `worker_2` e `flower`.
 
-O api fica disponível em [localhost:8000/](http://localhost:8000/). A documentação em [localhost:8000/docs](http://localhost:8000/docs)
-ou [localhost:8000/redoc](http://localhost:8000/redoc). O Flower fica no [localhost:5555](http://localhost:5555)
+ - `api` ➡️ [localhost:8000/](http://localhost:8000/)
+ - `doc` ➡️ [localhost:8000/docs](http://localhost:8000/docs)
+ - `redoc` ➡️ [localhost:8000/redoc](http://localhost:8000/redoc)
+ - `Flower` ➡️ [localhost:5555](http://localhost:5555)
 
 ### Produção
 
@@ -25,7 +27,10 @@ Subindo um aplocação que simula o ambiente de produção.
 docker compose -f docker-compose-prod.yml up -d
 ```
 
-A agora apenas as dependencias de produção são instaladas na imagem da api. Além disso servidor de aplicação não é mais o `uvicorn` é sim `gunicorn` com 3 `workers`. Também temos `nginx` agindo como proxy reverso para a `api` e `flower`. Todos os serviços estão rodando na rede interna do docker é não tem mais acesso direto externo. A `api` agora fica [localhost:80/](http://localhost:80/) e o `flower` [localhost:80/flower](http://localhost:80/flower).
+A agora apenas as dependencias de produção são instaladas na imagem da `api`. Além disso servidor de aplicação não é mais o `uvicorn` é sim `gunicorn` com `3 workers`. Também temos `nginx` agindo como proxy reverso para a `api` e `flower`. Todos os serviços estão rodando na rede interna do docker é não tem mais acesso direto externo. 
+
+- `api` ➡️ [localhost:80/](http://localhost:80/)
+- `Flower` ➡️ [localhost:80/flower](http://localhost:80/flower)
 
 ## Configurando o ambiente de desenvolvimento local
 
@@ -109,7 +114,7 @@ poetry run task tests
 
 Os teste serão automaticamente rodados utilizando o DB `confiacim_api_test`.
 
-Para gerar o a cobertura de testes basta:
+Para gerar a cobertura de testes basta:
 
 ```bash
 poetry run task tests_report
@@ -119,7 +124,7 @@ poetry run task report_server
 O relátorio fica disponivel no [http://0.0.0.0:8001/](http://0.0.0.0:8001/)
 
 
-## Atualziando o esquema do banco de dados
+## Atualizando o esquema do banco de dados
 
 Para atualizar o esquema do banco de dados é preciso fazer a modificação necessária no arquivo `create_tables.sql` e gerar uma nova imagem com:
 
