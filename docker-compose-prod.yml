@@ -2,13 +2,31 @@ version: "3.8"
 
 services:
 
+  nginx:
+    container_name: confiacim_api_nginx
+    restart: 'no'
+    image: nginx:1.23.2-alpine
+    networks:
+      - internal_nw
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+
+  broker:
+    container_name: confiacim-api-broker
+    image: redis:7.2-alpine
+    networks:
+      - internal_nw
+
   database:
     container_name: confiacim-api-db
     build:
       context: postgres
     restart: 'no'
     networks:
-      - confiacim_api_nw
+      - internal_nw
     volumes:
       - pg_data:/var/lib/postgresql/data
     environment:
@@ -22,10 +40,10 @@ services:
     build:
       dockerfile: ./Dockerfile.prod
     image: confiacim_api:latest
-    command: "gunicorn confiacim_api.app:app --workers 3 --log-level info --access-logfile '-' --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000"
+    command: "gunicorn confiacim_api.app:app --workers 2 --log-level info --access-logfile '-' --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000"
     restart: 'no'
     networks:
-      - confiacim_api_nw
+      - internal_nw
     environment:
       DATABASE_URL: postgresql://confiacim_api_user:confiacim_api_password@database:5432/confiacim_api
       CELERY_BROKER_URL: redis://broker:6379
@@ -35,18 +53,13 @@ services:
       - broker
       - nginx
 
-  broker:
-    container_name: confiacim-api-broker
-    image: redis:7.2-alpine
-    networks:
-      - confiacim_api_nw
 
   worker_1:
     image: confiacim_api:latest
     command: celery -A confiacim_api.celery worker  -n 'worker@1' --concurrency=2 -l INFO
     restart: 'no'
     networks:
-      - confiacim_api_nw
+      - internal_nw
     depends_on:
       - broker
       - nginx
@@ -60,7 +73,7 @@ services:
     command: celery -A confiacim_api.celery worker  -n 'worker@2' --concurrency=2 -l INFO
     restart: 'no'
     networks:
-      - confiacim_api_nw
+      - internal_nw
     depends_on:
       - broker
       - nginx
@@ -73,23 +86,12 @@ services:
     image: confiacim_api:latest
     restart: 'no'
     networks:
-      - confiacim_api_nw
+      - internal_nw
     command: celery --broker=redis://broker:6379/0 flower --port=5555 --url-prefix=flower
-
-  nginx:
-    container_name: confiacim_api_nginx
-    restart: 'no'
-    image: nginx:1.23.2-alpine
-    networks:
-      - confiacim_api_nw
-    volumes:
-      - ./nginx/:/etc/nginx/conf.d/
-    ports:
-      - 80:80
 
 volumes:
   pg_data:
 
 networks:
-  confiacim_api_nw:
+  internal_nw:
     driver: bridge
