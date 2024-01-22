@@ -15,9 +15,7 @@ router = APIRouter(prefix="/simulation", tags=["Simulation"])
 
 @router.get("", response_model=SimulationList)
 def simulation_list(session: ActiveSession):
-    query = select(Simulation)
-
-    simulations = session.scalars(query).all()
+    simulations = session.scalars(select(Simulation).order_by(Simulation.tag)).all()
 
     return {"simulations": simulations}
 
@@ -43,9 +41,7 @@ def simulation_create(session: ActiveSession, payload: SimulationCreate):
 
 @router.get("/{simulation_id}", response_model=SimulationPublic)
 def simulation_retrive(session: ActiveSession, simulation_id: int):
-    query = select(Simulation).where(Simulation.id == simulation_id)
-
-    db_simulation = session.scalar(query)
+    db_simulation = session.scalar(select(Simulation).where(Simulation.id == simulation_id))
 
     if not db_simulation:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Simulation not found")
@@ -55,9 +51,7 @@ def simulation_retrive(session: ActiveSession, simulation_id: int):
 
 @router.delete("/{simulation_id}")
 def simulation_delete(session: ActiveSession, simulation_id: int):
-    query = select(Simulation).where(Simulation.id == simulation_id)
-
-    db_simulation = session.scalar(query)
+    db_simulation = session.scalar(select(Simulation).where(Simulation.id == simulation_id))
 
     if not db_simulation:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Simulation not found")
