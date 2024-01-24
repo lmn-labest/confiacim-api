@@ -73,7 +73,7 @@ services:
 
   flower:
     image: confiacim_api:dev
-    command: celery --broker=redis://broker:6379/0 flower --port=5555
+    command: celery --broker=redis://broker:6379/0 flower --port=5555 --url-prefix=flower
 
     ports:
       - 5555:5555
