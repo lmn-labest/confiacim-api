@@ -2,18 +2,6 @@ version: "3.8"
 
 services:
 
-  nginx:
-    container_name: confiacim_api_nginx
-    restart: 'no'
-    image: nginx:1.23.2-alpine
-    networks:
-      - internal_nw
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - 80:80
-
   broker:
     container_name: confiacim-api-broker
     image: redis:7.2-alpine
@@ -51,8 +39,6 @@ services:
     depends_on:
       - database
       - broker
-      - nginx
-
 
   worker_1:
     image: confiacim_api:latest
@@ -62,7 +48,7 @@ services:
       - internal_nw
     depends_on:
       - broker
-      - nginx
+
     environment:
       DATABASE_URL: postgresql://confiacim_api_user:confiacim_api_password@database:5432/confiacim_api
       CELERY_BROKER_URL: redis://broker:6379
@@ -76,7 +62,7 @@ services:
       - internal_nw
     depends_on:
       - broker
-      - nginx
+
     environment:
       DATABASE_URL: postgresql://confiacim_api_user:confiacim_api_password@database:5432/confiacim_api
       CELERY_BROKER_URL: redis://broker:6379
@@ -88,10 +74,12 @@ services:
     networks:
       - internal_nw
     command: celery --broker=redis://broker:6379/0 flower --port=5555 --url-prefix=flower
+    depends_on:
+      - broker
 
 volumes:
   pg_data:
 
 networks:
   internal_nw:
-    driver: bridge
+    name: "confiacim_internal_nw"

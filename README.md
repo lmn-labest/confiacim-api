@@ -14,10 +14,9 @@ docker compose -f docker-compose-dev.yml up -d
 
 Esse comando irá subir o `api`, `postgres`, `boker`, `worker_1`, `worker_2` e `flower`.
 
- - `api` ➡️ [localhost:8000/](http://localhost:8000/)
- - `doc` ➡️ [localhost:8000/docs](http://localhost:8000/docs)
- - `redoc` ➡️ [localhost:8000/redoc](http://localhost:8000/redoc)
- - `Flower` ➡️ [localhost:5555](http://localhost:5555)
+ - `api` ➡️ [localhost:8000/](http://localhost:8000/api/)
+ - `doc` ➡️ [localhost:8000/docs](http://localhost:8000/api/docs)
+ - `Flower` ➡️ [localhost:5555](http://localhost:5555/flower/)
 
 ### Produção
 
@@ -27,10 +26,11 @@ Subindo um aplocação que simula o ambiente de produção.
 docker compose -f docker-compose-prod.yml up -d
 ```
 
-A agora apenas as dependencias de produção são instaladas na imagem da `api`. Além disso servidor de aplicação não é mais o `uvicorn` é sim `gunicorn` com `3 workers`. Também temos `nginx` agindo como proxy reverso para a `api` e `flower`. Todos os serviços estão rodando na rede interna do docker é não tem mais acesso direto externo. 
+A agora apenas as dependencias de produção são instaladas na imagem da `api`. Além disso servidor de aplicação não é mais o `uvicorn` é sim `gunicorn` com `3 workers`. Todos os serviços estão rodando na rede interna do docker é não tem mais acesso direto externo. Para acesso é preciso subir os containers do `confiacim-front`, lá temos um `nginx` agindo como proxy reverso para a `api` e `flower` além de servir o bundle do `frontend`. Outra caracteristica de configuração é que não é mais preciso configurar o `CORS`.
 
-- `api` ➡️ [localhost:80/](http://localhost:80/)
-- `Flower` ➡️ [localhost:80/flower](http://localhost:80/flower)
+- `doc` ➡️ [localhost:8000/docs](http://localhost:80/api/docs)
+- `api` ➡️ [localhost:80/](http://localhost:80/api/)
+- `Flower` ➡️ [localhost:80/flower](http://localhost:80/flower/)
 
 ## Configurando o ambiente de desenvolvimento local
 

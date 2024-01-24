@@ -10,7 +10,7 @@ from confiacim_api.schemas import (
     SimulationUpdate,
 )
 
-router = APIRouter(prefix="/simulation", tags=["Simulation"])
+router = APIRouter(prefix="/api/simulation", tags=["Simulation"])
 
 
 @router.get("", response_model=SimulationList)

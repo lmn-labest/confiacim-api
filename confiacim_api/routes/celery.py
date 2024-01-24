@@ -10,7 +10,7 @@ from confiacim_api.models import Simulation
 from confiacim_api.schemas import Message
 from confiacim_api.tasks import simulation_run as simulation_run_task
 
-router = APIRouter(prefix="/simulation", tags=["Simulation"])
+router = APIRouter(prefix="/api/simulation", tags=["Simulation"])
 
 
 @router.get("/{simulation_id}/run", response_model=Message, tags=["celery"], status_code=status.HTTP_202_ACCEPTED)
