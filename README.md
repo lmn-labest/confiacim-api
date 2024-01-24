@@ -2,6 +2,10 @@
 
 API web para o `confiacim-core`.
 
+![arquitetura](./docs/img/confiacim_web.drawio.png)
+
+Figura 1: Arquitetura básica
+
 ## Subindo a aplicação com docker
 
 ### Desenvolvimento
