@@ -68,6 +68,12 @@ export DATABASE_URL="postgresql://confiacim_api_user:confiacim_api_password@loca
 
 ou defini-la em um arquivo `.env` como está no aquivo `.env_sample`.
 
+Como não tempos o `nginx` como `proxy reverso`é preciso configurar o `CORS`, comm o `vite`:
+
+```bash
+CORS=http://localhost:5173
+```
+
 Subindo o redis
 
 ```bash

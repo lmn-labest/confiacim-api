@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     CELERY_BROKER_URL: str
     CELERY_RESULT_BACKEND: str
     SQLALCHEMY_ECHO: bool = False
+    CORS: str | None = None
 
 
 settings = Settings()  # type: ignore
