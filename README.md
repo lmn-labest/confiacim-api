@@ -19,8 +19,8 @@ docker compose -f docker-compose-dev.yml up -d
 Esse comando irá subir o `api`, `postgres`, `boker`, `worker_1`, `worker_2` e `flower`.
 
  - `api` ➡️ [localhost:8000/](http://localhost:8000/api/)
- - `doc` ➡️ [localhost:8000/docs](http://localhost:8000/api/docs)
- - `Flower` ➡️ [localhost:5555](http://localhost:5555/flower/)
+ - `doc` ➡️ [localhost:8000/api/docs](http://localhost:8000/api/docs)
+ - `Flower` ➡️ [localhost:5555/flower/](http://localhost:5555/flower/)
 
 ### Produção
 
