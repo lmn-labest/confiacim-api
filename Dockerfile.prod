@@ -1,3 +1,16 @@
+FROM python:3.11-alpine as requirements-stage
+
+# set work directory
+WORKDIR /tmp
+
+# copy project
+RUN pip install --upgrade pip && pip install poetry poetry-plugin-export
+
+COPY pyproject.toml poetry.lock ./
+
+RUN poetry export --without dev --format=requirements.txt > requirements.txt
+
+#
 FROM python:3.11-alpine
 
 ARG USER_DIR=/home/app
@@ -22,14 +35,10 @@ RUN set -eux; \
     libc-dev\
     && rm -rf /var/cache/apk/*
 
+COPY --from=requirements-stage /tmp/requirements.txt .
+
 # copy project
-RUN pip install --upgrade pip && pip install poetry
-
-# install dependencies
-COPY pyproject.toml poetry.lock /home/app/
-# copy poetry.lock /home/app
-
-RUN poetry install --no-interaction --no-cache --without dev --no-root
+RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
