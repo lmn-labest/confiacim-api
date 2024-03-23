@@ -1,0 +1,24 @@
+env:
+  AuthorizedGroups: GG_APPS_DEVOPS_ACESSODEV_A17790_K8S
+  Name: a17790-backend
+  SkipProjectFilesUpdate: true
+  SkipSnapshotCommit: true
+
+build:
+  python:
+    PythonVersion: "3.11"
+    SkipTests: true
+  docker:
+    Repository: a17790
+    Name: backend
+    Dockerfile: Dockerfile
+    ContextRoot: .
+    # BuildArgs: IMAGE_REGISTRY=nexus.petrobras.com.br:5000/;PETROBRAS_BUILD=TRUE
+
+upload:
+  docker:
+
+deploy:
+  job: a17790-k8s@backend
+  # name: a17790-backend
+  folder: TIC-US

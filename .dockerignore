@@ -6,7 +6,8 @@
 .venv
 .env
 .env_sample
-__pycache__
+**/__pycache__/
+**/*.py[cod]
 .git
 .gitignore
 .python-version
