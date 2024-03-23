@@ -11,7 +11,7 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: postgresql://test_user:test_password@localhost:5432/confiacim_api
+      DATABASE_URL: postgresql+psycopg://test_user:test_password@localhost:5432/confiacim_api
       CELERY_BROKER_URL: redis://localhost:6379
       CELERY_RESULT_BACKEND: redis://localhost:6379
 
