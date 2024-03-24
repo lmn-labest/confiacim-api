@@ -8,12 +8,13 @@ build:
   python:
     PythonVersion: "3.11"
     SkipTests: true
+    SkipSonar: true
   docker:
     Repository: a17790
     Name: backend
     Dockerfile: Dockerfile
     ContextRoot: .
-    # BuildArgs: IMAGE_REGISTRY=nexus.petrobras.com.br:5000/;PETROBRAS_BUILD=TRUE
+    BuildArgs: IMAGE_REGISTRY=registry.petrobras.com.br/dockerhub/library/
 
 upload:
   docker:
