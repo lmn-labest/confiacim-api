@@ -8,7 +8,6 @@ build:
   python:
     PythonVersion: "3.11"
     SkipTests: true
-    SkipSonar: true
   docker:
     Repository: a17790
     Name: backend
