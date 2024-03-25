@@ -3,6 +3,10 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 
+class Health(BaseModel):
+    status: str
+
+
 class Message(BaseModel):
     message: str
 

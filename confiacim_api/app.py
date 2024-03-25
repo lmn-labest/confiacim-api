@@ -4,7 +4,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from confiacim_api.conf import settings
 from confiacim_api.routes import base_router, celery_router, simulation_router
 
-app = FastAPI(docs_url="/api/docs", openapi_url="/api/openapi.json")
+app = FastAPI(
+    title="Confiacim API",
+    description="Backend da aplicação do confiacim",
+    docs_url="/api/docs",
+    openapi_url="/api/openapi.json",
+)
 
 if settings.CORS:
     app.add_middleware(
