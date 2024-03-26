@@ -21,6 +21,6 @@ def index():
     return {"message": "Api do confiacim"}
 
 
-@router.get("/heath", response_model=Health)
+@router.get("/health", response_model=Health)
 def health(session: ActiveSession):
     return {"status": "ok" if check_db(session) else "fail"}
