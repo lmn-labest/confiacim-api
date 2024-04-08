@@ -9,7 +9,7 @@ class Base(DeclarativeBase):
 
 
 class Simulation(Base):
-    __tablename__ = "Simulation"  # TODO colocar em lower case
+    __tablename__ = "simulation"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     tag: Mapped[str] = mapped_column(String(30), unique=True)
