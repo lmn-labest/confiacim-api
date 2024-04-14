@@ -1,15 +1,30 @@
 services:
 
-  broker:
-    container_name: confiacim-api-broker
+  redis-master:
+    container_name: confiacim-api-redis-redis-master
     image: redis:7.2-alpine
+    command: redis-server
+
+    networks:
+      - internal_nw
+
+  sentinel:
+    container_name: confiacim-api-redis-sentinel
+    image: redis:7.2-alpine
+    command: redis-server /etc/sentinel.conf --sentinel
+    volumes:
+      - "./docker/sentinel/sentinel.conf:/etc/sentinel.conf"
+
+    depends_on:
+      - redis-master
+
     networks:
       - internal_nw
 
   database:
     container_name: confiacim-api-db
     build:
-      context: postgres
+      context: docker/postgres
     restart: 'no'
     networks:
       - internal_nw
@@ -32,11 +47,11 @@ services:
       - internal_nw
     environment:
       DATABASE_URL: postgresql+psycopg://user:password@database:5432/confiacim_api
-      CELERY_BROKER_URL: redis://broker:6379
-      CELERY_RESULT_BACKEND: redis://broker:6379
+      CELERY_BROKER_URL: sentinel://sentinel:26379
+      CELERY_RESULT_BACKEND: sentinel://sentinel:26379
     depends_on:
       - database
-      - broker
+      - sentinel
 
   worker_1:
     image: confiacim_api:latest
@@ -45,12 +60,12 @@ services:
     networks:
       - internal_nw
     depends_on:
-      - broker
+      - sentinel
 
     environment:
       DATABASE_URL: postgresql+psycopg://user:password@database:5432/confiacim_api
-      CELERY_BROKER_URL: redis://broker:6379
-      CELERY_RESULT_BACKEND: redis://broker:6379
+      CELERY_BROKER_URL: sentinel://sentinel:26379
+      CELERY_RESULT_BACKEND: sentinel://sentinel:26379
 
   worker_2:
     image: confiacim_api:latest
@@ -59,21 +74,25 @@ services:
     networks:
       - internal_nw
     depends_on:
-      - broker
+      - sentinel
 
     environment:
       DATABASE_URL: postgresql+psycopg://user:password@database:5432/confiacim_api
-      CELERY_BROKER_URL: redis://broker:6379
-      CELERY_RESULT_BACKEND: redis://broker:6379
+      CELERY_BROKER_URL: sentinel://sentinel:26379
+      CELERY_RESULT_BACKEND: sentinel://sentinel:26379
 
   flower:
     image: confiacim_api:latest
     restart: 'no'
+    environment:
+      DATABASE_URL: postgresql+psycopg://user:password@database:5432/confiacim_api
+      CELERY_BROKER_URL: sentinel://sentinel:26379
+      CELERY_RESULT_BACKEND: sentinel://sentinel:26379
     networks:
       - internal_nw
-    command: celery --broker=redis://broker:6379/0 flower --port=5555 --url-prefix=flower
+    command: celery -A confiacim_api.celery --broker=sentinel://sentinel:26379/0 flower --port=5555 --url-prefix=flower
     depends_on:
-      - broker
+      - sentinel
 
 volumes:
   pg_data:
