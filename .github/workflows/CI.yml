@@ -15,7 +15,6 @@ jobs:
       CELERY_BROKER_URL: redis://localhost:6379
       CELERY_RESULT_BACKEND: redis://localhost:6379
       SENTINEL_MASTER_NAME: mymaster
-      SENTINEL_PASSWORD: 1234
 
     strategy:
       fail-fast: true
