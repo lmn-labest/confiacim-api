@@ -9,7 +9,13 @@ celery_app = Celery(
     broker_connection_retry_on_startup=True,  # TODO: Pesquisar essa configuração.
 )
 
-celery_app.conf.broker_transport_options = {"master_name": "mymaster"}
-celery_app.conf.result_backend_transport_options = {"master_name": "mymaster"}
+
+config_transport = {
+    "master_name": settings.SENTINEL_MASTER_NAME,
+    "sentinel_kwargs": {"password": settings.SENTINEL_PASSWORD},
+}
+
+celery_app.conf.broker_transport_options = config_transport
+celery_app.conf.result_backend_transport_options = config_transport
 
 celery_app.autodiscover_tasks(packages=["confiacim_api"])
