@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     CELERY_RESULT_BACKEND: str
     SQLALCHEMY_ECHO: bool = False
     CORS: str | None = None
+    SENTINEL_MASTER_NAME: str
+    SENTINEL_PASSWORD: str
 
 
 settings = Settings()  # type: ignore
