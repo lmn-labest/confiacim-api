@@ -12,7 +12,7 @@ celery_app = Celery(
 
 config_transport = {
     "master_name": settings.SENTINEL_MASTER_NAME,
-    "sentinel_kwargs": {"password": settings.SENTINEL_PASSWORD},
+    # "sentinel_kwargs": {"password": settings.SENTINEL_PASSWORD},
 }
 
 celery_app.conf.broker_transport_options = config_transport
