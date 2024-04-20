@@ -49,6 +49,7 @@ services:
       DATABASE_URL: postgresql+psycopg://user:password@database:5432/confiacim_api
       CELERY_BROKER_URL: sentinel://sentinel:26379
       CELERY_RESULT_BACKEND: sentinel://sentinel:26379
+      SENTINEL_MASTER_NAME: mymaster
     depends_on:
       - database
       - sentinel
@@ -66,6 +67,7 @@ services:
       DATABASE_URL: postgresql+psycopg://user:password@database:5432/confiacim_api
       CELERY_BROKER_URL: sentinel://sentinel:26379
       CELERY_RESULT_BACKEND: sentinel://sentinel:26379
+      SENTINEL_MASTER_NAME: mymaster
 
   worker_2:
     image: confiacim_api:latest
@@ -80,6 +82,7 @@ services:
       DATABASE_URL: postgresql+psycopg://user:password@database:5432/confiacim_api
       CELERY_BROKER_URL: sentinel://sentinel:26379
       CELERY_RESULT_BACKEND: sentinel://sentinel:26379
+      SENTINEL_MASTER_NAME: mymaster
 
   flower:
     image: confiacim_api:latest
@@ -88,6 +91,7 @@ services:
       DATABASE_URL: postgresql+psycopg://user:password@database:5432/confiacim_api
       CELERY_BROKER_URL: sentinel://sentinel:26379
       CELERY_RESULT_BACKEND: sentinel://sentinel:26379
+      SENTINEL_MASTER_NAME: mymaster
     networks:
       - internal_nw
     command: celery -A confiacim_api.celery --broker=sentinel://sentinel:26379/0 flower --port=5555 --url-prefix=flower
