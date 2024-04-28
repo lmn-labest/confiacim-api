@@ -7,12 +7,19 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
     )
 
-    DATABASE_URL: str
-    CELERY_BROKER_URL: str
-    CELERY_RESULT_BACKEND: str
+    DB_USER: str
+    DB_PASSWORD: str
+    DB_HOST: str
+    DB_NAME: str
+    DB_PORT: int = 5432
+
     SQLALCHEMY_ECHO: bool = False
     CORS: str | None = None
+
+    SENTINEL_HOST: str
     SENTINEL_MASTER_NAME: str | None = None
+    SENTINEL_PASSWORD: str | None = None
+    SENTINEL_PORT: int = 26379
 
 
 settings = Settings()  # type: ignore

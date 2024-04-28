@@ -1,11 +1,18 @@
 from celery import Celery
 
 from confiacim_api.conf import settings
+from confiacim_api.connection_string import sentinel_connection_url
+
+connection_url = sentinel_connection_url(
+    password=settings.SENTINEL_PASSWORD,
+    host=settings.SENTINEL_HOST,
+    port=settings.SENTINEL_PORT,
+)
 
 celery_app = Celery(
     __name__,
-    broker=settings.CELERY_BROKER_URL,
-    backend=settings.CELERY_RESULT_BACKEND,
+    broker=connection_url,
+    backend=connection_url,
     broker_connection_retry_on_startup=True,  # TODO: Pesquisar essa configuração.
 )
 
