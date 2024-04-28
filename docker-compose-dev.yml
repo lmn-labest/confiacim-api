@@ -49,10 +49,12 @@ services:
     tty: true
     environment:
       PYTHONBREAKPOINT: ipdb.set_trace
-      DATABASE_URL: postgresql+psycopg://user:password@database:5432/confiacim_api
-      CELERY_BROKER_URL: sentinel://sentinel:26379
-      CELERY_RESULT_BACKEND: sentinel://sentinel:26379
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_HOST: database
+      DB_NAME: confiacim_api
       SENTINEL_MASTER_NAME: mymaster
+      SENTINEL_HOST: sentinel
     ports:
       - 8000:8000
     depends_on:
@@ -68,10 +70,11 @@ services:
       - ./:/home/app/
     environment:
       WATCHFILES_FORCE_POLLING: true
-      DATABASE_URL: postgresql+psycopg://user:password@database:5432/confiacim_api
-      CELERY_BROKER_URL: sentinel://sentinel:26379
-      CELERY_RESULT_BACKEND: sentinel://sentinel:26379
+      DB_PASSWORD: password
+      DB_HOST: database
+      DB_NAME: confiacim_api
       SENTINEL_MASTER_NAME: mymaster
+      SENTINEL_HOST: sentinel
 
   worker_2:
     image: confiacim_api:dev
@@ -82,20 +85,22 @@ services:
       - ./:/home/app/
     environment:
       WATCHFILES_FORCE_POLLING: true
-      DATABASE_URL: postgresql+psycopg://user:password@database:5432/confiacim_api
-      CELERY_BROKER_URL: sentinel://sentinel:26379
-      CELERY_RESULT_BACKEND: sentinel://sentinel:26379
+      DB_PASSWORD: password
+      DB_HOST: database
+      DB_NAME: confiacim_api
       SENTINEL_MASTER_NAME: mymaster
+      SENTINEL_HOST: sentinel
 
   flower:
     image: confiacim_api:dev
     volumes:
       - ./:/home/app/
     environment:
-      DATABASE_URL: postgresql+psycopg://user:password@database:5432/confiacim_api
-      CELERY_BROKER_URL: sentinel://sentinel:26379
-      CELERY_RESULT_BACKEND: sentinel://sentinel:26379
+      DB_PASSWORD: password
+      DB_HOST: database
+      DB_NAME: confiacim_api
       SENTINEL_MASTER_NAME: mymaster
+      SENTINEL_HOST: sentinel
 
     command: celery -A confiacim_api.celery --broker=sentinel://sentinel:26379/0 flower --port=5555 --url-prefix=flower
 

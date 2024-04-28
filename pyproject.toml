@@ -79,7 +79,6 @@ exclude = [
     ".venv"
 ]
 
-src = ["src"]
 
 [tool.mypy]
 warn_return_any = true

@@ -1,8 +1,9 @@
-from confiacim_api.app import app
-from confiacim_api.models import Simulation
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy import select
+
+from confiacim_api.app import app
+from confiacim_api.models import Simulation
 
 ROUTE_LIST_NAME = "simulation_list"
 ROUTE_RETRIVE_NAME = "simulation_retrive"

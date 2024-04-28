@@ -1,6 +1,7 @@
-from confiacim_api.app import app
 from fastapi import status
 from fastapi.testclient import TestClient
+
+from confiacim_api.app import app
 
 
 def test_positive_index(client: TestClient):

@@ -11,10 +11,12 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: postgresql+psycopg://test_user:test_password@localhost:5432/confiacim_api
-      CELERY_BROKER_URL: redis://localhost:6379
-      CELERY_RESULT_BACKEND: redis://localhost:6379
+      DB_USER: test_user
+      DB_PASSWORD: test_password
+      DB_HOST: localhost
+      DB_NAME: confiacim_api
       SENTINEL_MASTER_NAME: mymaster
+      SENTINEL_HOST: sentinel
 
     strategy:
       fail-fast: true
@@ -35,7 +37,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 

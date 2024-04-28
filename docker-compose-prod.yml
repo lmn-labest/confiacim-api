@@ -46,10 +46,12 @@ services:
     networks:
       - internal_nw
     environment:
-      DATABASE_URL: postgresql+psycopg://user:password@database:5432/confiacim_api
-      CELERY_BROKER_URL: sentinel://sentinel:26379
-      CELERY_RESULT_BACKEND: sentinel://sentinel:26379
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_HOST: database
+      DB_NAME: confiacim_api
       SENTINEL_MASTER_NAME: mymaster
+      SENTINEL_HOST: sentinel
     depends_on:
       - database
       - sentinel
@@ -64,10 +66,12 @@ services:
       - sentinel
 
     environment:
-      DATABASE_URL: postgresql+psycopg://user:password@database:5432/confiacim_api
-      CELERY_BROKER_URL: sentinel://sentinel:26379
-      CELERY_RESULT_BACKEND: sentinel://sentinel:26379
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_HOST: database
+      DB_NAME: confiacim_api
       SENTINEL_MASTER_NAME: mymaster
+      SENTINEL_HOST: sentinel
 
   worker_2:
     image: confiacim_api:latest
@@ -79,19 +83,23 @@ services:
       - sentinel
 
     environment:
-      DATABASE_URL: postgresql+psycopg://user:password@database:5432/confiacim_api
-      CELERY_BROKER_URL: sentinel://sentinel:26379
-      CELERY_RESULT_BACKEND: sentinel://sentinel:26379
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_HOST: database
+      DB_NAME: confiacim_api
       SENTINEL_MASTER_NAME: mymaster
+      SENTINEL_HOST: sentinel
 
   flower:
     image: confiacim_api:latest
     restart: 'no'
     environment:
-      DATABASE_URL: postgresql+psycopg://user:password@database:5432/confiacim_api
-      CELERY_BROKER_URL: sentinel://sentinel:26379
-      CELERY_RESULT_BACKEND: sentinel://sentinel:26379
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_HOST: database
+      DB_NAME: confiacim_api
       SENTINEL_MASTER_NAME: mymaster
+      SENTINEL_HOST: sentinel
     networks:
       - internal_nw
     command: celery -A confiacim_api.celery --broker=sentinel://sentinel:26379/0 flower --port=5555 --url-prefix=flower
