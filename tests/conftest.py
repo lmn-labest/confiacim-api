@@ -2,18 +2,19 @@ from typing import Generator
 from uuid import uuid4
 
 import pytest
-from confiacim_api.app import app
-from confiacim_api.conf import settings
-from confiacim_api.database import get_session
-from confiacim_api.models import Base, Simulation
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 
+from confiacim_api.app import app
+from confiacim_api.conf import settings
+from confiacim_api.database import database_url, get_session
+from confiacim_api.models import Base, Simulation
+
 
 @pytest.fixture
 def session():
-    engine = create_engine(f"{settings.DATABASE_URL}_test", echo=settings.SQLALCHEMY_ECHO)
+    engine = create_engine(f"{database_url}_test", echo=settings.SQLALCHEMY_ECHO)
     Session = sessionmaker(autocommit=False, autoflush=True, bind=engine)
     Base.metadata.create_all(engine)
     with Session() as session:

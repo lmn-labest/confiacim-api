@@ -1,8 +1,9 @@
 from uuid import uuid4
 
-from confiacim_api.models import Simulation
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+
+from confiacim_api.models import Simulation
 
 
 def test_create_simulation(session: Session):

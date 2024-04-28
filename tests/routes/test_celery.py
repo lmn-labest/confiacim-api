@@ -1,9 +1,10 @@
 from uuid import uuid4
 
-from confiacim_api.app import app
-from confiacim_api.models import Simulation
 from fastapi import status
 from fastapi.testclient import TestClient
+
+from confiacim_api.app import app
+from confiacim_api.models import Simulation
 
 ROUTE_RUN_SIMULATION = "simulation_run"
 
