@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
 
 
 class Health(BaseModel):
@@ -27,3 +27,18 @@ class SimulationUpdate(BaseModel):
 
 class SimulationList(BaseModel):
     simulations: list[SimulationPublic]
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class UserOut(BaseModel):
+    id: int
+    email: EmailStr
+
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
