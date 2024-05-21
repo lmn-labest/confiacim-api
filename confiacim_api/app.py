@@ -1,8 +1,16 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from confiacim_api.conf import settings
-from confiacim_api.routes import base_router, celery_router, simulation_router
+from confiacim_api.routes import (
+    auth_router,
+    base_router,
+    celery_router,
+    simulation_router,
+    user_router,
+)
 
 app = FastAPI(
     title="Confiacim API",
@@ -20,6 +28,22 @@ if settings.CORS:
         allow_headers=["*"],
     )
 
+app.include_router(auth_router)
 app.include_router(base_router)
-app.include_router(simulation_router)
 app.include_router(celery_router)
+app.include_router(simulation_router)
+app.include_router(user_router)
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exeception_handler(request: Request, exec: RequestValidationError):
+    new_errors = [
+        {
+            "type": e["type"],
+            "msg": e["msg"],
+            "input": e["input"],
+            "loc": e["loc"],
+        }
+        for e in exec.errors()
+    ]
+    return JSONResponse({"detail": new_errors}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)

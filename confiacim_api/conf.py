@@ -21,5 +21,8 @@ class Settings(BaseSettings):
     SENTINEL_PASSWORD: str | None = None
     SENTINEL_PORT: int = 26379
 
+    JWT_SECRET_KEY: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+
 
 settings = Settings()  # type: ignore

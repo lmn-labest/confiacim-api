@@ -1,6 +1,7 @@
 from typing import Generator
 from uuid import uuid4
 
+import factory
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, select
@@ -9,7 +10,15 @@ from sqlalchemy.orm import Session, sessionmaker
 from confiacim_api.app import app
 from confiacim_api.conf import settings
 from confiacim_api.database import database_url, get_session
-from confiacim_api.models import Base, Simulation
+from confiacim_api.models import Base, Simulation, User
+from confiacim_api.security import create_access_token, get_password_hash
+
+
+class UserFactory(factory.Factory):
+    class Meta:
+        model = User
+
+    email = factory.Faker("email")
 
 
 @pytest.fixture
@@ -68,3 +77,25 @@ def simulation_list(session: Session):
     session.commit()
 
     return session.scalars(select(Simulation)).all()
+
+
+@pytest.fixture
+def user_obj():
+    password = "123456"
+    user = UserFactory(password=get_password_hash(password))
+    user.clean_password = password
+    return user
+
+
+@pytest.fixture
+def user(session, user_obj):
+    session.add(user_obj)
+    session.commit()
+    session.refresh(user_obj)
+
+    return user_obj
+
+
+@pytest.fixture
+def token(user):
+    return create_access_token(data={"sub": user.email})

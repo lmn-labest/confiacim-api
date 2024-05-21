@@ -17,6 +17,7 @@ jobs:
       DB_NAME: confiacim_api
       SENTINEL_MASTER_NAME: mymaster
       SENTINEL_HOST: sentinel
+      JWT_SECRET_KEY: Chave Secreta JWT
 
     strategy:
       fail-fast: true
