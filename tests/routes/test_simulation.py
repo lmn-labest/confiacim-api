@@ -1,3 +1,4 @@
+import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy import select
@@ -12,6 +13,7 @@ ROUTE_PATCH_NAME = "simulation_patch"
 ROUTE_CREATE_NAME = "simulation_create"
 
 
+@pytest.mark.integration
 def test_positive_list(client: TestClient, simulation_list: list[Simulation]):
     resp = client.get(app.url_path_for(ROUTE_LIST_NAME))
 
@@ -32,6 +34,7 @@ def test_positive_list(client: TestClient, simulation_list: list[Simulation]):
             assert s["celery_task_id"] is None
 
 
+@pytest.mark.integration
 def test_positive_list_empty(client: TestClient):
     resp = client.get(app.url_path_for(ROUTE_LIST_NAME))
 
@@ -44,6 +47,7 @@ def test_positive_list_empty(client: TestClient):
     assert len(simulations_list_from_api) == 0
 
 
+@pytest.mark.integration
 def test_positive_retrive(client: TestClient, simulation: Simulation):
     resp = client.get(app.url_path_for(ROUTE_RETRIVE_NAME, simulation_id=simulation.id))
 
@@ -55,6 +59,7 @@ def test_positive_retrive(client: TestClient, simulation: Simulation):
     assert body["tag"] == simulation.tag
 
 
+@pytest.mark.integration
 def test_negative_retrive_not_found(client: TestClient):
     resp = client.get(app.url_path_for(ROUTE_RETRIVE_NAME, simulation_id=404))
 
@@ -65,6 +70,7 @@ def test_negative_retrive_not_found(client: TestClient):
     assert body == {"detail": "Simulation not found"}
 
 
+@pytest.mark.integration
 def test_positive_delete(client: TestClient, simulation: Simulation, session):
     resp = client.delete(app.url_path_for(ROUTE_DELETE_NAME, simulation_id=simulation.id))
 
@@ -73,6 +79,7 @@ def test_positive_delete(client: TestClient, simulation: Simulation, session):
     assert not session.scalar(select(Simulation).where(Simulation.id == simulation.id))
 
 
+@pytest.mark.integration
 def test_negative_delete_not_found(client: TestClient):
     resp = client.delete(app.url_path_for(ROUTE_DELETE_NAME, simulation_id=404))
 
@@ -83,6 +90,7 @@ def test_negative_delete_not_found(client: TestClient):
     assert body == {"detail": "Simulation not found"}
 
 
+@pytest.mark.integration
 def test_positive_patch(client: TestClient, simulation: Simulation, session):
     payload = {"tag": "simulation_2"}
 
@@ -102,6 +110,7 @@ def test_positive_patch(client: TestClient, simulation: Simulation, session):
     assert simulation.tag == payload["tag"]
 
 
+@pytest.mark.integration
 def test_negative_patch_not_found(client: TestClient):
     payload = {"tag": "simulation_2"}
 
@@ -117,6 +126,7 @@ def test_negative_patch_not_found(client: TestClient):
     assert body == {"detail": "Simulation not found."}
 
 
+@pytest.mark.integration
 def test_negative_patch_tag_name_should_be_unique(
     client: TestClient,
     simulation: Simulation,
@@ -135,6 +145,7 @@ def test_negative_patch_tag_name_should_be_unique(
     assert body == {"detail": "Simulation Tag name shoud be unique."}
 
 
+@pytest.mark.integration
 def test_positive_patch_update_to_same_tag_name(client: TestClient, simulation: Simulation, session):
     payload = {"tag": simulation.tag}
 
@@ -154,6 +165,7 @@ def test_positive_patch_update_to_same_tag_name(client: TestClient, simulation: 
     assert simulation.tag == payload["tag"]
 
 
+@pytest.mark.integration
 def test_positive_create(client: TestClient, session):
     payload = {"tag": "simulation_1"}
 
@@ -175,6 +187,7 @@ def test_positive_create(client: TestClient, session):
     assert body["tag"] == payload["tag"]
 
 
+@pytest.mark.integration
 def test_negative_create_missing_tag(client: TestClient, session):
     payload = {"tag1": "1"}
 
@@ -196,6 +209,7 @@ def test_negative_create_missing_tag(client: TestClient, session):
     assert body["detail"][0]["type"] == "missing"
 
 
+@pytest.mark.integration
 def test_negative_create_missing_tag_must_be_lt_30(client: TestClient, session):
     payload = {"tag": "s" * 31}
 
@@ -217,6 +231,7 @@ def test_negative_create_missing_tag_must_be_lt_30(client: TestClient, session):
     assert body["detail"][0]["type"] == "string_too_long"
 
 
+@pytest.mark.integration
 def test_negative_create_tag_name_should_be_unique(
     client: TestClient,
     simulation: Simulation,

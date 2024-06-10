@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
@@ -9,6 +10,7 @@ from confiacim_api.models import Simulation
 ROUTE_RUN_SIMULATION = "simulation_run"
 
 
+@pytest.mark.integration
 def test_positive_run_simulation(mocker, client: TestClient, simulation: Simulation):
     AsyncResultMock = type("AsyncResultMock", (), {"id": uuid4()})
 
@@ -28,6 +30,7 @@ def test_positive_run_simulation(mocker, client: TestClient, simulation: Simulat
     assert simulation.celery_task_id == AsyncResultMock.id  # type: ignore
 
 
+@pytest.mark.integration
 def test_negative_run_simulation(client: TestClient):
     resp = client.get(app.url_path_for(ROUTE_RUN_SIMULATION, simulation_id=404))
 
