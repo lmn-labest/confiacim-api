@@ -4,9 +4,9 @@ from sqlalchemy import select
 from confiacim_api.database import ActiveSession
 from confiacim_api.models import User
 from confiacim_api.schemas import UserCreate, UserOut
-from confiacim_api.security import get_password_hash
+from confiacim_api.security import CurrentUser, get_password_hash
 
-router = APIRouter(prefix="/api", tags=["User"])
+router = APIRouter(prefix="/api/user", tags=["User"])
 
 
 @router.post("/", response_model=UserOut, status_code=status.HTTP_201_CREATED)
@@ -26,3 +26,16 @@ def create_user(session: ActiveSession, payload: UserCreate):
     session.refresh(new_user)
 
     return new_user
+
+
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(session: ActiveSession, user_id: int, user: CurrentUser):
+
+    if user.id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not enough permissions",
+        )
+
+    session.delete(user)
+    session.commit()
