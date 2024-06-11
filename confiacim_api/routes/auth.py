@@ -23,7 +23,7 @@ token_exception = HTTPException(
 )
 
 
-@router.post("/token/", name="token", response_model=Token)
+@router.post("/token", name="token", response_model=Token)
 def get_access_token(session: ActiveSession, form_data: OAuth2Form):
     user = session.scalar(select(User).where(User.email == form_data.username))
 
@@ -38,6 +38,6 @@ def get_access_token(session: ActiveSession, form_data: OAuth2Form):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/whoiam/", response_model=UserOut)
+@router.get("/whoiam", response_model=UserOut)
 def whoiam(user: CurrentUser):
     return user

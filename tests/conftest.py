@@ -99,3 +99,21 @@ def user(session, user_obj):
 @pytest.fixture
 def token(user):
     return create_access_token(data={"sub": user.email})
+
+
+@pytest.fixture
+def other_user(session, user_obj):
+
+    password = "123456!!"
+    user_obj = UserFactory(password=get_password_hash(password))
+
+    session.add(user_obj)
+    session.commit()
+    session.refresh(user_obj)
+
+    return user_obj
+
+
+@pytest.fixture
+def other_user_token(other_user):
+    return create_access_token(data={"sub": other_user.email})
