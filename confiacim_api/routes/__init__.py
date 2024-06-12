@@ -1,3 +1,4 @@
+from confiacim_api.routes.admin import router as admin_router
 from confiacim_api.routes.auth import router as auth_router
 from confiacim_api.routes.base import router as base_router
 from confiacim_api.routes.celery import router as celery_router
@@ -10,4 +11,5 @@ __all__ = (
     "celery_router",
     "simulation_router",
     "user_router",
+    "admin_router",
 )
