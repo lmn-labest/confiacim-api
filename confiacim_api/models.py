@@ -21,9 +21,10 @@ class User(TimestampMixin, Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(320), unique=True)
     password: Mapped[str] = mapped_column(String(1024))
+    is_admin: Mapped[bool] = mapped_column(default=False, server_default="false")
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(email={self.email})"
+        return f"{self.__class__.__name__}(email={self.email}, is_admin={self.is_admin})"
 
 
 class Simulation(Base):
