@@ -13,13 +13,14 @@ def test_model_instance_obj(user_obj):
     assert user_obj.id is None
     assert user_obj.email is not None
     assert user_obj.password is not None
+    assert user_obj.is_admin is None
     assert user_obj.created_at is None
     assert user_obj.updated_at is None
 
 
 @pytest.mark.unit
-def test_model_repr(user_obj):
-    assert str(user_obj) == f"User(email={user_obj.email})"
+def test_model_repr(user):
+    assert str(user) == f"User(email={user.email}, is_admin={user.is_admin})"
 
 
 @pytest.mark.integration
@@ -44,3 +45,20 @@ def test_create_user(session: Session, user_obj: User):
 
     assert user_from_db.updated_at is not None
     assert isinstance(user_from_db.updated_at, datetime)
+
+
+@pytest.mark.integration
+def test_create_user_default_admin_value(session: Session):
+
+    user = User(email="test@email.com", password="123456")
+
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    assert user.is_admin is False
+
+
+@pytest.mark.integration
+def test_admin_user_must_have_is_admin_equal_to_true(admin_user: User):
+    assert admin_user.is_admin is True

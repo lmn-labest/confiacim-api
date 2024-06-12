@@ -117,3 +117,15 @@ def other_user(session, user_obj):
 @pytest.fixture
 def other_user_token(other_user):
     return create_access_token(data={"sub": other_user.email})
+
+
+@pytest.fixture
+def admin_user(session):
+    password = "123456!!"
+    user_obj = UserFactory(password=get_password_hash(password), is_admin=True)
+
+    session.add(user_obj)
+    session.commit()
+    session.refresh(user_obj)
+
+    return user_obj
