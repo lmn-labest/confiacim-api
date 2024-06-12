@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 
 from confiacim_api.conf import settings
 from confiacim_api.routes import (
+    admin_router,
     auth_router,
     base_router,
     celery_router,
@@ -29,6 +30,7 @@ if settings.CORS:
     )
 
 app.include_router(auth_router)
+app.include_router(admin_router)
 app.include_router(base_router)
 app.include_router(celery_router)
 app.include_router(simulation_router)
