@@ -42,3 +42,8 @@ class UserOut(BaseModel):
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
+
+
+class ListUsersOut(BaseModel):
+    count: int
+    results: list[UserOut]
