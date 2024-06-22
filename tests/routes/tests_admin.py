@@ -3,13 +3,19 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from confiacim_api.app import app
+from confiacim_api.models import User
 from confiacim_api.security import create_access_token
 
 ROUTE_NAME = "admin_list_users"
 
 
 @pytest.mark.integration
-def test_list_user(client: TestClient, user, other_user, admin_user):
+def test_list_user(
+    client: TestClient,
+    user: User,
+    other_user: User,
+    admin_user: User,
+):
 
     token = create_access_token(data={"sub": admin_user.email})
 
@@ -19,19 +25,50 @@ def test_list_user(client: TestClient, user, other_user, admin_user):
 
     body = resp.json()
 
-    assert body["count"] == 2
-    assert body["results"][0] == {
-        "id": user.id,
-        "email": user.email,
-    }
-    assert body["results"][1] == {
-        "id": other_user.id,
-        "email": other_user.email,
-    }
+    assert body["count"] == 3
+
+    results = body["results"]
+
+    assert {"id": user.id, "email": user.email} in results
+    assert {"id": other_user.id, "email": other_user.email} in results
+    assert {"id": admin_user.id, "email": admin_user.email} in results
 
 
 @pytest.mark.integration
-def test_negative_only_admin_can_list_user(client: TestClient, user, other_user):
+@pytest.mark.parametrize(
+    "role, count",
+    [
+        ("admin", 1),
+        ("user", 2),
+    ],
+    ids=["admin", "user"],
+)
+def test_list_filter_by_role(
+    client: TestClient,
+    user: User,
+    other_user: User,
+    admin_user: User,
+    role: str,
+    count: int,
+):
+
+    token = create_access_token(data={"sub": admin_user.email})
+
+    url = f"{app.url_path_for(ROUTE_NAME)}?role={role}"
+
+    resp = client.get(url, headers={"Authorization": f"Bearer {token}"})
+
+    assert resp.status_code == status.HTTP_200_OK
+
+    assert resp.json()["count"] == count
+
+
+@pytest.mark.integration
+def test_negative_only_admin_can_list_user(
+    client: TestClient,
+    user: User,
+    other_user: User,
+):
 
     token = create_access_token(data={"sub": user.email})
 
