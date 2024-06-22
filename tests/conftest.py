@@ -129,3 +129,8 @@ def admin_user(session):
     session.refresh(user_obj)
 
     return user_obj
+
+
+@pytest.fixture
+def users(user, other_user, admin_user):
+    return [user, other_user, admin_user]
