@@ -21,6 +21,7 @@ types-passlib = "^1.7.7.20240327"
 pyjwt = "^2.8.0"
 python-multipart = "^0.0.9"
 pydantic = {extras = ["email"], version = "^2.7.3"}
+typer = "^0.12.3"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -47,6 +48,9 @@ factory-boy = "^3.3.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.poetry.scripts]
+confiacim-cli = "confiacim_api.cli:app"
+
 
 [tool.black]
 line-length = 120
@@ -69,6 +73,7 @@ testpaths = [
 ]
 
 markers=[
+    "cli: marks CLI tests",
     "unit: marks unity tests",
     "integration: marks integration testes",
 ]
@@ -90,9 +95,6 @@ select = [
     "C",  # flake8-comprehensions
     "B",  # flake8-bugbear
 ]
-
-
-
 
 [tool.mypy]
 warn_return_any = true
