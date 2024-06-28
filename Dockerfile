@@ -1,6 +1,5 @@
 ARG IMAGE_REGISTRY=""
 FROM ${IMAGE_REGISTRY}python:3.11-slim-bullseye
-# FROM python:3.11-slim-bullseye
 
 COPY ./certs/nexus.petrobras.com.br.crt /usr/local/share/ca-certificates/
 RUN update-ca-certificates
