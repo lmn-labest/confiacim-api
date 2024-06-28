@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from confiacim_api.models import User
+from confiacim_api.models import Simulation, User
 from confiacim_api.security import verify_password
 
 
@@ -62,3 +62,16 @@ def test_create_user_default_admin_value(session: Session):
 @pytest.mark.integration
 def test_admin_user_must_have_is_admin_equal_to_true(admin_user: User):
     assert admin_user.is_admin is True
+
+
+@pytest.mark.integration
+def test_a_user_can_have_many_simulations(session: Session, user: User):
+    simulation1 = Simulation(tag="simulation_1", user=user)
+    simulation2 = Simulation(tag="simulation_2", user=user)
+
+    session.add_all([simulation1, simulation2])
+    session.commit()
+
+    assert len(user.simulations) == 2
+    assert simulation1 in user.simulations
+    assert simulation2 in user.simulations

@@ -2,8 +2,8 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import DateTime, String, func, types
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import DateTime, ForeignKey, String, func, types
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
@@ -22,6 +22,7 @@ class User(TimestampMixin, Base):
     email: Mapped[str] = mapped_column(String(320), unique=True)
     password: Mapped[str] = mapped_column(String(1024))
     is_admin: Mapped[bool] = mapped_column(default=False, server_default="false")
+    simulations: Mapped[list["Simulation"]] = relationship(back_populates="user")
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(email={self.email}, is_admin={self.is_admin})"
@@ -33,6 +34,8 @@ class Simulation(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     tag: Mapped[str] = mapped_column(String(30), unique=True)
     celery_task_id: Mapped[uuid.UUID] = mapped_column(types.Uuid, nullable=True, default=None)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user: Mapped["User"] = relationship(back_populates="simulations")
 
     def __repr__(self) -> str:
         return self.tag

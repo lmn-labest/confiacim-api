@@ -45,41 +45,6 @@ def client(session) -> Generator[TestClient, None, None]:
 
 
 @pytest.fixture
-def simulation(session: Session):
-    new_simulation = Simulation(tag="simulation_1")
-    session.add(new_simulation)
-    session.commit()
-    session.refresh(new_simulation)
-
-    return new_simulation
-
-
-@pytest.fixture
-def outher_simulation(session: Session, simulation):
-    new_simulation = Simulation(tag="simulation_2")
-    session.add(new_simulation)
-    session.commit()
-    session.refresh(new_simulation)
-
-    return new_simulation
-
-
-@pytest.fixture
-def simulation_list(session: Session):
-    list_ = (
-        Simulation(tag="simulation_1"),
-        Simulation(tag="simulation_2", celery_task_id=uuid4()),
-        Simulation(tag="simulation_3"),
-    )
-
-    session.bulk_save_objects(list_)
-
-    session.commit()
-
-    return session.scalars(select(Simulation)).all()
-
-
-@pytest.fixture
 def user_obj():
     password = "123456"
     user = UserFactory(password=get_password_hash(password))
@@ -134,3 +99,38 @@ def admin_user(session):
 @pytest.fixture
 def users(user, other_user, admin_user):
     return [user, other_user, admin_user]
+
+
+@pytest.fixture
+def simulation(session: Session, user: User):
+    new_simulation = Simulation(tag="simulation_1", user=user)
+    session.add(new_simulation)
+    session.commit()
+    session.refresh(new_simulation)
+
+    return new_simulation
+
+
+@pytest.fixture
+def other_simulation(session: Session, simulation: Simulation, user: User):
+    new_simulation = Simulation(tag="simulation_2", user=user)
+    session.add(new_simulation)
+    session.commit()
+    session.refresh(new_simulation)
+
+    return new_simulation
+
+
+@pytest.fixture
+def simulation_list(session: Session, user: User, other_user: User):
+    list_ = (
+        Simulation(tag="simulation_1", user=user),
+        Simulation(tag="simulation_2", celery_task_id=uuid4(), user=user),
+        Simulation(tag="simulation_3", user=other_user),
+    )
+
+    session.bulk_save_objects(list_)
+
+    session.commit()
+
+    return session.scalars(select(Simulation)).all()
