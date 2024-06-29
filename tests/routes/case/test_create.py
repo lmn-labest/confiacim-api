@@ -10,13 +10,12 @@ ROUTE_CREATE_NAME = "case_create"
 
 
 @pytest.mark.integration
-def test_positive_create(client: TestClient, session, token: str, user: User):
+def test_positive_create(client_auth: TestClient, session, token: str, user: User):
     payload = {"tag": "case_1"}
 
-    resp = client.post(
+    resp = client_auth.post(
         app.url_path_for(ROUTE_CREATE_NAME),
         json=payload,
-        headers={"Authorization": f"Bearer {token}"},
     )
 
     assert resp.status_code == status.HTTP_201_CREATED
@@ -36,16 +35,15 @@ def test_positive_create(client: TestClient, session, token: str, user: User):
 
 @pytest.mark.integration
 def test_negative_create_missing_tag(
-    client: TestClient,
+    client_auth: TestClient,
     session,
     token: str,
 ):
     payload = {"tag1": "1"}
 
-    resp = client.post(
+    resp = client_auth.post(
         app.url_path_for(ROUTE_CREATE_NAME),
         json=payload,
-        headers={"Authorization": f"Bearer {token}"},
     )
 
     assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -63,16 +61,15 @@ def test_negative_create_missing_tag(
 
 @pytest.mark.integration
 def test_negative_create_missing_tag_must_be_lt_30(
-    client: TestClient,
+    client_auth: TestClient,
     session,
     token: str,
 ):
     payload = {"tag": "s" * 31}
 
-    resp = client.post(
+    resp = client_auth.post(
         app.url_path_for(ROUTE_CREATE_NAME),
         json=payload,
-        headers={"Authorization": f"Bearer {token}"},
     )
 
     assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -90,16 +87,15 @@ def test_negative_create_missing_tag_must_be_lt_30(
 
 @pytest.mark.integration
 def test_negative_create_tag_name_must_be_unique_per_user(
-    client: TestClient,
+    client_auth: TestClient,
     case: Case,
     token: str,
 ):
     payload = {"tag": "case_1"}
 
-    resp = client.post(
+    resp = client_auth.post(
         app.url_path_for(ROUTE_CREATE_NAME),
         json=payload,
-        headers={"Authorization": f"Bearer {token}"},
     )
 
     assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -124,3 +120,12 @@ def test_positive_create_two_user_can_have_the_same_tag_name(
 
     assert resp.status_code == status.HTTP_201_CREATED
     assert session.scalar(select(func.count()).select_from(Case)) == 2
+
+
+@pytest.mark.integration
+def test_negative_create_case_must_have_token(client: TestClient):
+    resp = client.get(app.url_path_for(ROUTE_CREATE_NAME))
+
+    assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+
+    assert resp.json() == {"detail": "Not authenticated"}

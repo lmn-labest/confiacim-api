@@ -9,7 +9,7 @@ ROUTE_LIST_NAME = "case_list"
 
 
 @pytest.mark.integration
-def test_positive_list_only_user_simulation(
+def test_positive_list_only_user_case(
     client: TestClient,
     case_list: list[Case],
     token: str,
@@ -37,15 +37,12 @@ def test_positive_list_only_user_simulation(
 
 @pytest.mark.integration
 def test_positive_check_fields(
-    client: TestClient,
+    client_auth: TestClient,
     case_list: list[Case],
     token: str,
 ):
 
-    resp = client.get(
-        app.url_path_for(ROUTE_LIST_NAME),
-        headers={"Authorization": f"Bearer {token}"},
-    )
+    resp = client_auth.get(app.url_path_for(ROUTE_LIST_NAME))
 
     assert resp.status_code == status.HTTP_200_OK
 
@@ -62,12 +59,9 @@ def test_positive_check_fields(
 
 
 @pytest.mark.integration
-def test_positive_list_case_empty(client: TestClient, token: str):
+def test_positive_list_case_empty(client_auth: TestClient, token: str):
 
-    resp = client.get(
-        app.url_path_for(ROUTE_LIST_NAME),
-        headers={"Authorization": f"Bearer {token}"},
-    )
+    resp = client_auth.get(app.url_path_for(ROUTE_LIST_NAME))
 
     assert resp.status_code == status.HTTP_200_OK
 
