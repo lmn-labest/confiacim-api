@@ -6,11 +6,9 @@
 # from confiacim_api.app import app
 # from confiacim_api.models import Simulation
 
-# ROUTE_LIST_NAME = "simulation_list"
 # ROUTE_RETRIVE_NAME = "simulation_retrive"
 # ROUTE_DELETE_NAME = "simulation_delete"
 # ROUTE_PATCH_NAME = "simulation_patch"
-# ROUTE_CREATE_NAME = "simulation_create"
 
 
 # @pytest.mark.skip(reason="Agora a simulação tem um relacionamento com usuario")
@@ -137,91 +135,3 @@
 #     assert body == {"id": simulation.id, "tag": payload["tag"], "celery_task_id": None}
 
 #     assert simulation.tag == payload["tag"]
-
-
-# @pytest.mark.skip(reason="Agora a simulação tem um relacionamento com usuario")
-# @pytest.mark.integration
-# def test_positive_create(client: TestClient, session):
-#     payload = {"tag": "simulation_1"}
-
-#     resp = client.post(
-#         app.url_path_for(ROUTE_CREATE_NAME),
-#         json=payload,
-#     )
-
-#     assert resp.status_code == status.HTTP_201_CREATED
-
-#     db_simulation = session.scalars(select(Simulation)).first()
-
-#     assert db_simulation.id
-#     assert db_simulation.tag == payload["tag"]
-
-#     body = resp.json()
-
-#     assert body["id"] == db_simulation.id
-#     assert body["tag"] == payload["tag"]
-
-
-# @pytest.mark.skip(reason="Agora a simulação tem um relacionamento com usuario")
-# @pytest.mark.integration
-# def test_negative_create_missing_tag(client: TestClient, session):
-#     payload = {"tag1": "1"}
-
-#     resp = client.post(
-#         app.url_path_for(ROUTE_CREATE_NAME),
-#         json=payload,
-#     )
-
-#     assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-
-#     db_simulation = session.scalars(select(Simulation)).first()
-
-#     assert not db_simulation
-
-#     body = resp.json()
-
-#     assert body["detail"][0]["loc"] == ["body", "tag"]
-#     assert body["detail"][0]["msg"] == "Field required"
-#     assert body["detail"][0]["type"] == "missing"
-
-
-# @pytest.mark.skip(reason="Agora a simulação tem um relacionamento com usuario")
-# @pytest.mark.integration
-# def test_negative_create_missing_tag_must_be_lt_30(client: TestClient, session):
-#     payload = {"tag": "s" * 31}
-
-#     resp = client.post(
-#         app.url_path_for(ROUTE_CREATE_NAME),
-#         json=payload,
-#     )
-
-#     assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-
-#     db_simulation = session.scalars(select(Simulation)).first()
-
-#     assert not db_simulation
-
-#     body = resp.json()
-
-#     assert body["detail"][0]["loc"] == ["body", "tag"]
-#     assert body["detail"][0]["msg"] == "String should have at most 30 characters"
-#     assert body["detail"][0]["type"] == "string_too_long"
-
-
-# @pytest.mark.skip(reason="Agora a simulação tem um relacionamento com usuario")
-# @pytest.mark.integration
-# def test_negative_create_tag_name_should_be_unique(
-#     client: TestClient,
-#     simulation: Simulation,
-#     outher_simulation: Simulation,
-# ):
-#     payload = {"tag": "simulation_1"}
-
-#     resp = client.post(
-#         app.url_path_for(ROUTE_CREATE_NAME),
-#         json=payload,
-#     )
-
-#     assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-
-#     assert resp.json() == {"detail": "Simulation Tag name shoud be unique."}
