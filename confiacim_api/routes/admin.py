@@ -27,5 +27,10 @@ def admin_list_users(session: ActiveSession, user: CurrentUser, role: Union[str,
         users = session.scalars(select(User).where(User.is_admin == true())).all()
     elif role == "user":
         users = session.scalars(select(User).where(User.is_admin == false())).all()
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid role filter.",
+        )
 
     return {"count": len(users), "results": users}
