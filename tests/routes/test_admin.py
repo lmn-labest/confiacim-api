@@ -95,12 +95,12 @@ def test_negative_only_admin_can_list_user(
     client: TestClient,
     user: User,
     other_user: User,
-    admin_token: str,
+    token: str,
 ):
 
     resp = client.get(
         app.url_path_for(ROUTE_NAME),
-        headers={"Authorization": f"Bearer {admin_token}"},
+        headers={"Authorization": f"Bearer {token}"},
     )
 
     assert resp.status_code == status.HTTP_401_UNAUTHORIZED

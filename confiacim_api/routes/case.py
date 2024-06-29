@@ -1,16 +1,13 @@
-# from fastapi import APIRouter, HTTPException, Response, status
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import select
 
 from confiacim_api.database import ActiveSession
 from confiacim_api.models import Case
 from confiacim_api.schemas import (
-    # SimulationCreate,
+    CaseCreate,
     CaseList,
+    CasePublic,
 )
-
-# SimulationPublic,
-# SimulationUpdate,
 from confiacim_api.security import CurrentUser
 
 router = APIRouter(prefix="/api/case", tags=["Case"])
@@ -23,23 +20,31 @@ def case_list(session: ActiveSession, user: CurrentUser):
     return {"cases": cases}
 
 
-# @router.post("", response_model=SimulationPublic, status_code=status.HTTP_201_CREATED)
-# def simulation_create(session: ActiveSession, payload: SimulationCreate):
-#     db_simulation_with_new_tag_name = session.scalar(select(Simulation).where(Simulation.tag == payload.tag))
+@router.post(
+    "",
+    response_model=CasePublic,
+    status_code=status.HTTP_201_CREATED,
+)
+def case_create(
+    session: ActiveSession,
+    payload: CaseCreate,
+    user: CurrentUser,
+):
+    db_case_with_new_tag_name = session.scalar(select(Case).where(Case.tag == payload.tag, Case.user == user))
 
-#     if db_simulation_with_new_tag_name:
-#         raise HTTPException(
-#             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-#             detail="Simulation Tag name shoud be unique.",
-#         )
+    if db_case_with_new_tag_name:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Case Tag name shoud be unique per user.",
+        )
 
-#     new_simulation = Simulation(tag=payload.tag)
+    new_case = Case(tag=payload.tag, user=user)
 
-#     session.add(new_simulation)
-#     session.commit()
-#     session.refresh(new_simulation)
+    session.add(new_case)
+    session.commit()
+    session.refresh(new_case)
 
-#     return new_simulation
+    return new_case
 
 
 # @router.get("/{simulation_id}", response_model=SimulationPublic)

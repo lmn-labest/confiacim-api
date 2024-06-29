@@ -22,6 +22,7 @@ def admin_list_users(session: ActiveSession, user: CurrentUser, role: Union[str,
 
     if not role:
         users = session.scalars(select(User).where()).all()
+        return {"count": len(users), "results": users}
 
     if role == "admin":
         users = session.scalars(select(User).where(User.is_admin == true())).all()
