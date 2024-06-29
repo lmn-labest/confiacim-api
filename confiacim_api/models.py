@@ -1,8 +1,21 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import DateTime, ForeignKey, String, func
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy import (
+    DateTime,
+    ForeignKey,
+    String,
+    UniqueConstraint,
+    func,
+)
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    Mapped,
+    mapped_column,
+    relationship,
+)
+
+from confiacim_api.const import MAX_TAG_NAME_LENGTH
 
 
 class Base(DeclarativeBase):
@@ -10,8 +23,15 @@ class Base(DeclarativeBase):
 
 
 class TimestampMixin:
-    created_at: Mapped[Optional[datetime]] = mapped_column(DateTime, server_default=func.now())
-    updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
+    created_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime,
+        server_default=func.now(),
+    )
+    updated_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime,
+        server_default=func.now(),
+        onupdate=func.now(),
+    )
 
 
 class User(TimestampMixin, Base):
@@ -20,7 +40,10 @@ class User(TimestampMixin, Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(320), unique=True)
     password: Mapped[str] = mapped_column(String(1024))
-    is_admin: Mapped[bool] = mapped_column(default=False, server_default="false")
+    is_admin: Mapped[bool] = mapped_column(
+        default=False,
+        server_default="false",
+    )
     cases: Mapped[list["Case"]] = relationship(back_populates="user")
 
     def __repr__(self) -> str:
@@ -29,9 +52,10 @@ class User(TimestampMixin, Base):
 
 class Case(Base):
     __tablename__ = "cases"
+    __table_args__ = (UniqueConstraint("tag", "user_id", name="case_tag_user"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    tag: Mapped[str] = mapped_column(String(30), unique=True)
+    tag: Mapped[str] = mapped_column(String(MAX_TAG_NAME_LENGTH))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(back_populates="cases")
 

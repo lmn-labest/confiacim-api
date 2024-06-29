@@ -1,5 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field
 
+from confiacim_api.const import MAX_TAG_NAME_LENGTH
+
 
 class Health(BaseModel):
     status: str
@@ -9,15 +11,14 @@ class Message(BaseModel):
     message: str
 
 
-# class SimulationCreate(BaseModel):
-#     tag: str = Field(max_length=30)
+class CaseCreate(BaseModel):
+    tag: str = Field(max_length=MAX_TAG_NAME_LENGTH)
 
 
 class CasePublic(BaseModel):
     id: int
     user_id: int = Field(serialization_alias="user")
-    tag: str = Field(max_length=30)
-    # celery_task_id: UUID | None
+    tag: str = Field(max_length=MAX_TAG_NAME_LENGTH)
 
 
 # class SimulationUpdate(BaseModel):
