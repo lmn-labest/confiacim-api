@@ -9,23 +9,23 @@ class Message(BaseModel):
     message: str
 
 
-class SimulationCreate(BaseModel):
-    tag: str = Field(max_length=30)
+# class SimulationCreate(BaseModel):
+#     tag: str = Field(max_length=30)
 
 
-class SimulationPublic(BaseModel):
+class CasePublic(BaseModel):
     id: int
     user_id: int = Field(serialization_alias="user")
     tag: str = Field(max_length=30)
     # celery_task_id: UUID | None
 
 
-class SimulationUpdate(BaseModel):
-    tag: str | None = Field(default=None, max_length=30)
+# class SimulationUpdate(BaseModel):
+#     tag: str | None = Field(default=None, max_length=30)
 
 
-class SimulationList(BaseModel):
-    simulations: list[SimulationPublic]
+class CaseList(BaseModel):
+    cases: list[CasePublic]
 
 
 class Token(BaseModel):

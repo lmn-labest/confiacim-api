@@ -8,8 +8,7 @@ from confiacim_api.routes import (
     admin_router,
     auth_router,
     base_router,
-    celery_router,
-    simulation_router,
+    case_router,
     user_router,
 )
 
@@ -32,8 +31,7 @@ if settings.CORS:
 app.include_router(auth_router)
 app.include_router(admin_router)
 app.include_router(base_router)
-app.include_router(celery_router)
-app.include_router(simulation_router)
+app.include_router(case_router)
 app.include_router(user_router)
 
 
