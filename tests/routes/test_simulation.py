@@ -6,34 +6,8 @@
 # from confiacim_api.app import app
 # from confiacim_api.models import Simulation
 
-# ROUTE_RETRIVE_NAME = "simulation_retrive"
 # ROUTE_DELETE_NAME = "simulation_delete"
 # ROUTE_PATCH_NAME = "simulation_patch"
-
-
-# @pytest.mark.skip(reason="Agora a simulação tem um relacionamento com usuario")
-# @pytest.mark.integration
-# def test_positive_retrive(client: TestClient, simulation: Simulation):
-#     resp = client.get(app.url_path_for(ROUTE_RETRIVE_NAME, simulation_id=simulation.id))
-
-#     assert resp.status_code == status.HTTP_200_OK
-
-#     body = resp.json()
-
-#     assert body["id"] == simulation.id
-#     assert body["tag"] == simulation.tag
-
-
-# @pytest.mark.skip(reason="Agora a simulação tem um relacionamento com usuario")
-# @pytest.mark.integration
-# def test_negative_retrive_not_found(client: TestClient):
-#     resp = client.get(app.url_path_for(ROUTE_RETRIVE_NAME, simulation_id=404))
-
-#     assert resp.status_code == status.HTTP_404_NOT_FOUND
-
-#     body = resp.json()
-
-#     assert body == {"detail": "Simulation not found"}
 
 
 # @pytest.mark.skip(reason="Agora a simulação tem um relacionamento com usuario")

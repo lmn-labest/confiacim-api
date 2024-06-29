@@ -47,49 +47,15 @@ def case_create(
     return new_case
 
 
-# @router.get("/{simulation_id}", response_model=SimulationPublic)
-# def simulation_retrive(session: ActiveSession, simulation_id: int):
-#     db_simulation = session.scalar(select(Simulation).where(Simulation.id == simulation_id))
+@router.get("/{case_id}", response_model=CasePublic)
+def case_retrive(session: ActiveSession, case_id: int, user: CurrentUser):
 
-#     if not db_simulation:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Simulation not found")
+    db_simulation = session.scalar(select(Case).where(Case.id == case_id, Case.user == user))
 
-#     return db_simulation
+    if not db_simulation:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Case not found",
+        )
 
-
-# @router.delete("/{simulation_id}")
-# def simulation_delete(session: ActiveSession, simulation_id: int):
-#     db_simulation = session.scalar(select(Simulation).where(Simulation.id == simulation_id))
-
-#     if not db_simulation:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Simulation not found")
-
-#     session.delete(db_simulation)
-#     session.commit()
-
-#     return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-
-# @router.patch("/{simulation_id}", response_model=SimulationPublic)
-# def simulation_patch(session: ActiveSession, simulation_id: int, payload: SimulationUpdate):
-#     db_simulation = session.scalar(select(Simulation).where(Simulation.id == simulation_id))
-
-#     if not db_simulation:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Simulation not found.")
-
-#     db_simulation_with_new_tag_name = session.scalar(select(Simulation).where(Simulation.tag == payload.tag))
-
-#     if db_simulation_with_new_tag_name and db_simulation.id != db_simulation_with_new_tag_name.id:
-#         raise HTTPException(
-#             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-#             detail="Simulation Tag name shoud be unique.",
-#         )
-
-#     for k, v in payload.model_dump(exclude_unset=True).items():
-#         setattr(db_simulation, k, v)
-
-#     session.add(db_simulation)
-#     session.commit()
-#     session.refresh(db_simulation)
-
-#     return db_simulation
+    return db_simulation

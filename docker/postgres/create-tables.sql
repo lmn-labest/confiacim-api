@@ -29,4 +29,12 @@ CREATE TABLE cases (
 
 INSERT INTO alembic_version (version_num) VALUES ('4c4ff3149075') RETURNING alembic_version.version_num;
 
+-- Running upgrade 4c4ff3149075 -> 804fd92d2ad4
+
+ALTER TABLE cases DROP CONSTRAINT cases_tag_key;
+
+ALTER TABLE cases ADD CONSTRAINT case_tag_user UNIQUE (tag, user_id);
+
+UPDATE alembic_version SET version_num='804fd92d2ad4' WHERE alembic_version.version_num = '4c4ff3149075';
+
 COMMIT;
