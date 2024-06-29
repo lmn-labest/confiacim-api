@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -17,8 +15,9 @@ class SimulationCreate(BaseModel):
 
 class SimulationPublic(BaseModel):
     id: int
+    user_id: int = Field(serialization_alias="user")
     tag: str = Field(max_length=30)
-    celery_task_id: UUID | None
+    # celery_task_id: UUID | None
 
 
 class SimulationUpdate(BaseModel):

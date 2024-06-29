@@ -129,7 +129,8 @@ def simulation_list(session: Session, user: User, other_user: User):
         Simulation(tag="simulation_3", user=other_user),
     )
 
-    session.bulk_save_objects(list_)
+    # session.bulk_save_objects(list_)
+    session.add_all(list_)
 
     session.commit()
 
