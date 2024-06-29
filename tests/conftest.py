@@ -1,5 +1,4 @@
 from typing import Generator
-from uuid import uuid4
 
 import factory
 import pytest
@@ -10,7 +9,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from confiacim_api.app import app
 from confiacim_api.conf import settings
 from confiacim_api.database import database_url, get_session
-from confiacim_api.models import Base, Simulation, User
+from confiacim_api.models import Base, Case, User
 from confiacim_api.security import create_access_token, get_password_hash
 
 
@@ -102,31 +101,31 @@ def users(user, other_user, admin_user):
 
 
 @pytest.fixture
-def simulation(session: Session, user: User):
-    new_simulation = Simulation(tag="simulation_1", user=user)
-    session.add(new_simulation)
+def case(session: Session, user: User):
+    new_case = Case(tag="case_1", user=user)
+    session.add(new_case)
     session.commit()
-    session.refresh(new_simulation)
+    session.refresh(new_case)
 
-    return new_simulation
+    return new_case
 
 
 @pytest.fixture
-def other_simulation(session: Session, simulation: Simulation, user: User):
-    new_simulation = Simulation(tag="simulation_2", user=user)
-    session.add(new_simulation)
+def other_case(session: Session, case: Case, user: User):
+    new_case = Case(tag="case_2", user=user)
+    session.add(new_case)
     session.commit()
-    session.refresh(new_simulation)
+    session.refresh(new_case)
 
-    return new_simulation
+    return new_case
 
 
 @pytest.fixture
-def simulation_list(session: Session, user: User, other_user: User):
+def case_list(session: Session, user: User, other_user: User):
     list_ = (
-        Simulation(tag="simulation_1", user=user),
-        Simulation(tag="simulation_2", celery_task_id=uuid4(), user=user),
-        Simulation(tag="simulation_3", user=other_user),
+        Case(tag="simulation_1", user=user),
+        Case(tag="simulation_2", user=user),
+        Case(tag="simulation_3", user=other_user),
     )
 
     # session.bulk_save_objects(list_)
@@ -134,4 +133,4 @@ def simulation_list(session: Session, user: User, other_user: User):
 
     session.commit()
 
-    return session.scalars(select(Simulation)).all()
+    return session.scalars(select(Case)).all()

@@ -5,7 +5,7 @@ CREATE TABLE alembic_version (
     CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num)
 );
 
--- Running upgrade  -> d61d5f077ec5
+-- Running upgrade  -> 4c4ff3149075
 
 CREATE TABLE users (
     id SERIAL NOT NULL,
@@ -18,16 +18,15 @@ CREATE TABLE users (
     UNIQUE (email)
 );
 
-CREATE TABLE simulation (
+CREATE TABLE cases (
     id SERIAL NOT NULL,
     tag VARCHAR(30) NOT NULL,
-    celery_task_id UUID,
     user_id INTEGER NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY(user_id) REFERENCES users (id),
     UNIQUE (tag)
 );
 
-INSERT INTO alembic_version (version_num) VALUES ('d61d5f077ec5') RETURNING alembic_version.version_num;
+INSERT INTO alembic_version (version_num) VALUES ('4c4ff3149075') RETURNING alembic_version.version_num;
 
 COMMIT;

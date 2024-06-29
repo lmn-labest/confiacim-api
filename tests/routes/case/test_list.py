@@ -3,15 +3,15 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from confiacim_api.app import app
-from confiacim_api.models import Simulation
+from confiacim_api.models import Case
 
-ROUTE_LIST_NAME = "simulation_list"
+ROUTE_LIST_NAME = "case_list"
 
 
 @pytest.mark.integration
 def test_positive_list_only_user_simulation(
     client: TestClient,
-    simulation_list: list[Simulation],
+    case_list: list[Case],
     token: str,
     other_user_token: str,
 ):
@@ -23,9 +23,7 @@ def test_positive_list_only_user_simulation(
 
     assert resp.status_code == status.HTTP_200_OK
 
-    body = resp.json()
-
-    assert len(body["simulations"]) == 2
+    assert len(resp.json()["cases"]) == 2
 
     resp = client.get(
         app.url_path_for(ROUTE_LIST_NAME),
@@ -34,15 +32,13 @@ def test_positive_list_only_user_simulation(
 
     assert resp.status_code == status.HTTP_200_OK
 
-    body = resp.json()
-
-    assert len(body["simulations"]) == 1
+    assert len(resp.json()["cases"]) == 1
 
 
 @pytest.mark.integration
 def test_positive_check_fields(
     client: TestClient,
-    simulation_list: list[Simulation],
+    case_list: list[Case],
     token: str,
 ):
 
@@ -53,11 +49,11 @@ def test_positive_check_fields(
 
     assert resp.status_code == status.HTTP_200_OK
 
-    simulations = resp.json()["simulations"]
+    cases = resp.json()["cases"]
 
-    assert len(simulations) == 2
+    assert len(cases) == 2
 
-    fields = simulations[0].keys()
+    fields = cases[0].keys()
 
     exepected = {"id", "tag", "user"}
 
@@ -66,7 +62,7 @@ def test_positive_check_fields(
 
 
 @pytest.mark.integration
-def test_positive_list_empty(client: TestClient, token: str):
+def test_positive_list_case_empty(client: TestClient, token: str):
 
     resp = client.get(
         app.url_path_for(ROUTE_LIST_NAME),
@@ -75,15 +71,13 @@ def test_positive_list_empty(client: TestClient, token: str):
 
     assert resp.status_code == status.HTTP_200_OK
 
-    body = resp.json()
+    cases_list_from_api = resp.json()["cases"]
 
-    simulations_list_from_api = body["simulations"]
-
-    assert len(simulations_list_from_api) == 0
+    assert len(cases_list_from_api) == 0
 
 
 @pytest.mark.integration
-def test_negative_list_must_have_token(client: TestClient):
+def test_negative_list_case_must_have_token(client: TestClient):
     resp = client.get(app.url_path_for(ROUTE_LIST_NAME))
 
     assert resp.status_code == status.HTTP_401_UNAUTHORIZED
