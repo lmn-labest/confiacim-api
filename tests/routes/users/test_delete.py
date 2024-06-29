@@ -12,11 +12,10 @@ ROUTE_NAME = "delete_user"
 
 
 @pytest.mark.integration
-def test_positive_delete_user(session, client: TestClient, user: User, token: str):
+def test_positive_delete_user(session, client_auth: TestClient, user: User, token: str):
 
-    resp = client.delete(
+    resp = client_auth.delete(
         app.url_path_for(ROUTE_NAME, user_id=user.id),
-        headers={"Authorization": f"Bearer {token}"},
     )
 
     assert resp.status_code == status.HTTP_204_NO_CONTENT

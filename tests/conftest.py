@@ -44,6 +44,20 @@ def client(session) -> Generator[TestClient, None, None]:
 
 
 @pytest.fixture
+def client_auth(session, token) -> Generator[TestClient, None, None]:
+    def get_session_override():
+        return session
+
+    headers = {"Authorization": f"Bearer {token}"}
+
+    with TestClient(app, headers=headers) as client:
+        app.dependency_overrides[get_session] = get_session_override
+        yield client
+
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture
 def user_obj():
     password = "123456"
     user = UserFactory(password=get_password_hash(password))
