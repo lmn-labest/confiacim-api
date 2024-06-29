@@ -9,17 +9,24 @@ from confiacim_api.security import create_access_token
 ROUTE_NAME = "admin_list_users"
 
 
+@pytest.fixture
+def admin_token(admin_user: User):
+    return create_access_token(data={"sub": admin_user.email})
+
+
 @pytest.mark.integration
 def test_list_user(
     client: TestClient,
     user: User,
     other_user: User,
     admin_user: User,
+    admin_token,
 ):
 
-    token = create_access_token(data={"sub": admin_user.email})
-
-    resp = client.get(app.url_path_for(ROUTE_NAME), headers={"Authorization": f"Bearer {token}"})
+    resp = client.get(
+        app.url_path_for(ROUTE_NAME),
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
 
     assert resp.status_code == status.HTTP_200_OK
 
@@ -50,13 +57,15 @@ def test_list_filter_by_role(
     admin_user: User,
     role: str,
     count: int,
+    admin_token,
 ):
-
-    token = create_access_token(data={"sub": admin_user.email})
 
     url = f"{app.url_path_for(ROUTE_NAME)}?role={role}"
 
-    resp = client.get(url, headers={"Authorization": f"Bearer {token}"})
+    resp = client.get(
+        url,
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
 
     assert resp.status_code == status.HTTP_200_OK
 
@@ -64,15 +73,35 @@ def test_list_filter_by_role(
 
 
 @pytest.mark.integration
+def test_negative_filter_by_invalid_role_must_return_400(
+    client: TestClient,
+    admin_token: str,
+):
+
+    url = f"{app.url_path_for(ROUTE_NAME)}?role=invalid"
+
+    resp = client.get(
+        url,
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+
+    assert resp.json()["detail"] == "Invalid role filter."
+
+
+@pytest.mark.integration
 def test_negative_only_admin_can_list_user(
     client: TestClient,
     user: User,
     other_user: User,
+    admin_token: str,
 ):
 
-    token = create_access_token(data={"sub": user.email})
-
-    resp = client.get(app.url_path_for(ROUTE_NAME), headers={"Authorization": f"Bearer {token}"})
+    resp = client.get(
+        app.url_path_for(ROUTE_NAME),
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
 
     assert resp.status_code == status.HTTP_401_UNAUTHORIZED
 
