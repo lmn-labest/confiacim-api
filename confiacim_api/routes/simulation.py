@@ -9,14 +9,15 @@ from confiacim_api.schemas import (
     SimulationPublic,
     SimulationUpdate,
 )
+from confiacim_api.security import CurrentUser
 
 router = APIRouter(prefix="/api/simulation", tags=["Simulation"])
 
 
 @router.get("", response_model=SimulationList)
-def simulation_list(session: ActiveSession):
-    simulations = session.scalars(select(Simulation).order_by(Simulation.tag)).all()
-
+def simulation_list(session: ActiveSession, user: CurrentUser):
+    stmt = select(Simulation).filter(Simulation.user == user).order_by(Simulation.tag)
+    simulations = session.scalars(stmt).all()
     return {"simulations": simulations}
 
 
