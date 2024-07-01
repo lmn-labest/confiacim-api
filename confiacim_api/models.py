@@ -1,13 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import (
-    DateTime,
-    ForeignKey,
-    String,
-    UniqueConstraint,
-    func,
-)
+from sqlalchemy import DateTime, ForeignKey, String, UniqueConstraint, false, func
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -41,7 +35,7 @@ class User(TimestampMixin, Base):
     email: Mapped[str] = mapped_column(String(320), unique=True)
     password: Mapped[str] = mapped_column(String(1024))
     is_admin: Mapped[bool] = mapped_column(
-        default=False,
+        default=false(),
         server_default="false",
     )
     cases: Mapped[list["Case"]] = relationship(back_populates="user")
