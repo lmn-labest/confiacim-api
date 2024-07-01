@@ -1,4 +1,7 @@
-from fastapi import APIRouter, HTTPException, status
+import zipfile
+from typing import Annotated
+
+from fastapi import APIRouter, File, HTTPException, UploadFile, status
 from sqlalchemy import select
 
 from confiacim_api.database import ActiveSession
@@ -59,3 +62,30 @@ def case_retrive(session: ActiveSession, case_id: int, user: CurrentUser):
         )
 
     return db_simulation
+
+
+@router.post("/{case_id}/upload")
+def upload_case_file(
+    session: ActiveSession,
+    case_id: int,
+    user: CurrentUser,
+    file: Annotated[UploadFile, File()],
+):
+    """
+    Upload do arquivos do `simentar`.
+    O arquivo precisa estar campactado no formato `zip`.
+    """
+    case = session.scalar(select(Case).filter(Case.id == case_id, Case.user == user))
+    if case is None:
+        raise HTTPException(
+            detail="Case not found.",
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+
+    if not zipfile.is_zipfile(file.file):
+        raise HTTPException(
+            detail="The file must be a zip file.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+    return {"detail": "File upload success."}
