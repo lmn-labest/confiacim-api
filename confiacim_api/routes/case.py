@@ -65,11 +65,11 @@ def case_retrive(session: ActiveSession, case_id: int, user: CurrentUser):
 
 
 @router.post("/{case_id}/upload")
-def upload_case_file(
+async def upload_case_file(
     session: ActiveSession,
     case_id: int,
     user: CurrentUser,
-    file: Annotated[UploadFile, File()],
+    case_file: Annotated[UploadFile, File()],
 ):
     """
     Upload do arquivos do `simentar`.
@@ -82,10 +82,13 @@ def upload_case_file(
             status_code=status.HTTP_404_NOT_FOUND,
         )
 
-    if not zipfile.is_zipfile(file.file):
+    if not zipfile.is_zipfile(case_file.file):
         raise HTTPException(
             detail="The file must be a zip file.",
             status_code=status.HTTP_400_BAD_REQUEST,
         )
+
+    case.base_file = await case_file.read()
+    session.commit()
 
     return {"detail": "File upload success."}

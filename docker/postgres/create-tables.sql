@@ -37,4 +37,10 @@ ALTER TABLE cases ADD CONSTRAINT case_tag_user UNIQUE (tag, user_id);
 
 UPDATE alembic_version SET version_num='804fd92d2ad4' WHERE alembic_version.version_num = '4c4ff3149075';
 
+-- Running upgrade 804fd92d2ad4 -> 7bb0922230d5
+
+ALTER TABLE cases ADD COLUMN base_file BYTEA;
+
+UPDATE alembic_version SET version_num='7bb0922230d5' WHERE alembic_version.version_num = '804fd92d2ad4';
+
 COMMIT;

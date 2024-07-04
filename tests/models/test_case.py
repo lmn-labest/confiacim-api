@@ -1,3 +1,5 @@
+from io import BytesIO
+
 import pytest
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -16,16 +18,16 @@ def test_create_case(session: Session, user: User):
     user_email = user.email
     session.reset()
 
-    simulation_from_db = session.scalar(select(Case).where(Case.tag == "case1"))
+    case_from_db = session.scalar(select(Case).where(Case.tag == "case1"))
 
-    assert simulation_from_db is not None
+    assert case_from_db is not None
 
-    assert simulation_from_db is not new_case  # Para evitar falso positivos
+    assert case_from_db is not new_case  # Para evitar falso positivos
 
-    assert simulation_from_db.tag == "case1"
-    assert simulation_from_db.id == new_case_id
-    assert simulation_from_db.user_id == user_id
-    assert simulation_from_db.user.email == user_email
+    assert case_from_db.tag == "case1"
+    assert case_from_db.id == new_case_id
+    assert case_from_db.user_id == user_id
+    assert case_from_db.user.email == user_email
 
 
 @pytest.mark.unit
@@ -63,3 +65,21 @@ def test_model_create_tag_name_must_be_unique_per_user(
         session.commit()
 
     assert "case_tag_user" in e.value.args[0]
+
+
+@pytest.mark.integration
+def test_save_blob_in_model(session, user: User):
+    case = Case(tag="case1", user=user)
+
+    assert case.base_file is None
+
+    file = BytesIO(b"File Like")
+    case.base_file = file.read()
+
+    session.add(case)
+    session.commit()
+    session.reset()
+
+    case_from_db = session.scalar(select(Case).where(Case.tag == "case1"))
+
+    assert case_from_db.base_file == b"File Like"

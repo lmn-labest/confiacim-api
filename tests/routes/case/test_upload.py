@@ -17,6 +17,7 @@ def zip_file_fake():
 
 @pytest.mark.integration
 def test_upload_case(
+    session,
     client_auth: TestClient,
     case: Case,
     mocker,
@@ -29,7 +30,7 @@ def test_upload_case(
 
     resp = client_auth.post(
         app.url_path_for(ROUTE_VIEW_NAME, case_id=case.id),
-        files={"file": zip_file_fake},
+        files={"case_file": zip_file_fake},
     )
 
     assert resp.status_code == status.HTTP_200_OK
@@ -37,6 +38,10 @@ def test_upload_case(
     is_zipfile_mocker.assert_called_once()
 
     assert resp.json() == {"detail": "File upload success."}
+
+    case_from_db = session.get(Case, case.id)
+
+    assert case_from_db.base_file == b"Fake zip file."
 
 
 @pytest.mark.integration
@@ -53,7 +58,7 @@ def test_negative_upload_case_mustbe_a_zipfile(
 
     resp = client_auth.post(
         app.url_path_for(ROUTE_VIEW_NAME, case_id=case.id),
-        files={"file": zip_file_fake},
+        files={"case_file": zip_file_fake},
     )
 
     assert resp.status_code == status.HTTP_400_BAD_REQUEST
@@ -70,7 +75,7 @@ def test_negative_case_not_found(
 ):
     resp = client_auth.post(
         app.url_path_for(ROUTE_VIEW_NAME, case_id=404),
-        files={"file": zip_file_fake},
+        files={"case_file": zip_file_fake},
     )
 
     assert resp.status_code == status.HTTP_404_NOT_FOUND
@@ -88,7 +93,7 @@ def test_negative_user_can_uplood_their_own_cases(
     resp = client.post(
         app.url_path_for(ROUTE_VIEW_NAME, case_id=case.id),
         headers={"Authorization": f"Bearer {other_user_token}"},
-        files={"file": zip_file_fake},
+        files={"case_file": zip_file_fake},
     )
 
     assert resp.status_code == status.HTTP_404_NOT_FOUND
