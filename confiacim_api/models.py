@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import DateTime, ForeignKey, String, UniqueConstraint, false, func
+from sqlalchemy import DateTime, ForeignKey, LargeBinary, String, UniqueConstraint, false, func
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -52,6 +52,7 @@ class Case(Base):
     tag: Mapped[str] = mapped_column(String(MAX_TAG_NAME_LENGTH))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(back_populates="cases")
+    base_file: Mapped[bytes] = mapped_column(LargeBinary, nullable=True)
 
     def __repr__(self) -> str:
         return self.tag
