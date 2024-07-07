@@ -2,6 +2,8 @@ import zipfile
 from typing import Annotated
 
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
+from fastapi.responses import Response
+from slugify import slugify
 from sqlalchemy import select
 
 from confiacim_api.database import ActiveSession
@@ -23,11 +25,7 @@ def case_list(session: ActiveSession, user: CurrentUser):
     return {"cases": cases}
 
 
-@router.post(
-    "",
-    response_model=CasePublic,
-    status_code=status.HTTP_201_CREATED,
-)
+@router.post("", response_model=CasePublic, status_code=status.HTTP_201_CREATED)
 def case_create(
     session: ActiveSession,
     payload: CaseCreate,
@@ -65,7 +63,7 @@ def case_retrive(session: ActiveSession, case_id: int, user: CurrentUser):
 
 
 @router.post("/{case_id}/upload")
-async def upload_case_file(
+def upload_case_file(
     session: ActiveSession,
     case_id: int,
     user: CurrentUser,
@@ -87,8 +85,37 @@ async def upload_case_file(
             detail="The file must be a zip file.",
             status_code=status.HTTP_400_BAD_REQUEST,
         )
+    case_file.file.seek(0)
 
-    case.base_file = await case_file.read()
+    case.base_file = case_file.file.read()
     session.commit()
 
     return {"detail": "File upload success."}
+
+
+@router.get("/{case_id}/download")
+def download_case_file(
+    session: ActiveSession,
+    case_id: int,
+    user: CurrentUser,
+):
+    """Downlaod do arquivos do `simentar`."""
+
+    case = session.scalar(select(Case).filter(Case.id == case_id, Case.user == user))
+    if case is None:
+        raise HTTPException(
+            detail="Case not found.",
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+
+    if case.base_file is None:
+        raise HTTPException(
+            detail="The case has no base file.",
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+    filename = f"{slugify(case.tag)}.zip"
+    response = Response(content=case.base_file, media_type="application/zip")
+    response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+
+    return response
