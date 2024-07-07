@@ -45,7 +45,7 @@ def test_upload_case(
 
 
 @pytest.mark.integration
-def test_negative_upload_case_mustbe_a_zipfile(
+def test_negative_upload_case_must_be_a_zipfile(
     client_auth: TestClient,
     case: Case,
     mocker,
@@ -84,7 +84,7 @@ def test_negative_case_not_found(
 
 
 @pytest.mark.integration
-def test_negative_user_can_uplood_their_own_cases(
+def test_negative_user_can_upload_their_own_cases(
     client: TestClient,
     case: Case,
     zip_file_fake: BytesIO,
