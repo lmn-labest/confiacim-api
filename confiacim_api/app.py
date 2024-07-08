@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from confiacim_api.conf import settings
-from confiacim_api.routes import (
+from confiacim_api.routers import (
     admin_router,
     auth_router,
     base_router,
