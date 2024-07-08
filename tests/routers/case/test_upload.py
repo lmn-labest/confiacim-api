@@ -24,7 +24,7 @@ def test_upload_case(
     zip_file_fake: BytesIO,
 ):
     is_zipfile_mocker = mocker.patch(
-        "confiacim_api.routes.case.zipfile.is_zipfile",
+        "confiacim_api.routers.case.zipfile.is_zipfile",
         return_value=True,
     )
 
@@ -52,7 +52,7 @@ def test_negative_upload_case_must_be_a_zipfile(
     zip_file_fake: BytesIO,
 ):
     is_zipfile_mocker = mocker.patch(
-        "confiacim_api.routes.case.zipfile.is_zipfile",
+        "confiacim_api.routers.case.zipfile.is_zipfile",
         return_value=False,
     )
 
