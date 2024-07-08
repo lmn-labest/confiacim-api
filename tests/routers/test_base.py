@@ -25,7 +25,7 @@ def test_positive_health(client: TestClient):
 
 @pytest.mark.integration
 def test_negative_health(mocker, client: TestClient):
-    mocker.patch("confiacim_api.routes.base.check_db", return_value=False)
+    mocker.patch("confiacim_api.routers.base.check_db", return_value=False)
 
     resp = client.get(app.url_path_for("health"))
 
