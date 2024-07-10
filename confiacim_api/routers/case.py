@@ -1,4 +1,3 @@
-import zipfile
 from typing import Annotated
 
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
@@ -14,6 +13,7 @@ from confiacim_api.schemas import (
     CasePublic,
 )
 from confiacim_api.security import CurrentUser
+from confiacim_api.utils import file_case_is_zipfile
 
 router = APIRouter(prefix="/api/case", tags=["Case"])
 
@@ -80,12 +80,11 @@ def upload_case_file(
             status_code=status.HTTP_404_NOT_FOUND,
         )
 
-    if not zipfile.is_zipfile(case_file.file):
+    if not file_case_is_zipfile(case_file.file):
         raise HTTPException(
             detail="The file must be a zip file.",
             status_code=status.HTTP_400_BAD_REQUEST,
         )
-    case_file.file.seek(0)
 
     case.base_file = case_file.file.read()
     session.commit()
