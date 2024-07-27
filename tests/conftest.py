@@ -148,3 +148,21 @@ def case_list(session: Session, user: User, other_user: User):
     session.commit()
 
     return session.scalars(select(Case)).all()
+
+
+@pytest.fixture
+def case_with_file(session, user: User):
+    case = Case(tag="case_1", user=user, base_file=b"Fake zip file.")
+    session.add(case)
+    session.commit()
+    session.refresh(case)
+    return case
+
+
+@pytest.fixture
+def case_with_real_file(session, user: User):
+    with open("tests/fixtures/case1.zip", mode="rb") as fp:
+        case = Case(tag="case1", user=user, base_file=fp.read())
+        session.add(case)
+        session.commit()
+    return case

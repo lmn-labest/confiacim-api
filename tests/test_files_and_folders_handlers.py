@@ -46,7 +46,7 @@ def test_positive_unzip_file(tmp_path):
 
 
 @pytest.mark.integration
-def test_positive_create__unzip_and_clean_simulation_folder(tmp_path):
+def test_positive_create_unzip_and_clean_simulation_folder(tmp_path):
 
     tmp_dir = temporary_simulation_folder(tmp_path)
 

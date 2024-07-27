@@ -6,7 +6,7 @@ authors = ["Henrique C. C. de Andrade <henrique.ccda@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.11,<3.12"
 fastapi = "^0.111.0"
 uvicorn = "^0.30.1"
 gunicorn = "^22.0.0"
@@ -22,9 +22,9 @@ pyjwt = "^2.8.0"
 python-multipart = "^0.0.9"
 pydantic = {extras = ["email"], version = "^2.7.3"}
 typer = "^0.12.3"
-
-
 python-slugify = "^8.0.4"
+
+confiacim = {path = "packages/confiacim-0.11.0-py3-none-any.whl"}
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.2"
 black = "^24.4.2"
@@ -34,7 +34,6 @@ mypy = "^1.8.0"
 coverage = "^7.4.0"
 pytest-cov = "^5.0.0"
 httpx = "^0.27.0"
-watchfiles = "^0.22.0"
 ipdb = "^0.13.13"
 ipython = "^8.20.0"
 pytest-mock = "^3.12.0"
@@ -43,9 +42,9 @@ pre-commit = "^3.6.0"
 poetry-plugin-export = "^1.7.1"
 freezegun = "^1.5.1"
 factory-boy = "^3.3.0"
-
-
 pytest-xdist = "^3.6.1"
+
+watchfiles = "0.21.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
@@ -78,6 +77,7 @@ markers=[
     "cli: marks CLI tests",
     "unit: marks unity tests",
     "integration: marks integration testes",
+    "slow: Slow test",
 ]
 
 [tool.ruff]
