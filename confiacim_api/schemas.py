@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel, EmailStr, Field
 
 from confiacim_api.const import MAX_TAG_NAME_LENGTH
@@ -47,3 +49,8 @@ class UserCreate(BaseModel):
 class ListUsersOut(BaseModel):
     count: int
     results: list[UserOut]
+
+
+class CeleryTask(BaseModel):
+    detail: str
+    task_id: UUID
