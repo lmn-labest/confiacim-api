@@ -133,7 +133,6 @@ poetry run task report_server
 
 O relátorio fica disponivel no [http://0.0.0.0:8001/](http://0.0.0.0:8001/)
 
-
 ## Atualizando o esquema do banco de dados
 
 Para atualizar o esquema do banco de dados é preciso fazer a modificação necessária no arquivo `create_tables.sql` e gerar uma nova imagem com:

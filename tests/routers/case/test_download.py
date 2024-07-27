@@ -3,18 +3,9 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from confiacim_api.app import app
-from confiacim_api.models import Case, User
+from confiacim_api.models import Case
 
 ROUTE_VIEW_NAME = "download_case_file"
-
-
-@pytest.fixture
-def case_with_file(session, user: User):
-    case = Case(tag="case_1", user=user, base_file=b"Fake zip file.")
-    session.add(case)
-    session.commit()
-    session.refresh(case)
-    return case
 
 
 @pytest.mark.integration

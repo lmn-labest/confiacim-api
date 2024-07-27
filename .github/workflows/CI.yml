@@ -11,13 +11,13 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     env:
-      DB_USER: test_user
-      DB_PASSWORD: test_password
-      DB_HOST: localhost
-      DB_NAME: confiacim_api
-      SENTINEL_MASTER_NAME: mymaster
-      SENTINEL_HOST: sentinel
-      JWT_SECRET_KEY: Chave Secreta JWT
+      CONFIACIM_API_DB_USER: test_user
+      CONFIACIM_API_DB_PASSWORD: test_password
+      CONFIACIM_API_DB_HOST: localhost
+      CONFIACIM_API_DB_NAME: confiacim_api
+      CONFIACIM_API_SENTINEL_MASTER_NAME: mymaster
+      CONFIACIM_API_SENTINEL_HOST: sentinel
+      CONFIACIM_API_JWT_SECRET_KEY: Chave Secreta JWT
 
     strategy:
       fail-fast: true
