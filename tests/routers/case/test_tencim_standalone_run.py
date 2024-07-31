@@ -32,7 +32,7 @@ def test_positive_run(
     assert resp.status_code == status.HTTP_200_OK
 
     tencim_standalone_run_mocker.assert_called_once()
-    tencim_standalone_run_mocker.assert_called_with(args=(1, 1))
+    tencim_standalone_run_mocker.assert_called_with(args=(1,))
 
     body = resp.json()
 

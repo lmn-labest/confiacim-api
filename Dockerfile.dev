@@ -27,14 +27,14 @@ RUN pip install --upgrade pip && pip install poetry
 
 # install dependencies
 COPY pyproject.toml poetry.lock /home/app/
-# copy poetry.lock /home/app
+COPY packages /home/app/packages
 
 RUN poetry install --no-interaction --no-cache
 
 COPY . .
 
-RUN chown -R app:appgroup $USER_DIR
-USER app
+# RUN chown -R app:appgroup $USER_DIR
+# USER app
 
 EXPOSE 8000
 
