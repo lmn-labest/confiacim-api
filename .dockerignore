@@ -24,3 +24,4 @@ pipeline.yml
 htmlcov
 postgres
 README.md
+confiacim.log

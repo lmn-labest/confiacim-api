@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from confiacim_api.app import app
 from confiacim_api.conf import settings
 from confiacim_api.database import database_url, get_session
-from confiacim_api.models import Base, Case, User
+from confiacim_api.models import Base, Case, TencimResult, User
 from confiacim_api.security import create_access_token, get_password_hash
 
 
@@ -165,4 +165,26 @@ def case_with_real_file(session, user: User):
         case = Case(tag="case1", user=user, base_file=fp.read())
         session.add(case)
         session.commit()
+        session.refresh(case)
     return case
+
+
+@pytest.fixture
+def tencim_results(session, case: Case):
+    istep = (1, 2, 3)
+    t = (1.0, 2.0, 3.0)
+    rankine_rc = (100.0, 90.0, 10.0)
+    mohr_coulomb_rc = (100.0, 80.0, 30.0)
+
+    new_result = TencimResult(
+        case=case,
+        istep=istep,
+        t=t,
+        rankine_rc=rankine_rc,
+        mohr_coulomb_rc=mohr_coulomb_rc,
+    )
+    session.add(new_result)
+    session.commit()
+    session.refresh(new_result)
+
+    return new_result

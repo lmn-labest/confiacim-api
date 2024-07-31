@@ -122,7 +122,7 @@ def download_case_file(
     return response
 
 
-@router.post("/{case_id}/run", response_model=CeleryTask)
+@router.post("/{case_id}/tencim/run", response_model=CeleryTask)
 def tencim_standalone_run(
     session: ActiveSession,
     case_id: int,
@@ -143,6 +143,6 @@ def tencim_standalone_run(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         )
 
-    task = tencim_run.apply_async(args=(case_id, user.id))
+    task = tencim_run.apply_async(args=(case_id,))
 
     return {"detail": "Simulation sent to queue.", "task_id": task.id}

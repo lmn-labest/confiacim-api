@@ -43,4 +43,24 @@ ALTER TABLE cases ADD COLUMN base_file BYTEA;
 
 UPDATE alembic_version SET version_num='7bb0922230d5' WHERE alembic_version.version_num = '804fd92d2ad4';
 
+-- Running upgrade 7bb0922230d5 -> ff0116c0539e
+
+CREATE TABLE tencim_results (
+    id SERIAL NOT NULL,
+    task_id UUID,
+    istep INTEGER[],
+    t FLOAT[],
+    rankine_rc FLOAT[],
+    mohr_coulomb_rc FLOAT[],
+    error TEXT,
+    case_id INTEGER NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    PRIMARY KEY (id),
+    FOREIGN KEY(case_id) REFERENCES cases (id),
+    CONSTRAINT case_task UNIQUE (task_id, case_id)
+);
+
+UPDATE alembic_version SET version_num='ff0116c0539e' WHERE alembic_version.version_num = '7bb0922230d5';
+
 COMMIT;
