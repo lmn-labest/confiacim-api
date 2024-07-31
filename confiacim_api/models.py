@@ -1,7 +1,20 @@
 from datetime import datetime
 from typing import Optional
+from uuid import UUID
 
-from sqlalchemy import DateTime, ForeignKey, LargeBinary, String, UniqueConstraint, false, func
+from sqlalchemy import (
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    LargeBinary,
+    String,
+    Text,
+    UniqueConstraint,
+    false,
+    func,
+)
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -54,18 +67,26 @@ class Case(Base):
     user: Mapped["User"] = relationship(back_populates="cases")
     base_file: Mapped[bytes] = mapped_column(LargeBinary, nullable=True)
 
+    tencim_results: Mapped[list["TencimResult"]] = relationship(back_populates="case")
+
     def __repr__(self) -> str:
         return self.tag
 
 
-# class Simulation(Base):
-#     __tablename__ = "simulation"
+class TencimResult(TimestampMixin, Base):
+    __tablename__ = "tencim_results"
+    __table_args__ = (UniqueConstraint("task_id", "case_id", name="case_task"),)
 
-#     id: Mapped[int] = mapped_column(primary_key=True)
-#     tag: Mapped[str] = mapped_column(String(30), unique=True)
-#     celery_task_id: Mapped[uuid.UUID] = mapped_column(types.Uuid, nullable=True, default=None)
-#     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-#     user: Mapped["User"] = relationship(back_populates="simulations")
+    id: Mapped[int] = mapped_column(primary_key=True)
+    task_id: Mapped[Optional[UUID]]
+    istep: Mapped[Optional[tuple[int]]] = mapped_column(ARRAY(Integer, as_tuple=True))
+    t: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True))
+    rankine_rc: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True))
+    mohr_coulomb_rc: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True))
+    error: Mapped[Optional[str]] = mapped_column(Text)
 
-#     def __repr__(self) -> str:
-#         return self.tag
+    case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
+    case: Mapped["Case"] = relationship(back_populates="tencim_results")
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(id={self.id}, case={self.case})"

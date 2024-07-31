@@ -24,7 +24,7 @@ pydantic = {extras = ["email"], version = "^2.7.3"}
 typer = "^0.12.3"
 python-slugify = "^8.0.4"
 
-confiacim = {path = "packages/confiacim-0.11.0-py3-none-any.whl"}
+confiacim = {path = "packages/confiacim-0.12.0a0-py3-none-any.whl"}
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.2"
 black = "^24.4.2"

@@ -565,12 +565,12 @@ files = [
 
 [[package]]
 name = "confiacim"
-version = "0.11.0"
+version = "0.12.0a0"
 description = "Calculo probabilistico de confiabilidade de poços."
 optional = false
 python-versions = "<3.12,>=3.11"
 files = [
-    {file = "confiacim-0.11.0-py3-none-any.whl", hash = "sha256:04ff51a0730ef754006226e5dcb0cfd93dfe97b870e6bdf27babc1195b97d6b6"},
+    {file = "confiacim-0.12.0a0-py3-none-any.whl", hash = "sha256:7f80a2fd1a25dc807c6f0db7f47f2dd2f8afb2cf5c3056ee93a9cfe4c19a5bfa"},
 ]
 
 [package.dependencies]
@@ -601,7 +601,7 @@ plot = ["contourpy (==1.2.1)", "cycler (==0.12.1)", "fonttools (==4.53.1)", "kiw
 
 [package.source]
 type = "file"
-url = "packages/confiacim-0.11.0-py3-none-any.whl"
+url = "packages/confiacim-0.12.0a0-py3-none-any.whl"
 
 [[package]]
 name = "coverage"
@@ -3643,4 +3643,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.12"
-content-hash = "88ae0abf146c2b6a46d2f054467b230099a3e701165a3c18cc9890df04a9bb03"
+content-hash = "9a1b71a49b1e70876f78ec13194e5ddeb39b22572e6c5ebce336e4fb1f5cdb4f"

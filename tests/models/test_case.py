@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from confiacim_api.models import Case, User
+from confiacim_api.models import Case, TencimResult, User
 
 
 @pytest.mark.integration
@@ -83,3 +83,24 @@ def test_save_blob_in_model(session, user: User):
     case_from_db = session.scalar(select(Case).where(Case.tag == "case1"))
 
     assert case_from_db.base_file == b"File Like"
+
+
+@pytest.mark.integration
+def test_case_can_have_many_tencim_results(session: Session, case: Case):
+
+    values = {
+        "istep": (1, 2, 3),
+        "t": (1.0, 2.0, 3.0),
+        "rankine_rc": (100.0, 90.0, 10.0),
+        "mohr_coulomb_rc": (100.0, 80.0, 30.0),
+    }
+
+    result1 = TencimResult(case=case, **values)
+    result2 = TencimResult(case=case, **values)
+
+    session.add_all([result1, result2])
+    session.commit()
+
+    assert len(case.tencim_results) == 2
+    assert result1 in case.tencim_results
+    assert result2 in case.tencim_results
