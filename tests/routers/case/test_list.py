@@ -52,10 +52,9 @@ def test_positive_check_fields(
 
     fields = cases[0].keys()
 
-    exepected = {"id", "tag", "user"}
+    exepected = {"id", "tag", "user", "tencim_results"}
 
-    for f in fields:
-        assert f in exepected
+    assert set(fields) == exepected
 
 
 @pytest.mark.integration

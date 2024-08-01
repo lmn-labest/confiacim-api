@@ -23,7 +23,7 @@ router = APIRouter(prefix="/api/case", tags=["Case"])
 @router.get("", response_model=CaseList)
 def case_list(session: ActiveSession, user: CurrentUser):
     stmt = select(Case).filter(Case.user == user).order_by(Case.tag)
-    cases = session.scalars(stmt).all()
+    cases = session.scalars(stmt).all()  # TODO: Query lenta
     return {"cases": cases}
 
 
@@ -33,6 +33,7 @@ def case_create(
     payload: CaseCreate,
     user: CurrentUser,
 ):
+    # TODO: Query lenta
     db_case_with_new_tag_name = session.scalar(select(Case).where(Case.tag == payload.tag, Case.user == user))
 
     if db_case_with_new_tag_name:
@@ -53,15 +54,15 @@ def case_create(
 @router.get("/{case_id}", response_model=CasePublic)
 def case_retrive(session: ActiveSession, case_id: int, user: CurrentUser):
 
-    db_simulation = session.scalar(select(Case).where(Case.id == case_id, Case.user == user))
+    db_case = session.scalar(select(Case).where(Case.id == case_id, Case.user == user))
 
-    if not db_simulation:
+    if not db_case:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Case not found",
         )
 
-    return db_simulation
+    return db_case
 
 
 @router.post("/{case_id}/upload")
