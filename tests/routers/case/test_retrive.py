@@ -9,7 +9,7 @@ ROUTE_RETRIVE_NAME = "case_retrive"
 
 
 @pytest.mark.integration
-def test_positive_retrive(client_auth: TestClient, case: Case, token: str):
+def test_positive_retrive(client_auth: TestClient, case: Case):
 
     resp = client_auth.get(
         app.url_path_for(ROUTE_RETRIVE_NAME, case_id=case.id),

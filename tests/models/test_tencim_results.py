@@ -49,4 +49,4 @@ def test_create_case(session: Session, case: Case):
 
 @pytest.mark.unit
 def test_str(tencim_results):
-    assert str(tencim_results) == f"TencimResult(id={tencim_results.id}, case={tencim_results.case})"
+    assert str(tencim_results) == f"TencimResult(id={tencim_results.id}, case={tencim_results.case.tag})"

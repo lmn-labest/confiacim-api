@@ -58,7 +58,7 @@ def test_positive_check_fields(
 
 
 @pytest.mark.integration
-def test_positive_list_case_empty(client_auth: TestClient, token: str):
+def test_positive_list_case_empty(client_auth: TestClient):
 
     resp = client_auth.get(app.url_path_for(ROUTE_LIST_NAME))
 

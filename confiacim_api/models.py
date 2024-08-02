@@ -79,14 +79,14 @@ class TencimResult(TimestampMixin, Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     task_id: Mapped[Optional[UUID]]
-    istep: Mapped[Optional[tuple[int]]] = mapped_column(ARRAY(Integer, as_tuple=True))
-    t: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True))
-    rankine_rc: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True))
-    mohr_coulomb_rc: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True))
+    istep: Mapped[Optional[tuple[int]]] = mapped_column(ARRAY(Integer, as_tuple=True), deferred=True)
+    t: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    rankine_rc: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    mohr_coulomb_rc: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
     error: Mapped[Optional[str]] = mapped_column(Text)
 
     case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
     case: Mapped["Case"] = relationship(back_populates="tencim_results")
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(id={self.id}, case={self.case})"
+        return f"{self.__class__.__name__}(id={self.id}, case={self.case.tag})"
