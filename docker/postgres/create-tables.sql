@@ -63,4 +63,12 @@ CREATE TABLE tencim_results (
 
 UPDATE alembic_version SET version_num='ff0116c0539e' WHERE alembic_version.version_num = '7bb0922230d5';
 
+-- Running upgrade ff0116c0539e -> ce65ed45d626
+
+ALTER TABLE cases ADD COLUMN created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now();
+
+ALTER TABLE cases ADD COLUMN updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now();
+
+UPDATE alembic_version SET version_num='ce65ed45d626' WHERE alembic_version.version_num = 'ff0116c0539e';
+
 COMMIT;

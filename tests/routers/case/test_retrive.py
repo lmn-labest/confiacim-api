@@ -22,7 +22,7 @@ def test_positive_retrive(client_auth: TestClient, case: Case, token: str):
     assert body["id"] == case.id
     assert body["tag"] == case.tag
     assert body["user"] == case.user.id
-    assert body["tencim_results"] == []
+    assert body["tencim_result_ids"] == []
 
 
 @pytest.mark.integration
