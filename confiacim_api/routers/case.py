@@ -23,7 +23,7 @@ router = APIRouter(prefix="/api/case", tags=["Case"])
 @router.get("", response_model=CaseList)
 def case_list(session: ActiveSession, user: CurrentUser):
     stmt = select(Case).filter(Case.user == user).order_by(Case.tag)
-    cases = session.scalars(stmt).all()  # TODO: Query lenta
+    cases = session.scalars(stmt).all()
     return {"cases": cases}
 
 
