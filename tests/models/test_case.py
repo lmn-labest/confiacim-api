@@ -32,7 +32,7 @@ def test_create_case(session: Session, user: User):
 
 @pytest.mark.unit
 def test_str(case):
-    assert str(case) == case.tag
+    assert str(case) == f"Case(id={case.id}, case={case.tag})"
 
 
 @pytest.mark.integration

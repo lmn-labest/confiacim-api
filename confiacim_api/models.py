@@ -57,7 +57,7 @@ class User(TimestampMixin, Base):
         return f"{self.__class__.__name__}(email={self.email}, is_admin={self.is_admin})"
 
 
-class Case(Base):
+class Case(TimestampMixin, Base):
     __tablename__ = "cases"
     __table_args__ = (UniqueConstraint("tag", "user_id", name="case_tag_user"),)
 
@@ -70,7 +70,7 @@ class Case(Base):
     tencim_results: Mapped[list["TencimResult"]] = relationship(back_populates="case")
 
     def __repr__(self) -> str:
-        return self.tag
+        return f"{self.__class__.__name__}(id={self.id}, case={self.tag})"
 
 
 class TencimResult(TimestampMixin, Base):

@@ -52,7 +52,7 @@ def test_positive_check_fields(
 
     fields = cases[0].keys()
 
-    exepected = {"id", "tag", "user", "tencim_results"}
+    exepected = {"id", "tag", "user", "tencim_result_ids", "created_at", "updated_at"}
 
     assert set(fields) == exepected
 
