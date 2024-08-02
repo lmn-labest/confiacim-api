@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field, field_serializer
@@ -18,15 +19,15 @@ class CaseCreate(BaseModel):
     tag: str = Field(max_length=MAX_TAG_NAME_LENGTH)
 
 
-class TencimResultId(BaseModel):
+class TencimResultSummary(BaseModel):
     id: int
-
-
-class TencimResult(BaseModel):
-    id: int
-    task_id: UUID
+    task_id: Optional[UUID]
     created_at: datetime
     updated_at: datetime
+
+
+class ListTencimResult(BaseModel):
+    results: list[TencimResultSummary]
 
 
 class CasePublic(BaseModel):
