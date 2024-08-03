@@ -11,10 +11,8 @@ from confiacim_api.schemas import (
     CaseCreate,
     CaseList,
     CasePublic,
-    CeleryTask,
 )
 from confiacim_api.security import CurrentUser
-from confiacim_api.tasks import tencim_standalone_run as tencim_run
 from confiacim_api.utils import file_case_is_zipfile
 
 router = APIRouter(prefix="/api/case", tags=["Case"])
@@ -121,29 +119,3 @@ def download_case_file(
     response.headers["Content-Disposition"] = f"attachment; filename={filename}"
 
     return response
-
-
-@router.post("/{case_id}/tencim/run", response_model=CeleryTask)
-def tencim_standalone_run(
-    session: ActiveSession,
-    case_id: int,
-    user: CurrentUser,
-):
-
-    case = session.scalar(select(Case).filter(Case.id == case_id, Case.user == user))
-
-    if case is None:
-        raise HTTPException(
-            detail="Case not found.",
-            status_code=status.HTTP_404_NOT_FOUND,
-        )
-
-    if case.base_file is None:
-        raise HTTPException(
-            detail="The case has no base file.",
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        )
-
-    task = tencim_run.apply_async(args=(case_id,))
-
-    return {"detail": "Simulation sent to queue.", "task_id": task.id}

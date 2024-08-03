@@ -23,7 +23,7 @@ def test_positive_run(
     task.id = str(uuid4())
 
     tencim_standalone_run_mocker = mocker.patch(
-        "confiacim_api.routers.case.tencim_run.apply_async",
+        "confiacim_api.routers.tencim.tencim_run.apply_async",
         return_value=task,
     )
 
