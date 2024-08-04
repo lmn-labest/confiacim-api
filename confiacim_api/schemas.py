@@ -6,6 +6,9 @@ from pydantic import BaseModel, EmailStr, Field, field_serializer
 
 from confiacim_api.const import MAX_TAG_NAME_LENGTH
 
+TArrayInt = tuple[int, ...]
+TArrayFloat = tuple[float, ...]
+
 
 class Health(BaseModel):
     status: str
@@ -22,6 +25,18 @@ class CaseCreate(BaseModel):
 class TencimResultSummary(BaseModel):
     id: int
     task_id: Optional[UUID]
+    created_at: datetime
+    updated_at: datetime
+
+
+class TencimResultDetail(BaseModel):
+    id: int
+    task_id: Optional[UUID]
+    istep: Optional[TArrayInt]
+    t: Optional[TArrayFloat]
+    rankine_rc: Optional[TArrayFloat]
+    mohr_coulomb_rc: Optional[TArrayFloat]
+    error: Optional[str]
     created_at: datetime
     updated_at: datetime
 
