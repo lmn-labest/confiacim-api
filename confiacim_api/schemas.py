@@ -85,6 +85,6 @@ class ListUsersOut(BaseModel):
     results: list[UserOut]
 
 
-class CeleryTask(BaseModel):
-    detail: str
+class ResultCeleryTask(BaseModel):
+    result_id: int
     task_id: UUID

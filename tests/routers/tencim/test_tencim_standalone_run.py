@@ -4,9 +4,10 @@ from uuid import uuid4
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
+from sqlalchemy import select
 
 from confiacim_api.app import app
-from confiacim_api.models import Case, User
+from confiacim_api.models import Case, TencimResult, User
 
 ROUTE_NAME = "tencim_standalone_run"
 
@@ -23,7 +24,7 @@ def test_positive_run(
     task.id = str(uuid4())
 
     tencim_standalone_run_mocker = mocker.patch(
-        "confiacim_api.routers.tencim.tencim_run.apply_async",
+        "confiacim_api.routers.tencim.tencim_run.delay",
         return_value=task,
     )
 
@@ -32,11 +33,13 @@ def test_positive_run(
     assert resp.status_code == status.HTTP_200_OK
 
     tencim_standalone_run_mocker.assert_called_once()
-    tencim_standalone_run_mocker.assert_called_with(args=(1,))
+    tencim_standalone_run_mocker.assert_called_with(1)
 
     body = resp.json()
 
-    assert body["detail"] == "Simulation sent to queue."
+    result = session.scalars(select(TencimResult)).one()
+
+    assert body["result_id"] == result.id
     assert body["task_id"] == task.id
 
 

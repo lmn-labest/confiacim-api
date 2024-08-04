@@ -170,14 +170,14 @@ def case_with_real_file(session, user: User):
 
 
 @pytest.fixture
-def tencim_results(session, case: Case):
+def tencim_results(session, case_with_real_file: Case):
     istep = (1, 2, 3)
     t = (1.0, 2.0, 3.0)
     rankine_rc = (100.0, 90.0, 10.0)
     mohr_coulomb_rc = (100.0, 80.0, 30.0)
 
     new_result = TencimResult(
-        case=case,
+        case=case_with_real_file,
         istep=istep,
         t=t,
         rankine_rc=rankine_rc,
