@@ -13,69 +13,74 @@ from confiacim_api.files_and_folders_handlers import (
     temporary_simulation_folder,
     unzip_tencim_case,
 )
-from confiacim_api.models import Case, ResultStatus, TencimResult
+from confiacim_api.models import ResultStatus, TencimResult
 
 
 class TaskFileCaseNotFound(Exception): ...
+
+
+class ResultNotFound(Exception): ...
 
 
 def get_simulation_base_dir(user_id: int) -> Path:
     return Path.cwd() / "simulation_tmp_dir" / f"user_{user_id}"
 
 
-@celery_app.task(bind=True)
-def tencim_standalone_run(self, case_id: int) -> dict:
+@celery_app.task(bind=True, ignore_result=True)
+def tencim_standalone_run(self, result_id: int):
 
     with SessionFactory() as session:
-        stmt = select(Case).options(joinedload(Case.user)).where(Case.id == case_id)
-        case = session.scalar(stmt)
-        if case is None:
-            raise TaskFileCaseNotFound("Case files not found.")
+        stmt = (
+            select(TencimResult)
+            .where(TencimResult.id == result_id)
+            .options(
+                joinedload(TencimResult.case),
+            )
+        )
+        result = session.scalar(stmt)
 
-    base_dir = get_simulation_base_dir(case.user.id)
+    if result is None:
+        raise ResultNotFound("Result not found.")
+
+    if result.case.base_file is None:
+        raise TaskFileCaseNotFound("The case has no base file.")
+
+    base_dir = get_simulation_base_dir(result.case.user_id)
 
     if not base_dir.exists():
         base_dir.mkdir(parents=True)
 
     tmp_dir = temporary_simulation_folder(base_dir)
-    unzip_tencim_case(case, tmp_dir)
+    unzip_tencim_case(result.case, tmp_dir)
     input_base_dir = Path(tmp_dir.name)
 
     with SessionFactory() as session:
-        new_results = TencimResult(
-            case=case,
-            task_id=self.request.id,
-            status=ResultStatus.RUNNING,
-        )
-
-        session.add(new_results)
+        result.task_id = self.request.id
+        result.status = ResultStatus.RUNNING
+        session.add(result)
         session.commit()
-        session.refresh(new_results)
+        session.refresh(result)
 
     try:
         run(input_dir=input_base_dir, output_dir=None, verbose_level=0)
 
-        results = read_rc_file(input_base_dir / "output/case_RC.txt")
+        result_tencim = read_rc_file(input_base_dir / "output/case_RC.txt")
 
-        new_results.istep = results.istep.tolist()
-        new_results.t = results.t.tolist()
-        new_results.rankine_rc = results.rc_rankine.tolist()
-        new_results.mohr_coulomb_rc = results.rc_mhor_coulomb.tolist()
-        new_results.status = ResultStatus.SUCCESS
+        result.istep = result_tencim.istep.tolist()
+        result.t = result_tencim.t.tolist()
+        result.rankine_rc = result_tencim.rc_rankine.tolist()
+        result.mohr_coulomb_rc = result_tencim.rc_mhor_coulomb.tolist()
+        result.status = ResultStatus.SUCCESS
 
     except TencimRunError as e:
-        new_results.error = str(e)
-        new_results.status = ResultStatus.FAILED
+        result.error = str(e)
+        result.status = ResultStatus.FAILED
         raise e
 
     finally:
         with SessionFactory() as session:
-            session.add(new_results)
+            session.add(result)
             session.commit()
-            session.refresh(new_results)
+            session.refresh(result)
 
         clean_temporary_simulation_folder(tmp_dir)
-
-    msg = {"results_id": new_results.id}
-
-    return msg

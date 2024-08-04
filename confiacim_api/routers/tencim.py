@@ -4,8 +4,8 @@ from sqlalchemy import select
 from confiacim_api.database import ActiveSession
 from confiacim_api.models import Case, TencimResult
 from confiacim_api.schemas import (
-    CeleryTask,
     ListTencimResult,
+    ResultCeleryTask,
     TencimResultDetail,
 )
 from confiacim_api.security import CurrentUser
@@ -67,7 +67,7 @@ def tencim_result_retrive(
     return result
 
 
-@router.post("/{case_id}/tencim/run", response_model=CeleryTask)
+@router.post("/{case_id}/tencim/run", response_model=ResultCeleryTask)
 def tencim_standalone_run(
     session: ActiveSession,
     case_id: int,
@@ -88,6 +88,14 @@ def tencim_standalone_run(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         )
 
-    task = tencim_run.apply_async(args=(case_id,))
+    result = TencimResult(case=case)
+    session.add(result)
+    session.commit()
+    session.refresh(result)
 
-    return {"detail": "Simulation sent to queue.", "task_id": task.id}
+    task = tencim_run.delay(result.id)
+
+    return {
+        "task_id": task.id,
+        "result_id": result.id,
+    }
