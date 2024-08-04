@@ -5,6 +5,7 @@ from uuid import UUID
 from pydantic import BaseModel, EmailStr, Field, field_serializer
 
 from confiacim_api.const import MAX_TAG_NAME_LENGTH
+from confiacim_api.models import ResultStatus
 
 TArrayInt = tuple[int, ...]
 TArrayFloat = tuple[float, ...]
@@ -25,6 +26,7 @@ class CaseCreate(BaseModel):
 class TencimResultSummary(BaseModel):
     id: int
     task_id: Optional[UUID]
+    status: Optional[ResultStatus]
     created_at: datetime
     updated_at: datetime
 
@@ -37,6 +39,7 @@ class TencimResultDetail(BaseModel):
     rankine_rc: Optional[TArrayFloat]
     mohr_coulomb_rc: Optional[TArrayFloat]
     error: Optional[str]
+    status: Optional[ResultStatus]
     created_at: datetime
     updated_at: datetime
 

@@ -2,7 +2,7 @@ import pytest
 from confiacim.erros import TencimRunError
 from sqlalchemy import select
 
-from confiacim_api.models import Case, TencimResult, User
+from confiacim_api.models import Case, ResultStatus, TencimResult, User
 from confiacim_api.tasks import TaskFileCaseNotFound, tencim_standalone_run
 
 
@@ -39,6 +39,7 @@ def test_positive_tencim_standalone_run(
         result_from_db = session.get(TencimResult, task_return["results_id"])
 
     assert result_from_db is not None
+    assert result_from_db.status == ResultStatus.SUCCESS
 
 
 @pytest.mark.integration
@@ -58,6 +59,7 @@ def test_negative_tencim_standalone_run_tencim_error(
         result_from_db = session.scalar(select(TencimResult).where(TencimResult.case_id == case_id))
 
     assert "ERROR STOP 1" in result_from_db.error
+    assert result_from_db.status == ResultStatus.FAILED
 
 
 @pytest.mark.integration
