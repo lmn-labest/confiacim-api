@@ -71,4 +71,12 @@ ALTER TABLE cases ADD COLUMN updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(
 
 UPDATE alembic_version SET version_num='ce65ed45d626' WHERE alembic_version.version_num = 'ff0116c0539e';
 
+-- Running upgrade ce65ed45d626 -> 368fdacf6a3e
+
+CREATE TYPE result_status AS ENUM ('RUNNING', 'FAILED', 'SUCCESS');
+
+ALTER TABLE tencim_results ADD COLUMN status result_status;
+
+UPDATE alembic_version SET version_num='368fdacf6a3e' WHERE alembic_version.version_num = 'ce65ed45d626';
+
 COMMIT;

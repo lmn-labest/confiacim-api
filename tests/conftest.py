@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from confiacim_api.app import app
 from confiacim_api.conf import settings
 from confiacim_api.database import database_url, get_session
-from confiacim_api.models import Base, Case, TencimResult, User
+from confiacim_api.models import Base, Case, ResultStatus, TencimResult, User
 from confiacim_api.security import create_access_token, get_password_hash
 
 
@@ -182,6 +182,7 @@ def tencim_results(session, case: Case):
         t=t,
         rankine_rc=rankine_rc,
         mohr_coulomb_rc=mohr_coulomb_rc,
+        status=ResultStatus.SUCCESS,
     )
     session.add(new_result)
     session.commit()
