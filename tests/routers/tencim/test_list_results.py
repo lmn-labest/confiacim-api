@@ -66,7 +66,8 @@ def test_negative_list_case_not_found(client_auth: TestClient):
     assert resp.json()["detail"] == "Case not found"
 
 
-def test_negative_list_can_access_only_their_own_cases(
+@pytest.mark.integration
+def test_negative_list_user_can_access_only_their_own_cases(
     client: TestClient,
     tencim_results: TencimResult,
     other_user_token: str,
@@ -84,7 +85,7 @@ def test_negative_list_can_access_only_their_own_cases(
 
 
 @pytest.mark.integration
-def test_negative_list_resutls_must_have_token(client: TestClient):
+def test_negative_list_result_must_have_token(client: TestClient):
     url = app.url_path_for(ROUTE_NAME, case_id=1)
 
     resp = client.get(url)
