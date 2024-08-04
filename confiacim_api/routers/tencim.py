@@ -7,6 +7,7 @@ from confiacim_api.schemas import (
     ListTencimResult,
     ResultCeleryTask,
     TencimResultDetail,
+    TencimResultError,
 )
 from confiacim_api.security import CurrentUser
 from confiacim_api.tasks import tencim_standalone_run as tencim_run
@@ -99,3 +100,41 @@ def tencim_standalone_run(
         "task_id": task.id,
         "result_id": result.id,
     }
+
+
+@router.get("/{case_id}/tencim/{result_id}/status", response_model=TencimResultError)
+def tencim_result_status_retrive(
+    session: ActiveSession,
+    case_id: int,
+    result_id: int,
+    user: CurrentUser,
+):
+    """Retorna o status do resultado do `tencim`.
+
+    As possibiliades são:
+
+    - CREATED - Resultdo Criando, mas a task ainda não foi enviada.
+    - RUNNING - Task enviada para o broker
+    - FAILED - Task falhou
+    - SUCCESS - Task rodou com sucesso.
+
+    """
+
+    stmt = (
+        select(TencimResult)
+        .join(TencimResult.case)
+        .where(
+            TencimResult.id == result_id,
+            Case.id == case_id,
+            Case.user_id == user.id,
+        )
+    )
+    result = session.scalar(stmt)
+
+    if not result:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Result/Case not found",
+        )
+
+    return {"status": result.status}
