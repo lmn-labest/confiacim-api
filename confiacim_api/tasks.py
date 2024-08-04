@@ -13,7 +13,7 @@ from confiacim_api.files_and_folders_handlers import (
     temporary_simulation_folder,
     unzip_tencim_case,
 )
-from confiacim_api.models import Case, TencimResult
+from confiacim_api.models import Case, ResultStatus, TencimResult
 
 
 class TaskFileCaseNotFound(Exception): ...
@@ -41,26 +41,31 @@ def tencim_standalone_run(self, case_id: int) -> dict:
     unzip_tencim_case(case, tmp_dir)
     input_base_dir = Path(tmp_dir.name)
 
+    with SessionFactory() as session:
+        new_results = TencimResult(
+            case=case,
+            task_id=self.request.id,
+            status=ResultStatus.RUNNING,
+        )
+
+        session.add(new_results)
+        session.commit()
+        session.refresh(new_results)
+
     try:
         run(input_dir=input_base_dir, output_dir=None, verbose_level=0)
 
         results = read_rc_file(input_base_dir / "output/case_RC.txt")
 
-        new_results = TencimResult(
-            case=case,
-            task_id=self.request.id,
-            istep=results.istep.tolist(),
-            t=results.t.tolist(),
-            rankine_rc=results.rc_rankine.tolist(),
-            mohr_coulomb_rc=results.rc_mhor_coulomb.tolist(),
-        )
+        new_results.istep = results.istep.tolist()
+        new_results.t = results.t.tolist()
+        new_results.rankine_rc = results.rc_rankine.tolist()
+        new_results.mohr_coulomb_rc = results.rc_mhor_coulomb.tolist()
+        new_results.status = ResultStatus.SUCCESS
 
     except TencimRunError as e:
-        new_results = TencimResult(
-            case=case,
-            task_id=self.request.id,
-            error=str(e),
-        )
+        new_results.error = str(e)
+        new_results.status = ResultStatus.FAILED
         raise e
 
     finally:

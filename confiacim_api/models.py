@@ -1,9 +1,11 @@
+import enum
 from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
 from sqlalchemy import (
     DateTime,
+    Enum,
     Float,
     ForeignKey,
     Integer,
@@ -23,6 +25,12 @@ from sqlalchemy.orm import (
 )
 
 from confiacim_api.const import MAX_TAG_NAME_LENGTH
+
+
+class ResultStatus(enum.Enum):
+    RUNNING = "runnig"
+    FAILED = "failed"
+    SUCCESS = "success"
 
 
 class Base(DeclarativeBase):
@@ -84,6 +92,7 @@ class TencimResult(TimestampMixin, Base):
     rankine_rc: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
     mohr_coulomb_rc: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
     error: Mapped[Optional[str]] = mapped_column(Text)
+    status: Mapped[Optional[ResultStatus]] = mapped_column(Enum(ResultStatus, name="result_status"))
 
     case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
     case: Mapped["Case"] = relationship(back_populates="tencim_results")

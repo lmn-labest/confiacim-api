@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from sqlalchemy.orm import Session
 
-from confiacim_api.models import Case, TencimResult
+from confiacim_api.models import Case, ResultStatus, TencimResult
 
 
 @pytest.mark.integration
@@ -20,6 +20,7 @@ def test_create_case(session: Session, case: Case):
         t=t,
         rankine_rc=rankine_rc,
         mohr_coulomb_rc=mohr_coulomb_rc,
+        status=ResultStatus.RUNNING,
     )
     session.add(new_result)
     session.commit()
@@ -39,6 +40,7 @@ def test_create_case(session: Session, case: Case):
     assert result_from_db.istep == istep
     assert result_from_db.rankine_rc == rankine_rc
     assert result_from_db.mohr_coulomb_rc == mohr_coulomb_rc
+    assert result_from_db.status == ResultStatus.RUNNING
 
     assert result_from_db.created_at is not None
     assert isinstance(result_from_db.created_at, datetime)
