@@ -50,7 +50,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-confiacim-cli = "confiacim_api.cli:app"
+confiacim-admin = "confiacim_api.cli:app"
 
 
 [tool.black]
