@@ -39,7 +39,7 @@ class TencimResultDetail(BaseModel):
     rankine_rc: Optional[TArrayFloat]
     mohr_coulomb_rc: Optional[TArrayFloat]
     error: Optional[str]
-    status: Optional[ResultStatus]
+    status: ResultStatus
     created_at: datetime
     updated_at: datetime
 
@@ -88,3 +88,7 @@ class ListUsersOut(BaseModel):
 class ResultCeleryTask(BaseModel):
     result_id: int
     task_id: UUID
+
+
+class TencimResultError(BaseModel):
+    status: ResultStatus
