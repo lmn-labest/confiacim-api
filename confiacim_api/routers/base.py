@@ -23,4 +23,5 @@ def index():
 
 @router.get("/health", response_model=Health)
 def health(session: ActiveSession):
+    """Testa a conecção com banco de dados"""
     return {"status": "ok" if check_db(session) else "fail"}

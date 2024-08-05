@@ -11,6 +11,7 @@ router = APIRouter(prefix="/api/user", tags=["User"])
 
 @router.post("/", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def create_user(session: ActiveSession, payload: UserCreate):
+    """Cria usuário com `email` e `senha`"""
     if session.scalar(select(User).where(User.email == payload.email)):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -30,6 +31,7 @@ def create_user(session: ActiveSession, payload: UserCreate):
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(session: ActiveSession, user_id: int, user: CurrentUser):
+    """Deleta usuário `user_id`"""
 
     if user.id != user_id:
         raise HTTPException(

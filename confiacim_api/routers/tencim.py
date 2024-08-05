@@ -18,16 +18,16 @@ router = APIRouter(prefix="/api/case", tags=["Tencim"])
 
 @router.get("/{case_id}/tencim/results", response_model=ListTencimResult)
 def tencim_result_list(session: ActiveSession, user: CurrentUser, case_id: int):
+    """Lista o resultados do usuário logado para do `case_id`"""
 
-    stmt = (
+    results = session.scalars(
         select(TencimResult)
         .join(TencimResult.case)
         .where(
             Case.id == case_id,
             Case.user_id == user.id,
         )
-    )
-    results = session.scalars(stmt).all()
+    ).all()
 
     if not results:
         raise HTTPException(
@@ -48,6 +48,7 @@ def tencim_result_retrive(
     case_id: int,
     result_id: int,
 ):
+    """Retorna o resultado `result_id` dp caso `case_id` por do usuário logado"""
 
     stmt = (
         select(TencimResult)
@@ -75,6 +76,7 @@ def tencim_standalone_run(
     case_id: int,
     user: CurrentUser,
 ):
+    """Envia uma simulação do `tencim` do caso `case_id` para a fila execução"""
 
     case = session.scalar(select(Case).filter(Case.id == case_id, Case.user == user))
 
