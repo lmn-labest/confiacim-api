@@ -3,11 +3,11 @@ from sqlalchemy import select
 
 from confiacim_api.database import ActiveSession
 from confiacim_api.models import Case, TencimResult
-from confiacim_api.schemas import (
+from confiacim_api.schemes import (
     ListTencimResult,
     ResultCeleryTask,
     TencimResultDetail,
-    TencimResultError,
+    TencimResultStatus,
 )
 from confiacim_api.security import CurrentUser
 from confiacim_api.tasks import tencim_standalone_run as tencim_run
@@ -102,7 +102,7 @@ def tencim_standalone_run(
     }
 
 
-@router.get("/{case_id}/tencim/{result_id}/status", response_model=TencimResultError)
+@router.get("/{case_id}/tencim/{result_id}/status", response_model=TencimResultStatus)
 def tencim_result_status_retrive(
     session: ActiveSession,
     case_id: int,

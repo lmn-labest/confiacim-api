@@ -3,7 +3,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
 
 from confiacim_api.database import ActiveSession
-from confiacim_api.schemas import Health, Message
+from confiacim_api.schemes import Health, Message
 
 router = APIRouter(prefix="/api", tags=["Base"])
 

@@ -7,7 +7,7 @@ from sqlalchemy import select
 
 from confiacim_api.database import ActiveSession
 from confiacim_api.models import Case
-from confiacim_api.schemas import (
+from confiacim_api.schemes import (
     CaseCreate,
     CaseList,
     CasePublic,
