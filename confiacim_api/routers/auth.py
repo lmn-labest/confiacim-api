@@ -6,7 +6,7 @@ from sqlalchemy import select
 
 from confiacim_api.database import ActiveSession
 from confiacim_api.models import User
-from confiacim_api.schemas import Token, UserOut
+from confiacim_api.schemes import Token, UserOut
 from confiacim_api.security import (
     CurrentUser,
     create_access_token,
