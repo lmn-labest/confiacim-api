@@ -3,7 +3,7 @@ from sqlalchemy import select
 
 from confiacim_api.database import ActiveSession
 from confiacim_api.models import User
-from confiacim_api.schemas import UserCreate, UserOut
+from confiacim_api.schemes import UserCreate, UserOut
 from confiacim_api.security import CurrentUser, get_password_hash
 
 router = APIRouter(prefix="/api/user", tags=["User"])

@@ -5,7 +5,7 @@ from sqlalchemy import false, select, true
 
 from confiacim_api.database import ActiveSession
 from confiacim_api.models import User
-from confiacim_api.schemas import ListUsersOut
+from confiacim_api.schemes import ListUsersOut
 from confiacim_api.security import CurrentUser
 
 router = APIRouter(prefix="/api/admin", tags=["Admin"])
