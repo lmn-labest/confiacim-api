@@ -37,3 +37,7 @@ class ListTencimResult(BaseModel):
 
 class TencimResultStatus(BaseModel):
     status: ResultStatus
+
+
+class TencimResultError(BaseModel):
+    error: Optional[str]

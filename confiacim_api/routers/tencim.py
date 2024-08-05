@@ -9,6 +9,7 @@ from confiacim_api.schemes import (
     TencimResultDetail,
     TencimResultStatus,
 )
+from confiacim_api.schemes.tencim import TencimResultError
 from confiacim_api.security import CurrentUser
 from confiacim_api.tasks import tencim_standalone_run as tencim_run
 
@@ -102,7 +103,7 @@ def tencim_standalone_run(
     }
 
 
-@router.get("/{case_id}/tencim/{result_id}/status", response_model=TencimResultStatus)
+@router.get("/{case_id}/tencim/results/{result_id}/status", response_model=TencimResultStatus)
 def tencim_result_status_retrive(
     session: ActiveSession,
     case_id: int,
@@ -138,3 +139,31 @@ def tencim_result_status_retrive(
         )
 
     return {"status": result.status}
+
+
+@router.get("/{case_id}/tencim/results/{result_id}/error", response_model=TencimResultError)
+def tencim_result_error_retrive(
+    session: ActiveSession,
+    case_id: int,
+    result_id: int,
+    user: CurrentUser,
+):
+    """Retorna o error do resultado do `tencim`."""
+
+    result = session.scalar(
+        select(TencimResult)
+        .join(TencimResult.case)
+        .where(
+            TencimResult.id == result_id,
+            Case.id == case_id,
+            Case.user_id == user.id,
+        )
+    )
+
+    if not result:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Result/Case not found",
+        )
+
+    return {"error": result.error}
