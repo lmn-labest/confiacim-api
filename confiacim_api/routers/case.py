@@ -20,6 +20,7 @@ router = APIRouter(prefix="/api/case", tags=["Case"])
 
 @router.get("", response_model=CaseList)
 def case_list(session: ActiveSession, user: CurrentUser):
+    "Lista os casos do usuario logado"
     stmt = select(Case).filter(Case.user == user).order_by(Case.tag)
     cases = session.scalars(stmt).all()
     return {"cases": cases}
@@ -31,6 +32,7 @@ def case_create(
     payload: CaseCreate,
     user: CurrentUser,
 ):
+    """Cria um caso"""
     # TODO: Query lenta
     db_case_with_new_tag_name = session.scalar(select(Case).where(Case.tag == payload.tag, Case.user == user))
 
@@ -51,6 +53,7 @@ def case_create(
 
 @router.get("/{case_id}", response_model=CasePublic)
 def case_retrive(session: ActiveSession, case_id: int, user: CurrentUser):
+    """Retorna o caso `case_id`"""
 
     db_case = session.scalar(select(Case).where(Case.id == case_id, Case.user == user))
 
@@ -71,7 +74,7 @@ def upload_case_file(
     case_file: Annotated[UploadFile, File()],
 ):
     """
-    Upload do arquivos do `simentar`.
+    Upload do arquivos do `simentar` para o caso `case_id`.
     O arquivo precisa estar campactado no formato `zip`.
     """
     case = session.scalar(select(Case).filter(Case.id == case_id, Case.user == user))
@@ -99,7 +102,7 @@ def download_case_file(
     case_id: int,
     user: CurrentUser,
 ):
-    """Downlaod do arquivos do `simentar`."""
+    """Download do arquivos do `simentar` do caso `case_id`"""
 
     case = session.scalar(select(Case).filter(Case.id == case_id, Case.user == user))
     if case is None:
