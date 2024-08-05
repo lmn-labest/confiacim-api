@@ -13,7 +13,7 @@ router = APIRouter(prefix="/api/admin", tags=["Admin"])
 
 @router.get("/users", response_model=ListUsersOut)
 def admin_list_users(session: ActiveSession, user: CurrentUser, role: Union[str, None] = None):
-
+    """Rota para lista os usuarios cadastrados. Apenas usuario admins pondem acessar essa rota"""
     if user.is_admin is not True:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

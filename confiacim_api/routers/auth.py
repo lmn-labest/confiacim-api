@@ -25,6 +25,8 @@ token_exception = HTTPException(
 
 @router.post("/token", name="token", response_model=Token)
 def get_access_token(session: ActiveSession, form_data: OAuth2Form):
+    """Obten o `token`S de acesso"""
+
     user = session.scalar(select(User).where(User.email == form_data.username))
 
     if not user:
@@ -40,4 +42,6 @@ def get_access_token(session: ActiveSession, form_data: OAuth2Form):
 
 @router.get("/whoiam", response_model=UserOut)
 def whoiam(user: CurrentUser):
+    """Verifica o usuario logado"""
+
     return user
