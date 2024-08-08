@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi_pagination import add_pagination
 
 from confiacim_api.conf import settings
 from confiacim_api.routers import (
@@ -19,6 +20,7 @@ app = FastAPI(
     docs_url="/api/docs",
     openapi_url="/api/openapi.json",
 )
+add_pagination(app)
 
 if settings.CORS:
     app.add_middleware(
