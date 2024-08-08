@@ -31,10 +31,6 @@ class TencimResultDetail(BaseModel):
     updated_at: datetime
 
 
-class ListTencimResult(BaseModel):
-    results: list[TencimResultSummary]
-
-
 class TencimResultStatus(BaseModel):
     status: ResultStatus
 

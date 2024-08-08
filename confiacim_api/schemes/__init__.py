@@ -1,13 +1,11 @@
 from confiacim_api.schemes.base import Health, Message, ResultCeleryTask, Token
-from confiacim_api.schemes.case import CaseCreate, CaseList, CasePublic
+from confiacim_api.schemes.case import CaseCreate, CasePublic
 from confiacim_api.schemes.tencim import (
-    ListTencimResult,
     TencimResultDetail,
     TencimResultStatus,
     TencimResultSummary,
 )
 from confiacim_api.schemes.users import (
-    ListUsersOut,
     UserCreate,
     UserOut,
 )
@@ -18,13 +16,10 @@ __all__ = (
     "Token",
     "ResultCeleryTask",
     "CaseCreate",
-    "CaseList",
     "CasePublic",
     "TencimResultDetail",
     "TencimResultSummary",
-    "ListTencimResult",
     "TencimResultStatus",
     "UserOut",
     "UserCreate",
-    "ListUsersOut",
 )

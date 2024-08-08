@@ -32,9 +32,9 @@ def test_list_user(
 
     body = resp.json()
 
-    assert body["count"] == 3
+    assert body["total"] == 3
 
-    results = body["results"]
+    results = body["items"]
 
     assert {"id": user.id, "email": user.email} in results
     assert {"id": other_user.id, "email": other_user.email} in results
@@ -69,7 +69,7 @@ def test_list_filter_by_role(
 
     assert resp.status_code == status.HTTP_200_OK
 
-    assert resp.json()["count"] == count
+    assert resp.json()["total"] == count
 
 
 @pytest.mark.integration
