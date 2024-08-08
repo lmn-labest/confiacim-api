@@ -2,6 +2,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
 from fastapi.responses import Response
+from fastapi_pagination import Page
+from fastapi_pagination.ext.sqlalchemy import paginate
 from slugify import slugify
 from sqlalchemy import select
 
@@ -9,7 +11,6 @@ from confiacim_api.database import ActiveSession
 from confiacim_api.models import Case
 from confiacim_api.schemes import (
     CaseCreate,
-    CaseList,
     CasePublic,
 )
 from confiacim_api.security import CurrentUser
@@ -18,12 +19,10 @@ from confiacim_api.utils import file_case_is_zipfile
 router = APIRouter(prefix="/api/case", tags=["Case"])
 
 
-@router.get("", response_model=CaseList)
+@router.get("", response_model=Page[CasePublic])
 def case_list(session: ActiveSession, user: CurrentUser):
     "Lista os casos do usuario logado"
-    stmt = select(Case).filter(Case.user == user).order_by(Case.tag)
-    cases = session.scalars(stmt).all()
-    return {"cases": cases}
+    return paginate(session, select(Case).filter(Case.user == user).order_by(Case.tag))
 
 
 @router.post("", response_model=CasePublic, status_code=status.HTTP_201_CREATED)

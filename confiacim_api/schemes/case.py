@@ -20,7 +20,3 @@ class CasePublic(BaseModel):
     @field_serializer("tencim_results")
     def tencim_result_ids(self, tencim_results, _info) -> list[int]:
         return [t.id for t in tencim_results]
-
-
-class CaseList(BaseModel):
-    cases: list[CasePublic]

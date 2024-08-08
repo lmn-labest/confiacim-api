@@ -23,7 +23,7 @@ def test_positive_list_only_user_case(
 
     assert resp.status_code == status.HTTP_200_OK
 
-    assert len(resp.json()["cases"]) == 2
+    assert resp.json()["total"] == 2
 
     resp = client.get(
         app.url_path_for(ROUTE_LIST_NAME),
@@ -32,7 +32,7 @@ def test_positive_list_only_user_case(
 
     assert resp.status_code == status.HTTP_200_OK
 
-    assert len(resp.json()["cases"]) == 1
+    assert resp.json()["total"] == 1
 
 
 @pytest.mark.integration
@@ -46,9 +46,11 @@ def test_positive_check_fields(
 
     assert resp.status_code == status.HTTP_200_OK
 
-    cases = resp.json()["cases"]
+    body = resp.json()
 
-    assert len(cases) == 2
+    cases = body["items"]
+
+    assert body["total"] == 2
 
     fields = cases[0].keys()
 
@@ -64,9 +66,7 @@ def test_positive_list_case_empty(client_auth: TestClient):
 
     assert resp.status_code == status.HTTP_200_OK
 
-    cases_list_from_api = resp.json()["cases"]
-
-    assert len(cases_list_from_api) == 0
+    assert resp.json()["total"] == 0
 
 
 @pytest.mark.integration

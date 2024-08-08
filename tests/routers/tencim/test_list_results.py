@@ -19,9 +19,9 @@ def test_positive_list(client_auth: TestClient, tencim_results: TencimResult):
 
     body = resp.json()
 
-    response_tencim_results = body["results"]
+    response_tencim_results = body["items"]
 
-    assert len(response_tencim_results) == 1
+    assert body["total"] == 1
 
     assert response_tencim_results[0]["id"] == tencim_results.id
     assert response_tencim_results[0]["task_id"] == tencim_results.task_id
@@ -45,9 +45,9 @@ def test_positive_check_fields(client_auth: TestClient, tencim_results: TencimRe
 
     body = resp.json()
 
-    response_tencim_results = body["results"]
+    response_tencim_results = body["items"]
 
-    assert len(response_tencim_results) == 1
+    assert body["total"] == 1
 
     fields = response_tencim_results[0].keys()
 

@@ -1,41 +1,44 @@
 from fastapi import APIRouter, HTTPException, status
+from fastapi_pagination import Page
+from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy import select
 
 from confiacim_api.database import ActiveSession
 from confiacim_api.models import Case, TencimResult
 from confiacim_api.schemes import (
-    ListTencimResult,
     ResultCeleryTask,
     TencimResultDetail,
     TencimResultStatus,
 )
-from confiacim_api.schemes.tencim import TencimResultError
+from confiacim_api.schemes.tencim import TencimResultError, TencimResultSummary
 from confiacim_api.security import CurrentUser
 from confiacim_api.tasks import tencim_standalone_run as tencim_run
 
 router = APIRouter(prefix="/api/case", tags=["Tencim"])
 
 
-@router.get("/{case_id}/tencim/results", response_model=ListTencimResult)
+@router.get("/{case_id}/tencim/results", response_model=Page[TencimResultSummary])
 def tencim_result_list(session: ActiveSession, user: CurrentUser, case_id: int):
     """Lista o resultados do usuário logado para do `case_id`"""
 
-    results = session.scalars(
+    case = session.scalar(select(Case).where(Case.id == case_id, Case.user_id == user.id))
+
+    if not case:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Case not found",
+        )
+
+    stmt = (
         select(TencimResult)
         .join(TencimResult.case)
         .where(
             Case.id == case_id,
             Case.user_id == user.id,
         )
-    ).all()
+    )
 
-    if not results:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Case not found",
-        )
-
-    return {"results": results}
+    return paginate(session, stmt)
 
 
 @router.get(
