@@ -4,7 +4,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from confiacim_api.app import app
-from confiacim_api.models import User
+from confiacim_api.models import Case, TencimResult, User
 
 faker = Faker()
 
@@ -12,7 +12,11 @@ ROUTE_NAME = "delete_user"
 
 
 @pytest.mark.integration
-def test_positive_delete_user(session, client_auth: TestClient, user: User, token: str):
+def test_positive_delete_user(
+    session,
+    client_auth: TestClient,
+    user: User,
+):
 
     resp = client_auth.delete(
         app.url_path_for(ROUTE_NAME, user_id=user.id),
@@ -26,7 +30,30 @@ def test_positive_delete_user(session, client_auth: TestClient, user: User, toke
 
 
 @pytest.mark.integration
-def test_negative_only_the_user_can_delete_himself(session, client: TestClient, user: User, other_user_token: str):
+def test_positive_delete_user_must_delete_the_case(
+    session,
+    client_auth: TestClient,
+    case_with_result: Case,
+):
+
+    resp = client_auth.delete(
+        app.url_path_for(ROUTE_NAME, user_id=case_with_result.user.id),
+    )
+
+    assert resp.status_code == status.HTTP_204_NO_CONTENT
+
+    assert not session.get(User, case_with_result.user.id)
+    assert not session.get(Case, case_with_result.id)
+    assert not session.get(TencimResult, case_with_result.tencim_results[0].id)
+
+
+@pytest.mark.integration
+def test_negative_only_the_user_can_delete_himself(
+    session,
+    client: TestClient,
+    user: User,
+    other_user_token: str,
+):
 
     resp = client.delete(
         app.url_path_for(ROUTE_NAME, user_id=user.id),

@@ -60,7 +60,10 @@ class User(TimestampMixin, Base):
         default=false(),
         server_default="false",
     )
-    cases: Mapped[list["Case"]] = relationship(back_populates="user")
+    cases: Mapped[list["Case"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(email={self.email}, is_admin={self.is_admin})"
