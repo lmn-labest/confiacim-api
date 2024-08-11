@@ -76,7 +76,10 @@ class Case(TimestampMixin, Base):
     user: Mapped["User"] = relationship(back_populates="cases")
     base_file: Mapped[bytes] = mapped_column(LargeBinary, nullable=True)
 
-    tencim_results: Mapped[list["TencimResult"]] = relationship(back_populates="case")
+    tencim_results: Mapped[list["TencimResult"]] = relationship(
+        back_populates="case",
+        cascade="all, delete-orphan",
+    )
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id}, case={self.tag})"
