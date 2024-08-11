@@ -19,7 +19,7 @@ router = APIRouter(prefix="/api/case", tags=["Tencim"])
 
 @router.get("/{case_id}/tencim/results", response_model=Page[TencimResultSummary])
 def tencim_result_list(session: ActiveSession, user: CurrentUser, case_id: int):
-    """Lista o resultados do usuário logado para do `case_id`"""
+    """Lista o resultados do usuário logado para o `case_id`"""
 
     case = session.scalar(select(Case).where(Case.id == case_id, Case.user_id == user.id))
 
@@ -51,7 +51,7 @@ def tencim_result_retrive(
     case_id: int,
     result_id: int,
 ):
-    """Retorna o resultado `result_id` dp caso `case_id` por do usuário logado"""
+    """Retorna o resultado `result_id` do caso `case_id` do usuário logado"""
 
     stmt = (
         select(TencimResult)
@@ -71,6 +71,39 @@ def tencim_result_retrive(
         )
 
     return result
+
+
+@router.delete(
+    "/{case_id}/tencim/results/{result_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def tencim_result_delete(
+    session: ActiveSession,
+    user: CurrentUser,
+    case_id: int,
+    result_id: int,
+):
+    """Deleta o resultado `result_id` do caso `case_id` do usuário logado"""
+
+    stmt = (
+        select(TencimResult)
+        .join(TencimResult.case)
+        .where(
+            TencimResult.id == result_id,
+            Case.id == case_id,
+            Case.user_id == user.id,
+        )
+    )
+    result = session.scalar(stmt)
+
+    if not result:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Result/Case not found",
+        )
+
+    session.delete(result)
+    session.commit()
 
 
 @router.post("/{case_id}/tencim/run", response_model=ResultCeleryTask)
