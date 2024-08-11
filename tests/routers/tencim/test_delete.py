@@ -9,7 +9,11 @@ ROUTE_NAME = "tencim_result_delete"
 
 
 @pytest.mark.integration
-def test_positive_delete(client_auth: TestClient, session, tencim_results: TencimResult):
+def test_positive_delete(
+    client_auth: TestClient,
+    session,
+    tencim_results: TencimResult,
+):
 
     url = app.url_path_for(
         ROUTE_NAME,
@@ -18,13 +22,13 @@ def test_positive_delete(client_auth: TestClient, session, tencim_results: Tenci
     )
 
     resp = client_auth.delete(url)
-    assert resp.status_code == status.HTTP_204_NO_CONTENT
 
+    assert resp.status_code == status.HTTP_204_NO_CONTENT
     assert session.get(TencimResult, tencim_results.id) is None
 
 
 @pytest.mark.integration
-def test_negative_delete_result_not_found(client_auth: TestClient, tencim_results: TencimResult):
+def test_negative_result_not_found(client_auth: TestClient, tencim_results: TencimResult):
 
     url = app.url_path_for(
         ROUTE_NAME,
@@ -39,7 +43,7 @@ def test_negative_delete_result_not_found(client_auth: TestClient, tencim_result
 
 
 @pytest.mark.integration
-def test_negative_delete_case_not_found(client_auth: TestClient, tencim_results: TencimResult):
+def test_negative_case_not_found(client_auth: TestClient, tencim_results: TencimResult):
 
     url = app.url_path_for(
         ROUTE_NAME,
