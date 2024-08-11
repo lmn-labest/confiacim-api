@@ -11,7 +11,13 @@ ROUTE_NAME = "admin_list_users"
 
 @pytest.fixture
 def admin_token(admin_user: User):
-    return create_access_token(data={"sub": admin_user.email})
+    return create_access_token(
+        data={
+            "sub": admin_user.id,
+            "email": admin_user.email,
+            "admin": admin_user.is_admin,
+        }
+    )
 
 
 @pytest.mark.integration

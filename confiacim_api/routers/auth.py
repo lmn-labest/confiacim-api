@@ -25,7 +25,7 @@ token_exception = HTTPException(
 
 @router.post("/token", name="token", response_model=Token)
 def get_access_token(session: ActiveSession, form_data: OAuth2Form):
-    """Obten o `token`S de acesso"""
+    """Obten o `token` de acesso"""
 
     user = session.scalar(select(User).where(User.email == form_data.username))
 
@@ -35,7 +35,13 @@ def get_access_token(session: ActiveSession, form_data: OAuth2Form):
     if not verify_password(form_data.password, user.password):
         raise token_exception
 
-    access_token = create_access_token(data={"sub": user.email})
+    access_token = create_access_token(
+        data={
+            "sub": user.id,
+            "email": user.email,
+            "admin": user.is_admin,
+        }
+    )
 
     return {"access_token": access_token, "token_type": "bearer"}
 
