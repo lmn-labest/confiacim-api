@@ -9,20 +9,40 @@ ROUTE_RETRIVE_NAME = "case_retrive"
 
 
 @pytest.mark.integration
-def test_positive_retrive(client_auth: TestClient, case: Case):
+def test_positive_retrive(client_auth: TestClient, case_with_result: Case):
 
     resp = client_auth.get(
-        app.url_path_for(ROUTE_RETRIVE_NAME, case_id=case.id),
+        app.url_path_for(ROUTE_RETRIVE_NAME, case_id=case_with_result.id),
     )
 
     assert resp.status_code == status.HTTP_200_OK
 
     body = resp.json()
 
-    assert body["id"] == case.id
-    assert body["tag"] == case.tag
-    assert body["user"] == case.user.id
-    assert body["tencim_result_ids"] == []
+    assert body["id"] == case_with_result.id
+    assert body["tag"] == case_with_result.tag
+    assert body["user"] == case_with_result.user.id
+    assert body["tencim_result_ids"] == [
+        {
+            "id": case_with_result.tencim_results[0].id,
+            "status": (
+                case_with_result.tencim_results[0].status.value
+                if case_with_result.tencim_results[0].status is not None
+                else None
+            ),
+            "task_id": case_with_result.tencim_results[0].task_id,
+            "created_at": (
+                case_with_result.tencim_results[0].created_at.isoformat()
+                if case_with_result.tencim_results[0].created_at is not None
+                else None
+            ),
+            "updated_at": (
+                case_with_result.tencim_results[0].updated_at.isoformat()
+                if case_with_result.tencim_results[0].updated_at is not None
+                else None
+            ),
+        }
+    ]
 
 
 @pytest.mark.integration
