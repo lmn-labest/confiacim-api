@@ -76,7 +76,13 @@ def user(session, user_obj):
 
 @pytest.fixture
 def token(user):
-    return create_access_token(data={"sub": user.email})
+    return create_access_token(
+        data={
+            "sub": user.id,
+            "email": user.email,
+            "admin": user.is_admin,
+        }
+    )
 
 
 @pytest.fixture
@@ -94,7 +100,13 @@ def other_user(session, user_obj):
 
 @pytest.fixture
 def other_user_token(other_user):
-    return create_access_token(data={"sub": other_user.email})
+    return create_access_token(
+        data={
+            "sub": other_user.id,
+            "email": other_user.email,
+            "admin": other_user.is_admin,
+        }
+    )
 
 
 @pytest.fixture

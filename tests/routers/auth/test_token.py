@@ -42,7 +42,9 @@ def test_positive_token_verify_token(client: TestClient, user, payload):
     payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[ALGORITHM])
 
     assert payload["exp"]
-    assert payload["sub"] == user.email
+    assert payload["sub"] == user.id
+    assert payload["email"] == user.email
+    assert payload["admin"] == user.is_admin
 
 
 @pytest.mark.integration

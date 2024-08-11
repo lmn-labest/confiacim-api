@@ -10,7 +10,7 @@ ROUTE_CREATE_NAME = "case_create"
 
 
 @pytest.mark.integration
-def test_positive_create(client_auth: TestClient, session, token: str, user: User):
+def test_positive_create(client_auth: TestClient, session, user: User):
     payload = {"tag": "case_1"}
 
     resp = client_auth.post(
@@ -34,11 +34,7 @@ def test_positive_create(client_auth: TestClient, session, token: str, user: Use
 
 
 @pytest.mark.integration
-def test_negative_create_missing_tag(
-    client_auth: TestClient,
-    session,
-    token: str,
-):
+def test_negative_create_missing_tag(client_auth: TestClient, session):
     payload = {"tag1": "1"}
 
     resp = client_auth.post(
@@ -60,11 +56,7 @@ def test_negative_create_missing_tag(
 
 
 @pytest.mark.integration
-def test_negative_create_missing_tag_must_be_lt_30(
-    client_auth: TestClient,
-    session,
-    token: str,
-):
+def test_negative_create_missing_tag_must_be_lt_30(client_auth: TestClient, session):
     payload = {"tag": "s" * 31}
 
     resp = client_auth.post(
@@ -89,7 +81,6 @@ def test_negative_create_missing_tag_must_be_lt_30(
 def test_negative_create_tag_name_must_be_unique_per_user(
     client_auth: TestClient,
     case: Case,
-    token: str,
 ):
     payload = {"tag": "case_1"}
 
