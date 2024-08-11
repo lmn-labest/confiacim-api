@@ -54,7 +54,12 @@ def case_create(
 def case_retrive(session: ActiveSession, case_id: int, user: CurrentUser):
     """Retorna o caso `case_id`"""
 
-    db_case = session.scalar(select(Case).where(Case.id == case_id, Case.user == user))
+    db_case = session.scalar(
+        select(Case).where(
+            Case.id == case_id,
+            Case.user == user,
+        )
+    )
 
     if not db_case:
         raise HTTPException(
@@ -63,6 +68,29 @@ def case_retrive(session: ActiveSession, case_id: int, user: CurrentUser):
         )
 
     return db_case
+
+
+@router.delete("/{case_id}", status_code=status.HTTP_204_NO_CONTENT)
+def case_delete(session: ActiveSession, case_id: int, user: CurrentUser):
+    """Deleta o caso `case_id`. Quando um `caso` é deletado os resultado
+    associados a ele são deletados também.
+    """
+
+    db_case = session.scalar(
+        select(Case).where(
+            Case.id == case_id,
+            Case.user == user,
+        )
+    )
+
+    if not db_case:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Case not found",
+        )
+
+    session.delete(db_case)
+    session.commit()
 
 
 @router.post("/{case_id}/upload")
