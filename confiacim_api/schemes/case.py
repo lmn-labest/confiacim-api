@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field, field_serializer
+from pydantic import BaseModel, Field
 
 from confiacim_api.const import MAX_TAG_NAME_LENGTH
+from confiacim_api.schemes.tencim import TencimResultSummary
 
 
 class CaseCreate(BaseModel):
@@ -13,10 +14,6 @@ class CasePublic(BaseModel):
     id: int
     user_id: int = Field(serialization_alias="user")
     tag: str = Field(max_length=MAX_TAG_NAME_LENGTH)
-    tencim_results: list = Field(serialization_alias="tencim_result_ids")
+    tencim_results: list[TencimResultSummary] = Field(serialization_alias="tencim_result_ids")
     created_at: datetime
     updated_at: datetime
-
-    @field_serializer("tencim_results")
-    def tencim_result_ids(self, tencim_results, _info) -> list[int]:
-        return [t.id for t in tencim_results]
