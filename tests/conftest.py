@@ -189,3 +189,14 @@ def tencim_results(session, case_with_real_file: Case):
     session.refresh(new_result)
 
     return new_result
+
+
+@pytest.fixture
+def case_with_result(session, user: User):
+    case = Case(tag="case1", user=user)
+    result = TencimResult(case=case)
+    session.add_all([case, result])
+    session.commit()
+    session.refresh(case)
+
+    return case
