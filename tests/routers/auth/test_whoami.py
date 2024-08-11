@@ -26,7 +26,13 @@ def test_positive_whoiam(client: TestClient, user: User, token: str):
 
 @pytest.mark.integration
 def test_negative_whoiam_user_not_exists(client: TestClient):
-    token = create_access_token(data={"sub": faker.email()})
+    token = create_access_token(
+        data={
+            "sub": 1,
+            "email": faker.email(),
+            "admin": False,
+        }
+    )
 
     resp = client.get(app.url_path_for(ROUTE_NAME), headers={"Authorization": f"Bearer {token}"})
 
@@ -49,6 +55,23 @@ def test_negative_whoiam_expired_token(client: TestClient, user):
 
     with freeze_time("2012-01-14 02:00:00"):
         resp = client.get(app.url_path_for(ROUTE_NAME), headers={"Authorization": f"Bearer {token}"})
+
+    assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+    assert resp.json() == {"detail": "Not authenticated"}
+
+
+@pytest.mark.integration
+def test_negative_whoiam_wrong_id(client: TestClient, user: User):
+
+    token = create_access_token(
+        data={
+            "sub": user.id + 1,
+            "email": user.email,
+            "admin": user.is_admin,
+        }
+    )
+
+    resp = client.get(app.url_path_for(ROUTE_NAME), headers={"Authorization": token})
 
     assert resp.status_code == status.HTTP_401_UNAUTHORIZED
     assert resp.json() == {"detail": "Not authenticated"}

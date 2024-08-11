@@ -5,7 +5,6 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt import DecodeError, ExpiredSignatureError, decode, encode
 from passlib.context import CryptContext
-from sqlalchemy import select
 from zoneinfo import ZoneInfo
 
 from confiacim_api.conf import settings
@@ -50,13 +49,13 @@ async def get_current_user(
 
     try:
         payload = decode(token, settings.JWT_SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get("sub")
-        if not username:
+        id = payload.get("sub")
+        if not id:
             raise credentials_exception
     except (DecodeError, ExpiredSignatureError) as e:
         raise credentials_exception from e
 
-    user = session.scalar(select(User).where(User.email == username))
+    user = session.get(User, id)
 
     if not user:
         raise credentials_exception
