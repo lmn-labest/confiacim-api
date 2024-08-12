@@ -1,0 +1,14 @@
+name: Start Release
+run-name: Start Release
+
+on:
+  # inicia o workflow quando um pull request é aberto, reaberto ou sincronizado
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize]
+
+jobs:
+  start_release:
+    name: Start Release
+    uses: petrobrasbr/d9i3-templates/.github/workflows/pipeline_release_start.yml@main
+    secrets: inherit

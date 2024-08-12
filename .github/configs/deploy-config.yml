@@ -1,0 +1,14 @@
+serverType: ' '
+artifacts:
+  a17790-backend:
+    CodigoAplicacao: a17790
+envs:
+  DSV:
+    a17790-backend:
+  TST:
+    a17790-backend:
+  HMG:
+    a17790-backend:
+  PRD:
+    a17790-backend:
+      reviewers: a17790_maintain_team
