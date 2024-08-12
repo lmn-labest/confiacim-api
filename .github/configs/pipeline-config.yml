@@ -1,0 +1,3 @@
+env:
+  SkipSonar: false
+  QualityGate: false
