@@ -1,0 +1,11 @@
+env:
+  SkipSonarOnSnapshot: false
+  SkipCheckmarxOnSnapshot: false
+
+build:
+
+upload:
+
+deploy:
+  SnapshotEnvs: DSV
+  StartReleaseEnvs: HMG
