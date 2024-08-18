@@ -22,6 +22,7 @@ def test_positive_retrive(client_auth: TestClient, case_with_result: Case):
     assert body["id"] == case_with_result.id
     assert body["tag"] == case_with_result.tag
     assert body["user"] == case_with_result.user.id
+    assert body["description"] == case_with_result.description
     assert body["tencim_result_ids"] == [
         {
             "id": case_with_result.tencim_results[0].id,

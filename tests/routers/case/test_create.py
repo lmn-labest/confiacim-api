@@ -11,7 +11,10 @@ ROUTE_CREATE_NAME = "case_create"
 
 @pytest.mark.integration
 def test_positive_create(client_auth: TestClient, session, user: User):
-    payload = {"tag": "case_1"}
+    payload = {
+        "tag": "case_1",
+        "description": "Any description you want",
+    }
 
     resp = client_auth.post(
         app.url_path_for(ROUTE_CREATE_NAME),
@@ -25,12 +28,42 @@ def test_positive_create(client_auth: TestClient, session, user: User):
     assert case_db.id
     assert case_db.tag == payload["tag"]
     assert case_db.user == user
+    assert case_db.description == payload["description"]
 
     body = resp.json()
 
     assert body["id"] == case_db.id
     assert body["tag"] == case_db.tag
     assert body["user"] == case_db.id
+    assert body["description"] == case_db.description
+
+
+@pytest.mark.integration
+def test_positive_create_description_is_optional(client_auth: TestClient, session, user: User):
+    payload = {
+        "tag": "case_1",
+    }
+
+    resp = client_auth.post(
+        app.url_path_for(ROUTE_CREATE_NAME),
+        json=payload,
+    )
+
+    assert resp.status_code == status.HTTP_201_CREATED
+
+    case_db = session.scalars(select(Case)).first()
+
+    assert case_db.id
+    assert case_db.tag == payload["tag"]
+    assert case_db.user == user
+    assert case_db.description is None
+
+    body = resp.json()
+
+    assert body["id"] == case_db.id
+    assert body["tag"] == case_db.tag
+    assert body["user"] == case_db.id
+    assert body["description"] == case_db.description
 
 
 @pytest.mark.integration
