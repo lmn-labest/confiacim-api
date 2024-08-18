@@ -13,6 +13,7 @@ from confiacim_api.files_and_folders_handlers import (
     temporary_simulation_folder,
     unzip_tencim_case,
 )
+from confiacim_api.logger import logger
 from confiacim_api.models import ResultStatus, TencimResult
 
 
@@ -28,6 +29,8 @@ def get_simulation_base_dir(user_id: int) -> Path:
 
 @celery_app.task(bind=True, ignore_result=True)
 def tencim_standalone_run(self, result_id: int):
+
+    task_id = self.request.id
 
     with SessionFactory() as session:
         stmt = (
@@ -50,6 +53,7 @@ def tencim_standalone_run(self, result_id: int):
     if not base_dir.exists():
         base_dir.mkdir(parents=True)
 
+    logger.info(f"Task {task_id} - Extracting case files")
     tmp_dir = temporary_simulation_folder(base_dir)
     unzip_tencim_case(result.case, tmp_dir)
     input_base_dir = Path(tmp_dir.name)
@@ -62,6 +66,7 @@ def tencim_standalone_run(self, result_id: int):
         session.refresh(result)
 
     try:
+        logger.info(f"Task {task_id} - Running task ...")
         run(input_dir=input_base_dir, output_dir=None, verbose_level=0)
 
         result_tencim = read_rc_file(input_base_dir / "output/case_RC.txt")
@@ -71,8 +76,10 @@ def tencim_standalone_run(self, result_id: int):
         result.rankine_rc = result_tencim.rc_rankine.tolist()
         result.mohr_coulomb_rc = result_tencim.rc_mhor_coulomb.tolist()
         result.status = ResultStatus.SUCCESS
+        logger.info(f"Task {task_id} - Analysis completed.")
 
     except TencimRunError as e:
+        logger.warning(f"Task {task_id} - Tencim error.")
         result.error = str(e)
         result.status = ResultStatus.FAILED
         raise e
@@ -83,4 +90,6 @@ def tencim_standalone_run(self, result_id: int):
             session.commit()
             session.refresh(result)
 
+        logger.debug(f"Task {task_id} - Cleaning up the temporary directory...")
         clean_temporary_simulation_folder(tmp_dir)
+        logger.debug(f"Task {task_id} - Cleaned temporary directory.")
