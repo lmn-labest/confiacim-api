@@ -41,7 +41,7 @@ def case_create(
             detail="Case Tag name shoud be unique per user.",
         )
 
-    new_case = Case(tag=payload.tag, user=user)
+    new_case = Case(**payload.model_dump(exclude_unset=True), user=user)
 
     session.add(new_case)
     session.commit()

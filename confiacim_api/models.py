@@ -78,6 +78,7 @@ class Case(TimestampMixin, Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(back_populates="cases")
     base_file: Mapped[bytes] = mapped_column(LargeBinary, nullable=True)
+    description: Mapped[str] = mapped_column(Text, nullable=True)
 
     tencim_results: Mapped[list["TencimResult"]] = relationship(
         back_populates="case",

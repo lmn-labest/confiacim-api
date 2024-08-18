@@ -51,4 +51,10 @@ CREATE TABLE tencim_results (
 
 INSERT INTO alembic_version (version_num) VALUES ('f1232937d0c4') RETURNING alembic_version.version_num;
 
+-- Running upgrade f1232937d0c4 -> b2aac65bab92
+
+ALTER TABLE cases ADD COLUMN description TEXT;
+
+UPDATE alembic_version SET version_num='b2aac65bab92' WHERE alembic_version.version_num = 'f1232937d0c4';
+
 COMMIT;

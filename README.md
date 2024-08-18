@@ -140,3 +140,11 @@ Para atualizar o esquema do banco de dados é preciso fazer a modificação nece
 ```bash
 docker compose -f docker-compose-dev.yml build database
 ```
+
+## Migrações do banco de dados.
+
+Para criar a migração offline:
+
+```bash
+alembic upgrade head --sql > migrations/migrations.sql
+```
