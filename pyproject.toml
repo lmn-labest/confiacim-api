@@ -26,6 +26,7 @@ python-slugify = "^8.0.4"
 
 confiacim = {path = "packages/confiacim-0.12.0a0-py3-none-any.whl"}
 fastapi-pagination = "^0.12.26"
+loguru = "^0.7.2"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.2"
 black = "^24.4.2"
