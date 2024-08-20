@@ -12,6 +12,13 @@ services:
     depends_on:
       - api
 
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: '500M'
+
+
   redis-master:
     container_name: confiacim-api-redis-redis-master
     image: redis:7.2-alpine
@@ -19,6 +26,12 @@ services:
 
     networks:
       - internal_nw
+
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '250M'
 
   sentinel:
     container_name: confiacim-api-redis-sentinel
@@ -32,6 +45,12 @@ services:
 
     networks:
       - internal_nw
+
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '250M'
 
   database:
     container_name: confiacim-api-db
@@ -47,6 +66,12 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_USER=user
       - POSTGRES_DBS=confiacim_api, confiacim_api_test
+
+    deploy:
+      resources:
+        limits:
+          cpus: '3'
+          memory: '1G'
 
   api:
     container_name: confiacim-api
@@ -71,9 +96,15 @@ services:
       - database
       - sentinel
 
-  worker_1:
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '500M'
+
+  worker:
     image: confiacim_api:latest
-    command: celery -A confiacim_api.celery worker  -n 'worker@1' --concurrency=2 -l INFO
+    command: celery -A confiacim_api.celery worker  --concurrency=4 -l INFO
     restart: 'no'
     networks:
       - internal_nw
@@ -88,6 +119,12 @@ services:
       CONFIACIM_API_SENTINEL_MASTER_NAME: mymaster
       CONFIACIM_API_SENTINEL_HOST: sentinel
       CONFIACIM_API_JWT_SECRET_KEY: Chave Secreta JWT
+
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '500M'
 
   flower:
     image: confiacim_api:latest
@@ -106,6 +143,12 @@ services:
     command: celery -A confiacim_api.celery --broker=sentinel://sentinel:26379/0 flower --port=5555 --url-prefix=flower
     depends_on:
       - sentinel
+
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '200M'
 
 volumes:
   pg_data:
