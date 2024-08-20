@@ -142,5 +142,5 @@ server_api = {cmd="uvicorn confiacim_api.app:app --reload", help="Subindo o serv
 up_db = {cmd="docker compose -f docker-compose-dev.yml up database -d", help="Subindo o contanier do DB."}
 down_db = {cmd="docker compose -f docker-compose-dev.yml down database", help="Parando o contanier do DB."}
 
-up_services = {cmd="docker compose -f docker-compose-dev.yml up database sentinel redis-master worker_1 worker_2 flower -d", help="Subindo todos os serviços."}
-down_services = {cmd="docker compose -f docker-compose-dev.yml down database sentinel redis-master worker_1 worker_2 flower", help="Parando todos os serviços."}
+up_services = {cmd="docker compose -f docker-compose-dev.yml up database sentinel redis-master worker flower -d", help="Subindo todos os serviços."}
+down_services = {cmd="docker compose -f docker-compose-dev.yml down database sentinel redis-master worker flower", help="Parando todos os serviços."}
