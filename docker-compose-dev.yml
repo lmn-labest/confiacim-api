@@ -60,9 +60,9 @@ services:
       - database
       - sentinel
 
-  worker_1:
+  worker:
     image: confiacim_api:dev
-    command: watchfiles --filter python 'celery -A confiacim_api.celery worker  -n 'worker@1' --concurrency=2 -l INFO'
+    command: watchfiles --filter python 'celery -A confiacim_api.celery worker  --concurrency=2 -l INFO'
     depends_on:
       - sentinel
     volumes:
@@ -74,22 +74,6 @@ services:
       CONFIACIM_API_DB_NAME: confiacim_api
       CONFIACIM_API_SENTINEL_MASTER_NAME: mymaster
       CONFIACIM_API_SENTINEL_HOST: sentinel
-
-  worker_2:
-    image: confiacim_api:dev
-    command: watchfiles --filter python 'celery -A confiacim_api.celery worker  -n 'worker@2' --concurrency=2 -l INFO'
-    depends_on:
-      - sentinel
-    volumes:
-      - ./:/home/app/
-    environment:
-      WATCHFILES_FORCE_POLLING: true
-      CONFIACIM_API_DB_PASSWORD: password
-      CONFIACIM_API_DB_HOST: database
-      CONFIACIM_API_DB_NAME: confiacim_api
-      CONFIACIM_API_SENTINEL_MASTER_NAME: mymaster
-      CONFIACIM_API_SENTINEL_HOST: sentinel
-
 
   flower:
     image: confiacim_api:dev
