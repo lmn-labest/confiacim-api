@@ -1,5 +1,17 @@
 services:
 
+  nginx:
+    container_name: nginx-backend
+    restart: 'no'
+    build:
+      context: docker/nginx/
+    networks:
+      - internal_nw
+    ports:
+      - 80:80
+    depends_on:
+      - api
+
   redis-master:
     container_name: confiacim-api-redis-redis-master
     image: redis:7.2-alpine
@@ -41,17 +53,20 @@ services:
     build:
       dockerfile: ./Dockerfile.prod
     image: confiacim_api:latest
-    command: "gunicorn confiacim_api.app:app --workers 2 --log-level info --access-logfile '-' --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000"
+    command: "gunicorn confiacim_api.app:app --workers 3 --log-level info --access-logfile '-' --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000"
     restart: 'no'
     networks:
       - internal_nw
+
     environment:
-      DB_USER: user
-      DB_PASSWORD: password
-      DB_HOST: database
-      DB_NAME: confiacim_api
-      SENTINEL_MASTER_NAME: mymaster
-      SENTINEL_HOST: sentinel
+      CONFIACIM_API_DB_USER: user
+      CONFIACIM_API_DB_PASSWORD: password
+      CONFIACIM_API_DB_HOST: database
+      CONFIACIM_API_DB_NAME: confiacim_api
+      CONFIACIM_API_SENTINEL_MASTER_NAME: mymaster
+      CONFIACIM_API_SENTINEL_HOST: sentinel
+      CONFIACIM_API_JWT_SECRET_KEY: Chave Secreta JWT
+
     depends_on:
       - database
       - sentinel
@@ -66,40 +81,26 @@ services:
       - sentinel
 
     environment:
-      DB_USER: user
-      DB_PASSWORD: password
-      DB_HOST: database
-      DB_NAME: confiacim_api
-      SENTINEL_MASTER_NAME: mymaster
-      SENTINEL_HOST: sentinel
-
-  worker_2:
-    image: confiacim_api:latest
-    command: celery -A confiacim_api.celery worker  -n 'worker@2' --concurrency=2 -l INFO
-    restart: 'no'
-    networks:
-      - internal_nw
-    depends_on:
-      - sentinel
-
-    environment:
-      DB_USER: user
-      DB_PASSWORD: password
-      DB_HOST: database
-      DB_NAME: confiacim_api
-      SENTINEL_MASTER_NAME: mymaster
-      SENTINEL_HOST: sentinel
+      CONFIACIM_API_DB_USER: user
+      CONFIACIM_API_DB_PASSWORD: password
+      CONFIACIM_API_DB_HOST: database
+      CONFIACIM_API_DB_NAME: confiacim_api
+      CONFIACIM_API_SENTINEL_MASTER_NAME: mymaster
+      CONFIACIM_API_SENTINEL_HOST: sentinel
+      CONFIACIM_API_JWT_SECRET_KEY: Chave Secreta JWT
 
   flower:
     image: confiacim_api:latest
     restart: 'no'
     environment:
-      DB_USER: user
-      DB_PASSWORD: password
-      DB_HOST: database
-      DB_NAME: confiacim_api
-      SENTINEL_MASTER_NAME: mymaster
-      SENTINEL_HOST: sentinel
+      CONFIACIM_API_DB_USER: user
+      CONFIACIM_API_DB_PASSWORD: password
+      CONFIACIM_API_DB_HOST: database
+      CONFIACIM_API_DB_NAME: confiacim_api
+      CONFIACIM_API_SENTINEL_MASTER_NAME: mymaster
+      CONFIACIM_API_SENTINEL_HOST: sentinel
+      CONFIACIM_API_JWT_SECRET_KEY: Chave Secreta JWT
+
     networks:
       - internal_nw
     command: celery -A confiacim_api.celery --broker=sentinel://sentinel:26379/0 flower --port=5555 --url-prefix=flower
@@ -111,4 +112,3 @@ volumes:
 
 networks:
   internal_nw:
-    name: "confiacim_internal_nw"
