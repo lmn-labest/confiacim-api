@@ -90,6 +90,7 @@ services:
       CONFIACIM_API_SENTINEL_MASTER_NAME: mymaster
       CONFIACIM_API_SENTINEL_HOST: sentinel
 
+
   flower:
     image: confiacim_api:dev
     volumes:
@@ -100,6 +101,7 @@ services:
       CONFIACIM_API_DB_NAME: confiacim_api
       CONFIACIM_API_SENTINEL_MASTER_NAME: mymaster
       CONFIACIM_API_SENTINEL_HOST: sentinel
+      CONFIACIM_API_JWT_SECRET_KEY: Chave Secreta JWT
 
     command: celery -A confiacim_api.celery --broker=sentinel://sentinel:26379/0 flower --port=5555 --url-prefix=flower
 
