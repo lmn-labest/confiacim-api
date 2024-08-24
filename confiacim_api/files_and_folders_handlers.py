@@ -6,6 +6,8 @@ from zipfile import ZipFile
 
 from confiacim_api.models import Case
 
+NO_CLIP_RC = "nocliprc"
+
 
 def temporary_simulation_folder(origin_dir: Path) -> TemporaryDirectory:
     """
@@ -49,3 +51,19 @@ def unzip_tencim_case(case: Case, tmp_dir: TemporaryDirectory):
     """
     file_like = BytesIO(case.base_file)
     unzip_file(file_like, tmp_dir)
+
+
+def add_nocliprc_macro(case_file_str: str) -> str:
+    """
+    Add a macro nocliprc no conteudo arquivo case.dat
+
+    Parameters:
+        case_file_str: Conteudo do arquivo case.dat
+
+    Returns:
+        Returna o conteudo com a macro nocliprc.
+    """
+    if NO_CLIP_RC in case_file_str:
+        return case_file_str
+
+    return case_file_str.replace("end mesh", f"end mesh\n{NO_CLIP_RC}\n")
