@@ -10,6 +10,7 @@ from confiacim_api.celery import celery_app
 from confiacim_api.database import SessionFactory
 from confiacim_api.files_and_folders_handlers import (
     clean_temporary_simulation_folder,
+    rewrite_case_file,
     temporary_simulation_folder,
     unzip_tencim_case,
 )
@@ -28,7 +29,7 @@ def get_simulation_base_dir(user_id: int) -> Path:
 
 
 @celery_app.task(bind=True, ignore_result=True)
-def tencim_standalone_run(self, result_id: int):
+def tencim_standalone_run(self, result_id: int, **options):
 
     task_id = self.request.id
 
@@ -53,9 +54,15 @@ def tencim_standalone_run(self, result_id: int):
     if not base_dir.exists():
         base_dir.mkdir(parents=True)
 
-    logger.info(f"Task {task_id} - Extracting case files")
+    logger.info(f"Task {task_id} - Extracting case files ...")
     tmp_dir = temporary_simulation_folder(base_dir)
     unzip_tencim_case(result.case, tmp_dir)
+    logger.info(f"Task {task_id} - Extract.")
+
+    logger.info(f"Task {task_id} - Writing case file ...")
+    rewrite_case_file(task_id=task_id, case_path=Path(tmp_dir.name) / "case.dat", **options)
+    logger.info(f"Task {task_id} - Write.")
+
     input_base_dir = Path(tmp_dir.name)
 
     with SessionFactory() as session:

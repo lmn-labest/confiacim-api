@@ -10,6 +10,7 @@ end mesh
 tmaxnlit 200
 maxnlit 200
 solvtrac 0
+nocliprc
 dt    1e-8
 loop    1
     solvt

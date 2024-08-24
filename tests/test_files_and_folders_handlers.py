@@ -1,5 +1,7 @@
+import shutil
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from uuid import uuid4
 
 import pytest
 from sqlalchemy import select
@@ -7,6 +9,7 @@ from sqlalchemy import select
 from confiacim_api.files_and_folders_handlers import (
     add_nocliprc_macro,
     clean_temporary_simulation_folder,
+    rewrite_case_file,
     temporary_simulation_folder,
     unzip_file,
     unzip_tencim_case,
@@ -100,7 +103,7 @@ def test_unzip_tencim_case_from_db(session, user, tmp_path):
 @pytest.mark.unit
 def test_case_file_with_nocliprc_macro():
 
-    with open("tests/fixtures/case_nocliprc.dat") as fp:
+    with open("tests/fixtures/case.dat") as fp:
         case_file = fp.read()
 
     new_file = add_nocliprc_macro(case_file)
@@ -111,7 +114,7 @@ def test_case_file_with_nocliprc_macro():
 @pytest.mark.unit
 def test_case_file_must_have_only_one_nocliprc_macro():
 
-    with open("tests/fixtures/case.dat") as fp:
+    with open("tests/fixtures/case_nocliprc.dat") as fp:
         case_file = fp.read()
 
     assert case_file.count("nocliprc") == 1
@@ -119,3 +122,31 @@ def test_case_file_must_have_only_one_nocliprc_macro():
     new_file = add_nocliprc_macro(case_file)
 
     assert new_file.count("nocliprc") == 1
+
+
+@pytest.mark.integration
+def test_rewrite_case_file(tmp_path):
+
+    shutil.copy2("tests/fixtures/case.dat", tmp_path)
+
+    case_path = tmp_path / "case.dat"
+
+    assert "nocliprc" not in case_path.read_text()
+
+    rewrite_case_file(task_id=uuid4(), case_path=case_path, rc_limit=True)
+
+    assert case_path.read_text().count("nocliprc") == 1
+
+
+@pytest.mark.integration
+def test_not_rewrite_case_file(tmp_path):
+
+    shutil.copy2("tests/fixtures/case.dat", tmp_path)
+
+    case_path = tmp_path / "case.dat"
+
+    assert "nocliprc" not in case_path.read_text()
+
+    rewrite_case_file(task_id=uuid4(), case_path=case_path, rc_limit=False)
+
+    assert "nocliprc" not in case_path.read_text()
