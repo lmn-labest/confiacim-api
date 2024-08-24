@@ -5,6 +5,7 @@ import pytest
 from sqlalchemy import select
 
 from confiacim_api.files_and_folders_handlers import (
+    add_nocliprc_macro,
     clean_temporary_simulation_folder,
     temporary_simulation_folder,
     unzip_file,
@@ -94,3 +95,27 @@ def test_unzip_tencim_case_from_db(session, user, tmp_path):
     }
 
     assert list_dir == expected
+
+
+@pytest.mark.unit
+def test_case_file_with_nocliprc_macro():
+
+    with open("tests/fixtures/case_nocliprc.dat") as fp:
+        case_file = fp.read()
+
+    new_file = add_nocliprc_macro(case_file)
+
+    assert "end mesh\nnocliprc\n" in new_file
+
+
+@pytest.mark.unit
+def test_case_file_must_have_only_one_nocliprc_macro():
+
+    with open("tests/fixtures/case.dat") as fp:
+        case_file = fp.read()
+
+    assert case_file.count("nocliprc") == 1
+
+    new_file = add_nocliprc_macro(case_file)
+
+    assert new_file.count("nocliprc") == 1

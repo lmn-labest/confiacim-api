@@ -1,0 +1,113 @@
+mesh
+    nnode 83 numel 82 numat 4 ndf 1 therm 1 maxno 2 dim 1 npi 3
+    insert gamma/materials.dat
+    insert gamma/mesh.dat
+    insert gamma/initialtemperature.dat
+    insert gamma/initialstress.dat
+    insert gamma/loads.dat
+    insert gamma/adiabat.dat
+end mesh
+tmaxnlit 200
+maxnlit 200
+solvtrac 0
+dt    1e-8
+loop    1
+    solvt
+     solvm
+next
+dt    0.1
+loop    1000
+    solvt
+     solvm
+next
+dt    1
+loop    20
+    solvt
+     solvm
+next
+dt    2
+loop    20
+    solvt
+     solvm
+next
+dt    5
+loop    18
+    solvt
+     solvm
+next
+dt    10
+loop    20
+    solvt
+     solvm
+next
+dt    20
+loop    20
+    solvt
+     solvm
+next
+dt    25
+loop    24162
+    solvt
+     solvm
+next
+dt    1
+loop    20
+    solvt
+     solvm
+next
+dt    2
+loop    20
+    solvt
+     solvm
+next
+dt    5
+loop    18
+    solvt
+     solvm
+next
+dt    10
+loop    20
+    solvt
+     solvm
+next
+dt    20
+loop    20
+    solvt
+     solvm
+next
+dt    25
+loop    3426
+    solvt
+     solvm
+next
+dt    1
+loop    20
+    solvt
+     solvm
+next
+dt    2
+loop    20
+    solvt
+     solvm
+next
+dt    5
+loop    18
+    solvt
+     solvm
+next
+dt    10
+loop    20
+    solvt
+     solvm
+next
+dt    20
+loop    20
+    solvt
+     solvm
+next
+dt    25
+loop    2426
+    solvt
+     solvm
+next
+stop
