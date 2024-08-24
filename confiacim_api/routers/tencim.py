@@ -12,7 +12,7 @@ from confiacim_api.schemes import (
     TencimResultDetail,
     TencimResultStatus,
 )
-from confiacim_api.schemes.tencim import TencimResultError, TencimResultSummary
+from confiacim_api.schemes.tencim import TencimOptions, TencimResultError, TencimResultSummary
 from confiacim_api.security import CurrentUser
 from confiacim_api.tasks import tencim_standalone_run as tencim_run
 from confiacim_api.write_csv import write_rc_result_to_csv
@@ -113,6 +113,7 @@ def tencim_result_delete(
 def tencim_standalone_run(
     session: ActiveSession,
     case_id: int,
+    options: TencimOptions,
     user: CurrentUser,
 ):
     """Envia uma simulação do `tencim` do caso `case_id` para a fila execução"""
@@ -136,7 +137,7 @@ def tencim_standalone_run(
     session.commit()
     session.refresh(result)
 
-    task = tencim_run.delay(result.id)
+    task = tencim_run.delay(result_id=result.id, **options.model_dump(exclude_unset=True))
 
     return {
         "task_id": task.id,

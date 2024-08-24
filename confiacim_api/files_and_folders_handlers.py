@@ -2,8 +2,10 @@ from io import BytesIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import BinaryIO
+from uuid import UUID
 from zipfile import ZipFile
 
+from confiacim_api.logger import logger
 from confiacim_api.models import Case
 
 NO_CLIP_RC = "nocliprc"
@@ -66,4 +68,28 @@ def add_nocliprc_macro(case_file_str: str) -> str:
     if NO_CLIP_RC in case_file_str:
         return case_file_str
 
-    return case_file_str.replace("end mesh", f"end mesh\n{NO_CLIP_RC}\n")
+    return case_file_str.replace("end mesh\n", f"end mesh\n{NO_CLIP_RC}\n")
+
+
+def rewrite_case_file(*, task_id: UUID, case_path: Path, rc_limit: bool = True):
+    """
+    Reescreve o arquivo case.dat
+
+    Args:
+        task_id: id da task celerey
+        case_path: caminho do arquivo case.dat
+        rc_limite: add a macro nocliprc.
+    """
+
+    if rc_limit:
+        logger.info(f"Task {task_id} - Writng case file with norcclip ...")
+
+        with open(case_path, encoding="utf-8") as fp:
+            file_case = fp.read()
+
+        file_case = add_nocliprc_macro(file_case)
+
+        with open(case_path, mode="w", encoding="utf-8") as fp:
+            fp.write(file_case)
+
+        logger.info(f"Task {task_id} - Write.")
