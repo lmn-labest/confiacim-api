@@ -141,10 +141,24 @@ Para atualizar o esquema do banco de dados é preciso fazer a modificação nece
 docker compose -f docker-compose-dev.yml build database
 ```
 
-## Migrações do banco de dados.
+## Migrações do banco de dados
 
 Para criar a migração offline:
 
 ```bash
 alembic upgrade head --sql > migrations/migrations.sql
+```
+
+## Deploy na Petrobras
+
+Para gerar o arquivo requirements.txt necessario basta:
+
+```bash
+poetry export > requirements.txt
+```
+
+Depois é preciso alter manualmente entrada do `confiacim` para algo como:
+
+```bash
+confiacim @ file:./packages/confiacim-0.12.0a0-py3-none-any.whl ; python_version >= "3.11" and python_version < "3.12" \
 ```
