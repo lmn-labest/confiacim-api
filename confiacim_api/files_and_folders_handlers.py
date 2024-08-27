@@ -71,25 +71,52 @@ def add_nocliprc_macro(case_file_str: str) -> str:
     return case_file_str.replace("end mesh\n", f"end mesh\n{NO_CLIP_RC}\n")
 
 
-def rewrite_case_file(*, task_id: UUID, case_path: Path, rc_limit: bool = True):
+def rm_setpnode_and_setptime(case_file_str: str) -> str:
+    """
+    Remove as macros setpnode e setptime do conteudo arquivo case.dat
+
+    Parameters:
+        case_file_str: Conteudo do arquivo case.dat
+
+    Returns:
+        Returna o conteudo com as macros removidas setpnode e setptime.
+    """
+
+    return "\n".join(line for line in case_file_str.split("\n") if "setpnode" not in line and "setptime" not in line)
+
+
+def rewrite_case_file(
+    *,
+    task_id: UUID,
+    case_path: Path,
+    rc_limit: bool = True,
+    setpnode_and_setptime: bool = True,
+):
     """
     Reescreve o arquivo case.dat
 
     Args:
         task_id: id da task celerey
         case_path: caminho do arquivo case.dat
-        rc_limite: add a macro nocliprc.
+        rc_limit: add a macro nocliprc.
+        setpnode_and_time: retira as macros setpnode e setptime
     """
 
+    with open(case_path, encoding="utf-8") as fp:
+        new_file_case = fp.read()
+
+    is_new_file = False
+
     if rc_limit:
-        logger.info(f"Task {task_id} - Writng case file with norcclip ...")
+        logger.info(f"Task {task_id} - Removing norcclip ...")
+        new_file_case = add_nocliprc_macro(new_file_case)
+        is_new_file = True
 
-        with open(case_path, encoding="utf-8") as fp:
-            file_case = fp.read()
+    if setpnode_and_setptime:
+        logger.info(f"Task {task_id} - Removing setpnode and setptime ...")
+        new_file_case = rm_setpnode_and_setptime(new_file_case)
+        is_new_file = True
 
-        file_case = add_nocliprc_macro(file_case)
-
+    if is_new_file:
         with open(case_path, mode="w", encoding="utf-8") as fp:
-            fp.write(file_case)
-
-        logger.info(f"Task {task_id} - Write.")
+            fp.write(new_file_case)
