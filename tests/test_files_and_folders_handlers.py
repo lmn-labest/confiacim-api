@@ -10,6 +10,7 @@ from confiacim_api.files_and_folders_handlers import (
     add_nocliprc_macro,
     clean_temporary_simulation_folder,
     rewrite_case_file,
+    rm_setpnode_and_setptime,
     temporary_simulation_folder,
     unzip_file,
     unzip_tencim_case,
@@ -124,8 +125,8 @@ def test_case_file_must_have_only_one_nocliprc_macro():
     assert new_file.count("nocliprc") == 1
 
 
-@pytest.mark.integration
-def test_rewrite_case_file(tmp_path):
+@pytest.mark.unit
+def test_rewrite_case_file_with_nocliprc(tmp_path):
 
     shutil.copy2("tests/fixtures/case.dat", tmp_path)
 
@@ -138,7 +139,7 @@ def test_rewrite_case_file(tmp_path):
     assert case_path.read_text().count("nocliprc") == 1
 
 
-@pytest.mark.integration
+@pytest.mark.unit
 def test_not_rewrite_case_file(tmp_path):
 
     shutil.copy2("tests/fixtures/case.dat", tmp_path)
@@ -150,3 +151,56 @@ def test_not_rewrite_case_file(tmp_path):
     rewrite_case_file(task_id=uuid4(), case_path=case_path, rc_limit=False)
 
     assert "nocliprc" not in case_path.read_text()
+
+
+@pytest.mark.unit
+def test_rewrite_case_file_without_setpnode_and_setptime(tmp_path):
+
+    shutil.copy2("tests/fixtures/case.dat", tmp_path)
+
+    case_path = tmp_path / "case.dat"
+
+    content = case_path.read_text()
+
+    assert "setpnode" in content
+    assert "setptime" in content
+
+    rewrite_case_file(task_id=uuid4(), case_path=case_path, setpnode_and_setptime=True)
+
+    content = case_path.read_text()
+    assert "setpnode" not in content
+    assert "setptime" not in content
+
+
+@pytest.mark.unit
+def test_rewrite_case_file_with_nocliprc_without_setpnode_and_setptime(tmp_path):
+
+    shutil.copy2("tests/fixtures/case.dat", tmp_path)
+
+    case_path = tmp_path / "case.dat"
+
+    content = case_path.read_text()
+
+    assert "nocliprc" not in content
+    assert "setpnode" in content
+    assert "setptime" in content
+
+    rewrite_case_file(task_id=uuid4(), case_path=case_path)
+
+    content = case_path.read_text()
+
+    assert "nocliprc" in content
+    assert "setpnode" not in content
+    assert "setptime" not in content
+
+
+@pytest.mark.unit
+def test_rm_setpnode_and_setptime():
+
+    with open("tests/fixtures/case.dat") as fp:
+        case_file = fp.read()
+
+    new_file = rm_setpnode_and_setptime(case_file)
+
+    assert "setpnode" not in new_file
+    assert "setptime" not in new_file
