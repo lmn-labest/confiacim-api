@@ -7,6 +7,8 @@ mesh
     insert gamma/loads.dat
     insert gamma/adiabat.dat
 end mesh
+setpnode setpnode.dat
+setptime setptime.dat
 tmaxnlit 200
 maxnlit 200
 solvtrac 0
