@@ -44,12 +44,29 @@ def test_positive_run(
 
 
 @pytest.mark.integration
+@pytest.mark.parametrize(
+    "value, boolean",
+    [
+        ("True", True),
+        ("true", True),
+        ("T", True),
+        ("t", True),
+        (1, True),
+        ("False", False),
+        ("false", False),
+        ("F", False),
+        ("f", False),
+        (0, False),
+    ],
+)
 def test_positive_run_with_rc_limit(
     client_auth: TestClient,
     session,
     mocker,
     user: User,
     case_with_file: Case,
+    value,
+    boolean,
 ):
     task = MagicMock()
     task.id = str(uuid4())
@@ -59,14 +76,14 @@ def test_positive_run_with_rc_limit(
         return_value=task,
     )
 
-    payload = {"rc_limit": True}
+    payload = {"rc_limit": value}
 
     resp = client_auth.post(app.url_path_for(ROUTE_NAME, case_id=case_with_file.id), json=payload)
 
     assert resp.status_code == status.HTTP_200_OK
 
     tencim_standalone_run_mocker.assert_called_once()
-    tencim_standalone_run_mocker.assert_called_with(result_id=1, rc_limit=True)
+    tencim_standalone_run_mocker.assert_called_with(result_id=1, rc_limit=boolean)
 
     body = resp.json()
 
