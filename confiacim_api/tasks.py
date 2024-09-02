@@ -58,7 +58,6 @@ def tencim_standalone_run(self, result_id: int, **options):
     tmp_dir = temporary_simulation_folder(base_dir)
     unzip_tencim_case(result.case, tmp_dir)
     logger.info(f"Task {task_id} - Extract.")
-
     logger.info(f"Task {task_id} - Writing case file ...")
     rewrite_case_file(task_id=task_id, case_path=Path(tmp_dir.name) / "case.dat", **options)
     logger.info(f"Task {task_id} - Write.")

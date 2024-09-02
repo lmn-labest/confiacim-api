@@ -9,6 +9,7 @@ from sqlalchemy import select
 from confiacim_api.files_and_folders_handlers import (
     add_nocliprc_macro,
     clean_temporary_simulation_folder,
+    new_time_loop,
     rewrite_case_file,
     rm_setpnode_and_setptime,
     temporary_simulation_folder,
@@ -16,6 +17,14 @@ from confiacim_api.files_and_folders_handlers import (
     unzip_tencim_case,
 )
 from confiacim_api.models import Case
+from tests.constants import (
+    CASE_FILE,
+    NEW_CASE_FILE_LAST_STEP_3,
+    RES_CASE_FILE_1,
+    RES_CASE_FILE_2,
+    RES_CASE_FILE_3,
+    RES_CASE_FILE_4,
+)
 
 
 @pytest.mark.integration
@@ -204,3 +213,40 @@ def test_rm_setpnode_and_setptime():
 
     assert "setpnode" not in new_file
     assert "setptime" not in new_file
+
+
+def test_rewrite_case_file_with_new_loop_time(tmp_path):
+
+    shutil.copy2("tests/fixtures/case.dat", tmp_path)
+
+    case_path = tmp_path / "case.dat"
+
+    content = case_path.read_text()
+
+    assert "nocliprc" not in content
+    assert "setpnode" in content
+    assert "setptime" in content
+
+    rewrite_case_file(task_id=uuid4(), case_path=case_path, last_step=3)
+
+    content = case_path.read_text()
+
+    assert content == NEW_CASE_FILE_LAST_STEP_3
+
+
+@pytest.mark.parametrize(
+    "last_step, result_file",
+    [
+        (1, RES_CASE_FILE_1),
+        (9, RES_CASE_FILE_2),
+        (11, RES_CASE_FILE_3),
+        (20, RES_CASE_FILE_4),
+        (100, CASE_FILE),
+    ],
+    ids=["step 1", "step 9", "step 11", "step 20", "step 100"],
+)
+def test_new_time_loop(last_step: int, result_file):
+
+    new_case = new_time_loop(case_file_str=CASE_FILE, last_step=last_step)
+
+    assert new_case == result_file
