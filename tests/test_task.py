@@ -69,6 +69,24 @@ def test_positive_tencim_standalone_run_rc_limit(
     assert result_from_db.status == ResultStatus.SUCCESS
 
 
+@pytest.mark.slow
+@pytest.mark.integration
+def test_positive_tencim_standalone_run_new_last_step(
+    tencim_results: TencimResult,
+    session_factory,
+    mocker,
+    tmp_path,
+):
+
+    mocker.patch("confiacim_api.tasks.get_simulation_base_dir", return_value=tmp_path)
+    tencim_standalone_run(tencim_results.id, last_step=100)
+
+    with session_factory as session:
+        result_from_db = session.get(TencimResult, tencim_results.id)
+
+    assert result_from_db.status == ResultStatus.SUCCESS
+
+
 @pytest.mark.integration
 def test_negative_tencim_standalone_run_tencim_error(
     tencim_results_case_fail: Case,

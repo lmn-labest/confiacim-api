@@ -77,14 +77,81 @@ def test_positive_run_with_rc_limit(
 
 
 @pytest.mark.integration
-def test_negative_run_invalid_payload(
+def test_positive_run_with_last_step(
     client_auth: TestClient,
+    session,
+    mocker,
+    user: User,
     case_with_file: Case,
 ):
     task = MagicMock()
     task.id = str(uuid4())
 
-    payload = {"rc_limit": "dd"}
+    tencim_standalone_run_mocker = mocker.patch(
+        "confiacim_api.routers.tencim.tencim_run.delay",
+        return_value=task,
+    )
+
+    payload = {"last_step": 100}
+
+    resp = client_auth.post(app.url_path_for(ROUTE_NAME, case_id=case_with_file.id), json=payload)
+
+    assert resp.status_code == status.HTTP_200_OK
+
+    tencim_standalone_run_mocker.assert_called_once()
+    tencim_standalone_run_mocker.assert_called_with(result_id=1, last_step=100)
+
+    body = resp.json()
+
+    result = session.scalars(select(TencimResult)).one()
+
+    assert body["result_id"] == result.id
+    assert body["task_id"] == task.id
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize(
+    "key, value, msg, type",
+    [
+        (
+            "rc_limit",
+            "dd",
+            "Input should be a valid boolean, unable to interpret input",
+            "bool_parsing",
+        ),
+        (
+            "last_step",
+            "dd",
+            "Input should be a valid integer, unable to parse string as an integer",
+            "int_parsing",
+        ),
+        (
+            "last_step",
+            "-1",
+            "Input should be greater than 0",
+            "greater_than",
+        ),
+        (
+            "last_step",
+            "0",
+            "Input should be greater than 0",
+            "greater_than",
+        ),
+    ],
+    ids=["rc limit invalid type", "last_step invalid type", "last_step invalid value -1", "last_step invalid value 0"],
+)
+def test_negative_run_invalid_payload(
+    client_auth: TestClient,
+    case_with_file: Case,
+    key: str,
+    value: str,
+    msg: str,
+    type: str,
+):
+    task = MagicMock()
+    task.id = str(uuid4())
+
+    payload = {key: value}
 
     resp = client_auth.post(app.url_path_for(ROUTE_NAME, case_id=case_with_file.id), json=payload)
 
@@ -93,10 +160,10 @@ def test_negative_run_invalid_payload(
     assert resp.json() == {
         "detail": [
             {
-                "input": "dd",
-                "loc": ["body", "rc_limit"],
-                "msg": "Input should be a valid boolean, unable to interpret input",
-                "type": "bool_parsing",
+                "input": value,
+                "loc": ["body", key],
+                "msg": msg,
+                "type": type,
             }
         ]
     }

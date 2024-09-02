@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, PositiveInt
 
 from confiacim_api.models import ResultStatus
 
@@ -41,3 +41,4 @@ class TencimResultError(BaseModel):
 
 class TencimOptions(BaseModel):
     rc_limit: Optional[bool] = None
+    last_step: Optional[PositiveInt] = None
