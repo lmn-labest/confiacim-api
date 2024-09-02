@@ -1,9 +1,11 @@
 from io import BytesIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import BinaryIO
+from typing import BinaryIO, Optional
 from uuid import UUID
 from zipfile import ZipFile
+
+from confiacim.tencim.deterministic import new_case_with_until_the_step
 
 from confiacim_api.logger import logger
 from confiacim_api.models import Case
@@ -91,11 +93,12 @@ def rewrite_case_file(
     case_path: Path,
     rc_limit: bool = True,
     setpnode_and_setptime: bool = True,
+    last_step: Optional[int] = None,
 ):
     """
     Reescreve o arquivo case.dat
 
-    Args:
+    Parameters:
         task_id: id da task celerey
         case_path: caminho do arquivo case.dat
         rc_limit: add a macro nocliprc.
@@ -117,6 +120,30 @@ def rewrite_case_file(
         new_file_case = rm_setpnode_and_setptime(new_file_case)
         is_new_file = True
 
+    if last_step:
+        logger.info(f"Task {task_id} - Novo loop de tempo até passo {last_step} ...")
+        new_file_case = new_time_loop(new_file_case, last_step)
+        is_new_file = True
+
     if is_new_file:
+        logger.debug(f"Task {task_id} - Writing the new file in disk ...")
         with open(case_path, mode="w", encoding="utf-8") as fp:
             fp.write(new_file_case)
+
+
+def new_time_loop(case_file_str: str, last_step: int) -> str:
+    """
+    Gera case truncado no new_last_step
+
+    Danger:
+        Caso `new_last_step` seja maior que o número de passos do caso original
+        será mantido o valor inicial. Não será criado mais blocos `loop-next` do `tencim`.
+
+    Parameters:
+        case_data_str: Conteudo do Arquivo de `case.dat` não forma de `str`.
+        new_last_step: Novo ultimo passo de tempo.
+
+    Returns:
+        Retorna no novo conteudo do arquivo `case.dat`.
+    """
+    return new_case_with_until_the_step(case_data_str=case_file_str, new_last_step=last_step)
