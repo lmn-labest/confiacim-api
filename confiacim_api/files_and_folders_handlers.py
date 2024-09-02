@@ -73,6 +73,22 @@ def add_nocliprc_macro(case_file_str: str) -> str:
     return case_file_str.replace("end mesh\n", f"end mesh\n{NO_CLIP_RC}\n")
 
 
+def rm_nocliprc_macro(case_file_str: str) -> str:
+    """
+    Add a macro nocliprc no conteudo arquivo case.dat
+
+    Parameters:
+        case_file_str: Conteudo do arquivo case.dat
+
+    Returns:
+        Returna o conteudo com a macro nocliprc.
+    """
+    if NO_CLIP_RC not in case_file_str:
+        return case_file_str
+
+    return case_file_str.replace(f"{NO_CLIP_RC}\n", "")
+
+
 def rm_setpnode_and_setptime(case_file_str: str) -> str:
     """
     Remove as macros setpnode e setptime do conteudo arquivo case.dat
@@ -91,7 +107,7 @@ def rewrite_case_file(
     *,
     task_id: UUID,
     case_path: Path,
-    rc_limit: bool = True,
+    rc_limit: bool = False,
     setpnode_and_setptime: bool = True,
     last_step: Optional[int] = None,
 ):
@@ -112,6 +128,10 @@ def rewrite_case_file(
 
     if rc_limit:
         logger.info(f"Task {task_id} - Removing norcclip ...")
+        new_file_case = rm_nocliprc_macro(new_file_case)
+        is_new_file = True
+    else:
+        logger.info(f"Task {task_id} - Add norcclip ...")
         new_file_case = add_nocliprc_macro(new_file_case)
         is_new_file = True
 
