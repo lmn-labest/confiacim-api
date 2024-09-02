@@ -40,5 +40,5 @@ class TencimResultError(BaseModel):
 
 
 class TencimOptions(BaseModel):
-    rc_limit: Optional[bool] = None
+    rc_limit: bool = False
     last_step: Optional[PositiveInt] = None

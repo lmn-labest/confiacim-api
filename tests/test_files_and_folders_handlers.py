@@ -11,6 +11,7 @@ from confiacim_api.files_and_folders_handlers import (
     clean_temporary_simulation_folder,
     new_time_loop,
     rewrite_case_file,
+    rm_nocliprc_macro,
     rm_setpnode_and_setptime,
     temporary_simulation_folder,
     unzip_file,
@@ -111,14 +112,29 @@ def test_unzip_tencim_case_from_db(session, user, tmp_path):
 
 
 @pytest.mark.unit
-def test_case_file_with_nocliprc_macro():
+def test_add_nocliprc_macro():
 
     with open("tests/fixtures/case.dat") as fp:
         case_file = fp.read()
 
+    assert "nocliprc\n" not in case_file
+
     new_file = add_nocliprc_macro(case_file)
 
     assert "end mesh\nnocliprc\n" in new_file
+
+
+@pytest.mark.unit
+def test_remove_nocliprc_macro():
+
+    with open("tests/fixtures/case_nocliprc.dat") as fp:
+        case_file = fp.read()
+
+    assert "nocliprc\n" in case_file
+
+    new_file = rm_nocliprc_macro(case_file)
+
+    assert "nocliprc\n" not in new_file
 
 
 @pytest.mark.unit
@@ -143,23 +159,9 @@ def test_rewrite_case_file_with_nocliprc(tmp_path):
 
     assert "nocliprc" not in case_path.read_text()
 
-    rewrite_case_file(task_id=uuid4(), case_path=case_path, rc_limit=True)
-
-    assert case_path.read_text().count("nocliprc") == 1
-
-
-@pytest.mark.unit
-def test_not_rewrite_case_file(tmp_path):
-
-    shutil.copy2("tests/fixtures/case.dat", tmp_path)
-
-    case_path = tmp_path / "case.dat"
-
-    assert "nocliprc" not in case_path.read_text()
-
     rewrite_case_file(task_id=uuid4(), case_path=case_path, rc_limit=False)
 
-    assert "nocliprc" not in case_path.read_text()
+    assert case_path.read_text().count("nocliprc") == 1
 
 
 @pytest.mark.unit
