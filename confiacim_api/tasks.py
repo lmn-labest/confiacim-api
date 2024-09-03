@@ -8,6 +8,7 @@ from sqlalchemy.orm import joinedload
 
 from confiacim_api.celery import celery_app
 from confiacim_api.database import SessionFactory
+from confiacim_api.errors import ResultNotFound, TaskFileCaseNotFound
 from confiacim_api.files_and_folders_handlers import (
     clean_temporary_simulation_folder,
     rewrite_case_file,
@@ -16,12 +17,6 @@ from confiacim_api.files_and_folders_handlers import (
 )
 from confiacim_api.logger import logger
 from confiacim_api.models import ResultStatus, TencimResult
-
-
-class TaskFileCaseNotFound(Exception): ...
-
-
-class ResultNotFound(Exception): ...
 
 
 def get_simulation_base_dir(user_id: int) -> Path:

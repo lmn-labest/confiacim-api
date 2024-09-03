@@ -139,5 +139,19 @@ loop 2
 solvt
 solvm
 next
-stop\
-"""
+stop"""
+
+MATERIALS_FILE = """\
+materials
+    1 1 1.999e+11 0.3000 1.400e-05 0 0 4.292e+01 3.894e+06 0 0 0
+    2 2 1.000e+10 0.3100 0 0 0 3.360e+00
+    3 1 1.0190e+10 0.3200 9.810e-06 0 7 3.360e+00 2.077e+06 0 1 0 3.200e+06 1.500e+01 2.540e+07 0 0 0 0 0 0 3 8 3.000e-03
+    4 1 2.040e+10 0.3600 1.000e-05 0 0 6.006e+00 1.901e+06 0 0 0
+end materials
+return"""  # noqa: E501
+
+WRONG_MAT_NUMBER_MATERIALS_FILE = """\
+materials
+    d 1 1.999e+11 0.3000 1.400e-05 0 0 4.292e+01 3.894e+06 0 0 0
+end materials
+return"""

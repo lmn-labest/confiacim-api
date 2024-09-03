@@ -1,15 +1,23 @@
+import re
 import shutil
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from textwrap import dedent
 from uuid import uuid4
 
 import pytest
 from sqlalchemy import select
 
+from confiacim_api.errors import (
+    MaterialsFileEmptyError,
+    MaterialsFileValueError,
+)
 from confiacim_api.files_and_folders_handlers import (
     add_nocliprc_macro,
     clean_temporary_simulation_folder,
+    extract_materials_infos,
     new_time_loop,
+    read_materials_file,
     rewrite_case_file,
     rm_nocliprc_macro,
     rm_setpnode_and_setptime,
@@ -20,6 +28,7 @@ from confiacim_api.files_and_folders_handlers import (
 from confiacim_api.models import Case
 from tests.constants import (
     CASE_FILE,
+    MATERIALS_FILE,
     NEW_CASE_FILE_LAST_STEP_3,
     RES_CASE_FILE_1,
     RES_CASE_FILE_2,
@@ -217,6 +226,7 @@ def test_rm_setpnode_and_setptime():
     assert "setptime" not in new_file
 
 
+@pytest.mark.unit
 def test_rewrite_case_file_with_new_loop_time(tmp_path):
 
     shutil.copy2("tests/fixtures/case.dat", tmp_path)
@@ -236,6 +246,7 @@ def test_rewrite_case_file_with_new_loop_time(tmp_path):
     assert content == NEW_CASE_FILE_LAST_STEP_3
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize(
     "last_step, result_file",
     [
@@ -252,3 +263,70 @@ def test_new_time_loop(last_step: int, result_file):
     new_case = new_time_loop(case_file_str=CASE_FILE, last_step=last_step)
 
     assert new_case == result_file
+
+
+@pytest.mark.unit
+def test_positive_extract_materials_infos():
+
+    materials = extract_materials_infos(MATERIALS_FILE)
+
+    assert materials.E_c == pytest.approx(1.019e10)
+    assert materials.poisson_c == pytest.approx(0.32)
+    assert materials.E_f == pytest.approx(2.040e10)
+    assert materials.poisson_f == pytest.approx(0.36)
+
+
+@pytest.mark.unit
+def test_negative_extract_materials_infos_empty_file():
+
+    with pytest.raises(MaterialsFileEmptyError, match="Empty materials file"):
+        extract_materials_infos("")
+
+
+@pytest.mark.unit
+def test_negative_extract_materials_invalid_mat_number():
+
+    file_str = dedent(
+        """\
+    materials
+        invalid 1 1.999e+11 0.3000 1.400e-05 0 0 4.292e+01 3.894e+06 0 0 0
+    end materials
+    return"""
+    )
+
+    with pytest.raises(
+        MaterialsFileValueError,
+        match=re.escape("Invalid material number: invalid literal for int() with base 10: 'invalid'"),
+    ):
+        extract_materials_infos(file_str)
+
+
+@pytest.mark.unit
+def test_negative_extract_materials_invalid_prop_value():
+
+    file_str = dedent(
+        """\
+    materials
+        3 1 invalid 0.3000 1.400e-05 0 0 4.292e+01 3.894e+06 0 0 0
+    end materials
+    return"""
+    )
+
+    with pytest.raises(
+        MaterialsFileValueError,
+        match="Invalid prop value in material 3: could not convert string to float: 'invalid'",
+    ):
+        extract_materials_infos(file_str)
+
+
+@pytest.mark.integration
+def test_positive_read_materials():
+
+    path = Path("tests/fixtures/materials.dat")
+
+    materials = read_materials_file(path)
+
+    assert materials.E_c == pytest.approx(1.019e10)
+    assert materials.poisson_c == pytest.approx(0.32)
+    assert materials.E_f == pytest.approx(2.040e10)
+    assert materials.poisson_f == pytest.approx(0.36)
