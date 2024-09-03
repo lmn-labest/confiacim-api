@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+from enum import Enum
 from io import BytesIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -7,10 +9,33 @@ from zipfile import ZipFile
 
 from confiacim.tencim.deterministic import new_case_with_until_the_step
 
+from confiacim_api.errors import (
+    MaterialsFileEmptyError,
+    MaterialsFileValueError,
+)
 from confiacim_api.logger import logger
 from confiacim_api.models import Case
 
 NO_CLIP_RC = "nocliprc"
+
+
+class MaterialsFileLinesIndex(Enum):
+    CEMENT_LINE = 3
+    FORMATION_LINE = 4
+
+
+class MaterialsFileColumnsIndex(Enum):
+    MAT_NUMBER = 0
+    E_COEF = 2
+    POISSON_COEF = 3
+
+
+@dataclass(frozen=True)
+class MaterialsInfos:
+    E_c: float
+    poisson_c: float
+    E_f: float
+    poisson_f: float
 
 
 def temporary_simulation_folder(origin_dir: Path) -> TemporaryDirectory:
@@ -100,6 +125,7 @@ def rm_setpnode_and_setptime(case_file_str: str) -> str:
         Returna o conteudo com as macros removidas setpnode e setptime.
     """
 
+    # TODO: transforma setpnode e setptime é uma constante
     return "\n".join(line for line in case_file_str.split("\n") if "setpnode" not in line and "setptime" not in line)
 
 
@@ -160,10 +186,73 @@ def new_time_loop(case_file_str: str, last_step: int) -> str:
         será mantido o valor inicial. Não será criado mais blocos `loop-next` do `tencim`.
 
     Parameters:
-        case_data_str: Conteudo do Arquivo de `case.dat` não forma de `str`.
+        case_data_str: Conteudo do Arquivo de `case.dat` no formato de `str`.
         new_last_step: Novo ultimo passo de tempo.
 
     Returns:
         Retorna no novo conteudo do arquivo `case.dat`.
     """
     return new_case_with_until_the_step(case_data_str=case_file_str, new_last_step=last_step)
+
+
+def extract_materials_infos(file_str: str) -> MaterialsInfos:
+    """
+    Extrai o valores do materias desejados
+
+    Parameters:
+        case_data_str: Conteudo do arquivo de `materials.dat` no formato de `str`.
+
+    Returns:
+        Retorna o valor materials.
+    """
+
+    lines = file_str.split("\n")
+
+    if lines == [""]:
+        raise MaterialsFileEmptyError("Empty materials file.")
+
+    tmp_dict = {}
+
+    for lin in lines:
+
+        if "materials" == lin:
+            continue
+
+        if "end materials" == lin:
+            break
+
+        words = lin.split()
+
+        try:
+            mat_number = int(words[MaterialsFileColumnsIndex.MAT_NUMBER.value])
+        except ValueError as e:
+            raise MaterialsFileValueError(f"Invalid material number: {e}") from e
+
+        if mat_number == 3:
+            try:
+                tmp_dict["E_c"] = float(words[MaterialsFileColumnsIndex.E_COEF.value])
+                tmp_dict["poisson_c"] = float(words[MaterialsFileColumnsIndex.POISSON_COEF.value])
+            except ValueError as e:
+                raise MaterialsFileValueError(f"Invalid prop value in material {mat_number}: {e}") from e
+
+        elif mat_number == 4:
+            try:
+                tmp_dict["E_f"] = float(words[MaterialsFileColumnsIndex.E_COEF.value])
+                tmp_dict["poisson_f"] = float(words[MaterialsFileColumnsIndex.POISSON_COEF.value])
+            except ValueError as e:
+                raise MaterialsFileValueError(f"Invalid prop value in material {mat_number}: {e}") from e
+
+    return MaterialsInfos(**tmp_dict)
+
+
+def read_materials_file(path_file: Path) -> MaterialsInfos:
+    """
+    Lê o arquivo de materiais e extrai os valores desejados
+
+    Parameters:
+        path_file: Lê o arquivos `materials.dat`.
+
+    Returns:
+        Retorna o valor materials.
+    """
+    return extract_materials_infos(path_file.read_text())
