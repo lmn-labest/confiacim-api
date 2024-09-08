@@ -57,4 +57,22 @@ ALTER TABLE cases ADD COLUMN description TEXT;
 
 UPDATE alembic_version SET version_num='b2aac65bab92' WHERE alembic_version.version_num = 'f1232937d0c4';
 
+-- Running upgrade b2aac65bab92 -> 553a83605190
+
+CREATE TABLE materials_base_case_average_prop (
+    id SERIAL NOT NULL,
+    "E_c" FLOAT NOT NULL,
+    "E_f" FLOAT NOT NULL,
+    poisson_c FLOAT NOT NULL,
+    poisson_f FLOAT NOT NULL,
+    case_id INTEGER NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    PRIMARY KEY (id),
+    FOREIGN KEY(case_id) REFERENCES cases (id),
+    UNIQUE (case_id)
+);
+
+UPDATE alembic_version SET version_num='553a83605190' WHERE alembic_version.version_num = 'b2aac65bab92';
+
 COMMIT;

@@ -203,7 +203,7 @@ def extract_materials_infos(file_str: str) -> MaterialsInfos:
         case_data_str: Conteudo do arquivo de `materials.dat` no formato de `str`.
 
     Returns:
-        Retorna o valor materials.
+        Retorna o valor dos materiais.
     """
 
     lines = file_str.split("\n")
@@ -253,6 +253,25 @@ def read_materials_file(path_file: Path) -> MaterialsInfos:
         path_file: Lê o arquivos `materials.dat`.
 
     Returns:
-        Retorna o valor materials.
+        Retorna o valor dos materiais.
     """
     return extract_materials_infos(path_file.read_text())
+
+
+def extract_materials_infos_from_blob(case: Case) -> MaterialsInfos:
+    """
+    Extrai as informações dos materiais diretamentamente do blob salvo no
+    DB.
+
+    Parameters:
+        case: Caso
+
+    Returns:
+        MaterialsInfos: Retorna o valor dos materiais.
+    """
+
+    with ZipFile(BytesIO(case.base_file), "r") as zip_ref:
+        with zip_ref.open("materials.dat") as fp:
+            mat_infos = extract_materials_infos(fp.read().decode())
+
+    return mat_infos
