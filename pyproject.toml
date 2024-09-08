@@ -110,6 +110,7 @@ module = [
     "celery",
     "celery.result",
     "factory",
+    "factory.fuzzy",
     "routers",
 ]
 ignore_missing_imports = true

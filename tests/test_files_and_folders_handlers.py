@@ -16,6 +16,7 @@ from confiacim_api.files_and_folders_handlers import (
     add_nocliprc_macro,
     clean_temporary_simulation_folder,
     extract_materials_infos,
+    extract_materials_infos_from_blob,
     new_time_loop,
     read_materials_file,
     rewrite_case_file,
@@ -330,3 +331,14 @@ def test_positive_read_materials():
     assert materials.poisson_c == pytest.approx(0.32)
     assert materials.E_f == pytest.approx(2.040e10)
     assert materials.poisson_f == pytest.approx(0.36)
+
+
+@pytest.mark.unit
+def test_positive_extract_materials_infos_from_blob(case_with_real_file):
+
+    mat_infos = extract_materials_infos_from_blob(case_with_real_file)
+
+    assert mat_infos.E_c == pytest.approx(10960000000.0)
+    assert mat_infos.E_f == pytest.approx(37920000000.0)
+    assert mat_infos.poisson_c == pytest.approx(0.228)
+    assert mat_infos.poisson_f == pytest.approx(0.21)

@@ -5,7 +5,12 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from confiacim_api.models import Case, TencimResult, User
+from confiacim_api.models import (
+    Case,
+    MaterialsBaseCaseAverageProps,
+    TencimResult,
+    User,
+)
 
 
 @pytest.mark.integration
@@ -104,3 +109,21 @@ def test_case_can_have_many_tencim_results(session: Session, case: Case):
     assert len(case.tencim_results) == 2
     assert result1 in case.tencim_results
     assert result2 in case.tencim_results
+
+
+@pytest.mark.integration
+def test_case_can_have_one_materials(session: Session, case: Case, materials: MaterialsBaseCaseAverageProps):
+
+    assert case.materials == materials
+
+
+@pytest.mark.integration
+def test_deleting_the_case_should_delete_the_materials(
+    session: Session, case: Case, materials: MaterialsBaseCaseAverageProps
+):
+
+    session.delete(case)
+    session.commit()
+
+    assert session.get(Case, case.id) is None
+    assert session.get(MaterialsBaseCaseAverageProps, materials.id) is None

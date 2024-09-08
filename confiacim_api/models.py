@@ -85,6 +85,11 @@ class Case(TimestampMixin, Base):
         cascade="all, delete-orphan",
     )
 
+    materials: Mapped["MaterialsBaseCaseAverageProps"] = relationship(
+        back_populates="case",
+        cascade="all, delete-orphan",
+    )
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id}, case={self.tag})"
 
@@ -110,3 +115,21 @@ class TencimResult(TimestampMixin, Base):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id}, case={self.case.tag})"
+
+
+class MaterialsBaseCaseAverageProps(TimestampMixin, Base):
+    __tablename__ = "materials_base_case_average_prop"
+    __table_args__ = (UniqueConstraint("case_id"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    E_c: Mapped[float]
+    E_f: Mapped[float]
+    poisson_c: Mapped[float]
+    poisson_f: Mapped[float]
+
+    case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
+    case: Mapped["Case"] = relationship(back_populates="materials")
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(id={self.id}, case={self.case.tag}, E_c={self.E_c}, ...)"
