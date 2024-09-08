@@ -1,6 +1,7 @@
 from typing import Generator
 
 import factory
+import factory.fuzzy
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, select
@@ -9,7 +10,14 @@ from sqlalchemy.orm import Session, sessionmaker
 from confiacim_api.app import app
 from confiacim_api.conf import settings
 from confiacim_api.database import database_url, get_session
-from confiacim_api.models import Base, Case, ResultStatus, TencimResult, User
+from confiacim_api.models import (
+    Base,
+    Case,
+    MaterialsBaseCaseAverageProps,
+    ResultStatus,
+    TencimResult,
+    User,
+)
 from confiacim_api.security import create_access_token, get_password_hash
 
 
@@ -18,6 +26,16 @@ class UserFactory(factory.Factory):
         model = User
 
     email = factory.Faker("email")
+
+
+class MaterialsFactory(factory.Factory):
+    class Meta:
+        model = MaterialsBaseCaseAverageProps
+
+    E_c = factory.fuzzy.FuzzyFloat(low=1e6, high=1e10)
+    E_f = factory.fuzzy.FuzzyFloat(low=1e6, high=1e10)
+    poisson_c = factory.fuzzy.FuzzyFloat(low=0, high=0.49)
+    poisson_f = factory.fuzzy.FuzzyFloat(low=0, high=0.49)
 
 
 @pytest.fixture
@@ -212,3 +230,11 @@ def case_with_result(session, user: User):
     session.refresh(case)
 
     return case
+
+
+@pytest.fixture
+def materials(session: Session, case: Case):
+    mat = MaterialsFactory(case_id=case.id)
+    session.add(mat)
+    session.commit()
+    return mat

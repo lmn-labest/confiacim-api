@@ -5,7 +5,8 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from confiacim_api.app import app
-from confiacim_api.models import Case
+from confiacim_api.files_and_folders_handlers import MaterialsInfos
+from confiacim_api.models import Case, MaterialsBaseCaseAverageProps
 
 ROUTE_VIEW_NAME = "upload_case_file"
 
@@ -28,6 +29,11 @@ def test_upload_case(
         return_value=True,
     )
 
+    extract_materials_infos_from_blob_mocker = mocker.patch(
+        "confiacim_api.routers.case.extract_materials_infos_from_blob",
+        return_value=MaterialsInfos(E_c=1.0, E_f=0.5, poisson_c=0.2, poisson_f=0.3),
+    )
+
     resp = client_auth.post(
         app.url_path_for(ROUTE_VIEW_NAME, case_id=case.id),
         files={"case_file": zip_file_fake},
@@ -36,12 +42,71 @@ def test_upload_case(
     assert resp.status_code == status.HTTP_200_OK
 
     is_zipfile_mocker.assert_called_once()
+    extract_materials_infos_from_blob_mocker.assert_called_once()
 
     assert resp.json() == {"detail": "File upload success."}
 
     case_from_db = session.get(Case, case.id)
 
+    case_from_db = session.get(Case, case.id)
+
+    assert case_from_db.materials.E_c == pytest.approx(1.0)
+    assert case_from_db.materials.E_f == pytest.approx(0.5)
+    assert case_from_db.materials.poisson_c == pytest.approx(0.2)
+    assert case_from_db.materials.poisson_f == pytest.approx(0.3)
+
     assert case_from_db.base_file == b"Fake zip file."
+
+
+@pytest.mark.integration
+def test_upload_case_real_file(
+    session,
+    client_auth: TestClient,
+    case: Case,
+):
+
+    with open("tests/fixtures/case1.zip", mode="rb") as fp:
+        resp = client_auth.post(
+            app.url_path_for(ROUTE_VIEW_NAME, case_id=case.id),
+            files={"case_file": fp},
+        )
+
+    assert resp.status_code == status.HTTP_200_OK
+
+    assert resp.json() == {"detail": "File upload success."}
+
+    case_from_db = session.get(Case, case.id)
+
+    assert case_from_db.materials.E_c == pytest.approx(10960000000.0)
+    assert case_from_db.materials.E_f == pytest.approx(37920000000.0)
+    assert case_from_db.materials.poisson_c == pytest.approx(0.228)
+    assert case_from_db.materials.poisson_f == pytest.approx(0.21)
+
+
+@pytest.mark.integration
+def test_upload_in_case_already_have_materials(
+    session,
+    client_auth: TestClient,
+    case: Case,
+    materials: MaterialsBaseCaseAverageProps,
+):
+
+    with open("tests/fixtures/case1.zip", mode="rb") as fp:
+        resp = client_auth.post(
+            app.url_path_for(ROUTE_VIEW_NAME, case_id=case.id),
+            files={"case_file": fp},
+        )
+
+    assert resp.status_code == status.HTTP_200_OK
+
+    assert resp.json() == {"detail": "File upload success."}
+
+    case_from_db = session.get(Case, case.id)
+
+    assert case_from_db.materials.E_c == pytest.approx(10960000000.0)
+    assert case_from_db.materials.E_f == pytest.approx(37920000000.0)
+    assert case_from_db.materials.poisson_c == pytest.approx(0.228)
+    assert case_from_db.materials.poisson_f == pytest.approx(0.21)
 
 
 @pytest.mark.integration

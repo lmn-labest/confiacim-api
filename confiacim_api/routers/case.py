@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from typing import Annotated
 
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
@@ -8,7 +9,8 @@ from slugify import slugify
 from sqlalchemy import select
 
 from confiacim_api.database import ActiveSession
-from confiacim_api.models import Case
+from confiacim_api.files_and_folders_handlers import extract_materials_infos_from_blob
+from confiacim_api.models import Case, MaterialsBaseCaseAverageProps
 from confiacim_api.schemes import (
     CaseCreate,
     CasePublic,
@@ -118,6 +120,17 @@ def upload_case_file(
         )
 
     case.base_file = case_file.file.read()
+
+    mat_infos = extract_materials_infos_from_blob(case)
+
+    # Primeiro upload
+    if case.materials is None:
+        mat = MaterialsBaseCaseAverageProps(case=case, **asdict(mat_infos))
+        session.add(mat)
+    else:
+        for k, v in asdict(mat_infos).items():
+            setattr(case.materials, k, v)
+
     session.commit()
 
     return {"detail": "File upload success."}
