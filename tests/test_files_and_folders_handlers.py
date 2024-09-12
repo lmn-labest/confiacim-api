@@ -10,6 +10,7 @@ from sqlalchemy import select
 
 from confiacim_api.errors import (
     MaterialsFileEmptyError,
+    MaterialsFileNotFoundInZipError,
     MaterialsFileValueError,
 )
 from confiacim_api.files_and_folders_handlers import (
@@ -342,3 +343,10 @@ def test_positive_extract_materials_infos_from_blob(case_with_real_file):
     assert mat_infos.E_f == pytest.approx(37920000000.0)
     assert mat_infos.poisson_c == pytest.approx(0.228)
     assert mat_infos.poisson_f == pytest.approx(0.21)
+
+
+@pytest.mark.unit
+def test_negative_extract_materials_infos_from_blob_zipfile_without_materials(case_with_real_file_without_materials):
+
+    with pytest.raises(MaterialsFileNotFoundInZipError, match="Materials file not found in zip."):
+        extract_materials_infos_from_blob(case_with_real_file_without_materials)
