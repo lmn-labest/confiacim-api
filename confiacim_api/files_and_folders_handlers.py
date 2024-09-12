@@ -11,6 +11,7 @@ from confiacim.tencim.deterministic import new_case_with_until_the_step
 
 from confiacim_api.errors import (
     MaterialsFileEmptyError,
+    MaterialsFileNotFoundInZipError,
     MaterialsFileValueError,
 )
 from confiacim_api.logger import logger
@@ -271,7 +272,10 @@ def extract_materials_infos_from_blob(case: Case) -> MaterialsInfos:
     """
 
     with ZipFile(BytesIO(case.base_file), "r") as zip_ref:
-        with zip_ref.open("materials.dat") as fp:
-            mat_infos = extract_materials_infos(fp.read().decode())
+        try:
+            with zip_ref.open("materials.dat") as fp:
+                mat_infos = extract_materials_infos(fp.read().decode())
+        except KeyError as e:
+            raise MaterialsFileNotFoundInZipError("Materials file not found in zip.") from e
 
     return mat_infos
