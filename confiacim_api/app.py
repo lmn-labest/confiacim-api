@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from fastapi_pagination import add_pagination
 
 from confiacim_api.conf import settings
+from confiacim_api.errors import MaterialsFileNotFoundInZipError
 from confiacim_api.routers import (
     admin_router,
     auth_router,
@@ -51,3 +52,8 @@ async def validation_exeception_handler(request: Request, exec: RequestValidatio
         for e in exec.errors()
     ]
     return JSONResponse({"detail": new_errors}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+
+@app.exception_handler(MaterialsFileNotFoundInZipError)
+async def upload_exeception_handler(request: Request, exec: MaterialsFileNotFoundInZipError):
+    return JSONResponse({"detail": str(exec)}, status_code=status.HTTP_400_BAD_REQUEST)

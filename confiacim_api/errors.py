@@ -1,3 +1,6 @@
+class MaterialsFileNotFoundInZipError(Exception): ...
+
+
 class MaterialsFileEmptyError(Exception): ...
 
 

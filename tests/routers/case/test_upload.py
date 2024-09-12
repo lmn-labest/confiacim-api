@@ -84,7 +84,7 @@ def test_upload_case_real_file(
 
 
 @pytest.mark.integration
-def test_upload_in_case_already_have_materials(
+def test_upload_case_already_have_materials(
     session,
     client_auth: TestClient,
     case: Case,
@@ -107,6 +107,24 @@ def test_upload_in_case_already_have_materials(
     assert case_from_db.materials.E_f == pytest.approx(37920000000.0)
     assert case_from_db.materials.poisson_c == pytest.approx(0.228)
     assert case_from_db.materials.poisson_f == pytest.approx(0.21)
+
+
+@pytest.mark.integration
+def test_negative_case_zipfile_without_materials(
+    session,
+    client_auth: TestClient,
+    case: Case,
+):
+
+    with open("tests/fixtures/case_without_materials.zip", mode="rb") as fp:
+        resp = client_auth.post(
+            app.url_path_for(ROUTE_VIEW_NAME, case_id=case.id),
+            files={"case_file": fp},
+        )
+
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+
+    assert resp.json() == {"detail": "Materials file not found in zip."}
 
 
 @pytest.mark.integration
