@@ -14,6 +14,7 @@ from confiacim_api.models import Case, MaterialsBaseCaseAverageProps
 from confiacim_api.schemes import (
     CaseCreate,
     CasePublic,
+    MaterialsOut,
 )
 from confiacim_api.security import CurrentUser
 from confiacim_api.utils import file_case_is_zipfile
@@ -162,3 +163,28 @@ def download_case_file(
     response.headers["Content-Disposition"] = f"attachment; filename={filename}"
 
     return response
+
+
+@router.get("/{case_id}/materials", response_model=MaterialsOut)
+def material_case_retrive(
+    session: ActiveSession,
+    case_id: int,
+    user: CurrentUser,
+):
+    """Retorno a informações do materiais do caso `case_id`"""
+
+    case = session.scalar(select(Case).filter(Case.id == case_id, Case.user == user))
+
+    if not case:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Case not found",
+        )
+
+    if not case.materials:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The case not have registered materials",
+        )
+
+    return case.materials

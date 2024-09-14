@@ -190,6 +190,16 @@ def case_with_file(session, user: User):
 
 
 @pytest.fixture
+def case_with_materials_info(session, user: User):
+    case = Case(tag="case_1", user=user)
+    mat = MaterialsFactory(case=case)
+    session.add_all([case, mat])
+    session.commit()
+    session.refresh(case)
+    return case
+
+
+@pytest.fixture
 def case_with_real_file(session, user: User):
     with open("tests/fixtures/case1.zip", mode="rb") as fp:
         case = Case(tag="case1", user=user, base_file=fp.read())
