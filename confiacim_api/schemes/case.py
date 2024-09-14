@@ -20,3 +20,13 @@ class CasePublic(BaseModel):
     tencim_results: list[TencimResultSummary] = Field(serialization_alias="tencim_result_ids")
     created_at: datetime
     updated_at: datetime
+
+
+class MaterialsOut(BaseModel):
+    id: int
+    E_c: float
+    E_f: float
+    poisson_c: float
+    poisson_f: float
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
