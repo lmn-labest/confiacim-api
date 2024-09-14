@@ -16,7 +16,7 @@ Subindo aplicação completa com as configurações de desenvolvimento
 docker compose -f docker-compose-dev.yml up -d
 ```
 
-Esse comando irá subir o `api`, `postgres`, `boker`, `worker_1`, `worker_2` e `flower`.
+Esse comando irá subir o `api`, `postgres`, `boker`, `worker` e `flower`.
 
  - `api` ➡️ [localhost:8000/](http://localhost:8000/api/)
  - `doc` ➡️ [localhost:8000/api/docs](http://localhost:8000/api/docs)
@@ -27,18 +27,20 @@ Esse comando irá subir o `api`, `postgres`, `boker`, `worker_1`, `worker_2` e `
 Subindo um aplocação que simula o ambiente de produção.
 
 ```bash
-docker compose -f docker-compose-prod.yml up -d
+docker compose up -d
 ```
 
-A agora apenas as dependencias de produção são instaladas na imagem da `api`. Além disso servidor de aplicação não é mais o `uvicorn` é sim `gunicorn` com `3 workers`. Todos os serviços estão rodando na rede interna do docker é não tem mais acesso direto externo. Para acesso é preciso subir os containers do `confiacim-front`, lá temos um `nginx` agindo como proxy reverso para a `api` e `flower` além de servir o bundle do `frontend`. Outra caracteristica de configuração é que não é mais preciso configurar o `CORS`.
+A agora apenas as dependencias de produção são instaladas na imagem da `api`. Além disso servidor de aplicação não é mais o `uvicorn` é sim `gunicorn` com `3 workers`. Todos os serviços estão rodando na rede interna do docker e não tem mais acesso direto externo. Exceto pelo `nginx` agindo como proxy reverso para a `api` e `flower`.
 
-- `doc` ➡️ [localhost:8000/docs](http://localhost:80/api/docs)
+- `doc` ➡️ [localhost:80/docs](http://localhost:80/api/docs)
 - `api` ➡️ [localhost:80/](http://localhost:80/api/)
 - `Flower` ➡️ [localhost:80/flower](http://localhost:80/flower/)
 
+Lembrando que a porta `80` pode ser omitida
+
 ## Configurando o ambiente de desenvolvimento local
 
-A seguir as instruções Caso você queria trabalhar com o codido da api fora do ambiente docker.
+A seguir as instruções caso você queria trabalhar com o códido da `api` fora do ambiente `docker`.
 
 Instalando todas as dependencias
 
@@ -58,29 +60,23 @@ Subindo o banco de dados `POSTGRES` via `docker compose`.
 docker compose -f docker-compose-dev.yml up database -d
 ```
 
-O docker compose irá criar dois banco de dados na primeira vez, os `confiacim_api` e `confiacim_api_test`. Essa funcionalidade e provida pelo script [create-databases.sh](./postgres/create-databases.sh). Além disso no `confiacim_api` será criado as tabelas utilizando o script [create_tables.sql](./postgres/create_tables.sql).
+O docker compose irá criar dois banco de dados na primeira vez, os `confiacim_api` e `confiacim_api_test`. Essa funcionalidade e provida pelo script [create-databases.sh](./postgres/create-databases.sh).
 
-Para configurar o banco bastas usar variável de ambiente `DATABASE_URL`.
-
-```bash
-export DATABASE_URL="postgresql://confiacim_api_user:confiacim_api_password@localhost:5432/confiacim_api"
-```
-
-ou defini-la em um arquivo `.env` como está no aquivo `.env_sample`.
-
-Como não tempos o `nginx` como `proxy reverso`é preciso configurar o `CORS`, comm o `vite`:
+Para configurar o banco bastas usar variável de ambiente `CONFIACIM_API_DATABASE_URL`.
 
 ```bash
-CORS=http://localhost:5173
+export CONFIACIM_API_DATABASE_URL="postgresql://confiacim_api_user:confiacim_api_password@localhost:5432/confiacim_api"
 ```
+
+ou defini-la em um arquivo `.env` como está no arquivo de exemplo `.env_sample`.
 
 Subindo o redis
 
 ```bash
-docker compose -f docker-compose-dev.yml up broker -d
+docker compose -f docker-compose-dev.yml up redis-master sentinel -d
 ```
 
-O `worker`pode ser inicializado locamente com
+O `worker` pode ser inicializado locamente com
 
 ```bash
 watchfiles --filter python 'celery -A confiacim_api.celery worker --concurrency=2  -l INFO'
@@ -95,16 +91,28 @@ celery --broker=redis://localhost:6379/0 flower --port=5555
 Mas eles tão podem ser inicializados via `docker compose` com:
 
 ```bash
-docker compose -f docker-compose-dev.yml up worker_1 flower -d
+docker compose -f docker-compose-dev.yml up worker flower -d
 ```
 
-Todo os serviços exceto a api pobem ser inicializados via `docker compose` com:
+Todo os serviços exceto a `api` pobem ser inicializados via `docker compose` com:
 
 ```bash
-docker compose -f docker-compose-dev.yml up database borker worker_1 flower
+docker compose -f docker-compose-dev.yml up database borker worker flower
+```
+
+ou simplesmente com:
+
+```bash
+task up_services
 ```
 
 Subindo a api com `uvicorn`.
+
+```bash
+uvicorn confiacim_api.app:app --reload
+```
+
+ou com
 
 ```bash
 poetry run task server_api
@@ -133,21 +141,6 @@ poetry run task report_server
 
 O relátorio fica disponivel no [http://0.0.0.0:8001/](http://0.0.0.0:8001/)
 
-## Atualizando o esquema do banco de dados
-
-Para atualizar o esquema do banco de dados é preciso fazer a modificação necessária no arquivo `create_tables.sql` e gerar uma nova imagem com:
-
-```bash
-docker compose -f docker-compose-dev.yml build database
-```
-
-## Migrações do banco de dados
-
-Para criar a migração offline:
-
-```bash
-alembic upgrade head --sql > migrations/migrations.sql
-```
 
 ## Deploy na Petrobras
 
@@ -161,4 +154,12 @@ Depois é preciso alter manualmente entrada do `confiacim` para algo como:
 
 ```bash
 confiacim @ file:./packages/confiacim-0.12.0a0-py3-none-any.whl ; python_version >= "3.11" and python_version < "3.12" \
+```
+
+### Migrações do banco de dados offline
+
+No ambiente Petrobras não podemos usar o `Almebic` para aplicar as migrações. Para contonar essa limitação foi usado modo offline. Nesse modo é gerado um arquivo `.sql` com todas a migrações necessarias que depois são aplicadas manualmente no `DB`.
+
+```bash
+alembic upgrade head --sql > migrations/migrations.sql
 ```
