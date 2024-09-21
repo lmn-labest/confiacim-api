@@ -1,12 +1,13 @@
 from io import BytesIO
 
 import pytest
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from confiacim_api.models import (
     Case,
+    FormResult,
     MaterialsBaseCaseAverageProps,
     TencimResult,
     User,
@@ -112,6 +113,20 @@ def test_case_can_have_many_tencim_results(session: Session, case: Case):
 
 
 @pytest.mark.integration
+def test_case_can_have_many_form_results(session: Session, case: Case):
+
+    result1 = FormResult(case=case)
+    result2 = FormResult(case=case)
+
+    session.add_all([result1, result2])
+    session.commit()
+
+    assert len(case.form_results) == 2
+    assert result1 in case.form_results
+    assert result2 in case.form_results
+
+
+@pytest.mark.integration
 def test_case_can_have_one_materials(session: Session, case: Case, materials: MaterialsBaseCaseAverageProps):
 
     assert case.materials == materials
@@ -121,9 +136,43 @@ def test_case_can_have_one_materials(session: Session, case: Case, materials: Ma
 def test_deleting_the_case_should_delete_the_materials(
     session: Session, case: Case, materials: MaterialsBaseCaseAverageProps
 ):
+    """Testa a configuracao do cascate"""
 
     session.delete(case)
     session.commit()
 
     assert session.get(Case, case.id) is None
     assert session.get(MaterialsBaseCaseAverageProps, materials.id) is None
+
+
+@pytest.mark.integration
+def test_deleting_the_case_should_delete_the_form_results(session: Session, case: Case):
+    """Testa a configuracao do cascate"""
+
+    session.add(FormResult(case=case))
+    session.commit()
+
+    session.delete(case)
+    session.commit()
+
+    assert session.scalar(select(func.count()).select_from(FormResult)) == 0
+
+
+@pytest.mark.integration
+def test_deleting_the_case_should_delete_the_tencim_results(session: Session, case: Case):
+    """Testa a configuracao do cascate"""
+
+    values = {
+        "istep": (1, 2, 3),
+        "t": (1.0, 2.0, 3.0),
+        "rankine_rc": (100.0, 90.0, 10.0),
+        "mohr_coulomb_rc": (100.0, 80.0, 30.0),
+    }
+
+    session.add(TencimResult(case=case, **values))
+    session.commit()
+
+    session.delete(case)
+    session.commit()
+
+    assert session.scalar(select(func.count()).select_from(TencimResult)) == 0

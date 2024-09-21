@@ -85,6 +85,11 @@ class Case(TimestampMixin, Base):
         cascade="all, delete-orphan",
     )
 
+    form_results: Mapped[list["FormResult"]] = relationship(
+        back_populates="case",
+        cascade="all, delete-orphan",
+    )
+
     materials: Mapped["MaterialsBaseCaseAverageProps"] = relationship(
         back_populates="case",
         cascade="all, delete-orphan",
@@ -96,7 +101,7 @@ class Case(TimestampMixin, Base):
 
 class TencimResult(TimestampMixin, Base):
     __tablename__ = "tencim_results"
-    __table_args__ = (UniqueConstraint("task_id", "case_id", name="case_task"),)
+    __table_args__ = (UniqueConstraint("task_id", "case_id", name="case_task_tencim_result"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     task_id: Mapped[Optional[UUID]]
@@ -112,6 +117,26 @@ class TencimResult(TimestampMixin, Base):
 
     case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
     case: Mapped["Case"] = relationship(back_populates="tencim_results")
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(id={self.id}, case={self.case.tag})"
+
+
+class FormResult(TimestampMixin, Base):
+    __tablename__ = "form_results"
+    __table_args__ = (UniqueConstraint("task_id", "case_id", name="case_task_form_result"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    task_id: Mapped[Optional[UUID]]
+
+    error: Mapped[Optional[str]] = mapped_column(Text)
+    status: Mapped[Optional[ResultStatus]] = mapped_column(
+        Enum(ResultStatus, name="result_status"),
+        default=ResultStatus.CREATED,
+    )
+
+    case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
+    case: Mapped["Case"] = relationship(back_populates="form_results")
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id}, case={self.case.tag})"
