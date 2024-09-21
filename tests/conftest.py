@@ -13,6 +13,7 @@ from confiacim_api.database import database_url, get_session
 from confiacim_api.models import (
     Base,
     Case,
+    FormResult,
     MaterialsBaseCaseAverageProps,
     ResultStatus,
     TencimResult,
@@ -258,3 +259,17 @@ def materials(session: Session, case: Case):
     session.add(mat)
     session.commit()
     return mat
+
+
+@pytest.fixture
+def form_results(session, case_with_real_file: Case):
+
+    new_result = FormResult(
+        case=case_with_real_file,
+        status=ResultStatus.SUCCESS,
+    )
+    session.add(new_result)
+    session.commit()
+    session.refresh(new_result)
+
+    return new_result
