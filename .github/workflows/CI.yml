@@ -18,6 +18,7 @@ jobs:
       CONFIACIM_API_SENTINEL_MASTER_NAME: mymaster
       CONFIACIM_API_SENTINEL_HOST: sentinel
       CONFIACIM_API_JWT_SECRET_KEY: Chave Secreta JWT
+      CONFIACIM_CORE_EXEC_TENCIM_MODE: SEQUENTIAL # TODO: Retirar essa config quando atualiza o core para a versãao 0.13.1
 
     strategy:
       fail-fast: true

@@ -211,6 +211,16 @@ def case_with_real_file(session, user: User):
 
 
 @pytest.fixture
+def case_form_with_real_file(session, user: User):
+    with open("tests/fixtures/case_form.zip", mode="rb") as fp:
+        case = Case(tag="case1", user=user, base_file=fp.read())
+        session.add(case)
+        session.commit()
+        session.refresh(case)
+    return case
+
+
+@pytest.fixture
 def case_with_real_file_without_materials(session, user: User):
     with open("tests/fixtures/case_without_materials.zip", mode="rb") as fp:
         case = Case(tag="case1", user=user, base_file=fp.read())
@@ -262,11 +272,51 @@ def materials(session: Session, case: Case):
 
 
 @pytest.fixture
-def form_results(session, case_with_real_file: Case):
+def form_case_config():
+    return {
+        "variables": [
+            {
+                "name": "E_c",
+                "dist": {
+                    "name": "lognormal",
+                    "params": {
+                        "mean": 1.0,
+                        "cov": 0.1,
+                    },
+                },
+            },
+            {
+                "name": "poisson_c",
+                "dist": {
+                    "name": "lognormal",
+                    "params": {
+                        "mean": 1.0,
+                        "cov": 0.1,
+                    },
+                },
+            },
+        ],
+        "config": {
+            "form": {
+                "delta": 0.01,
+                "tol": 1e-03,
+                "maxit": 100,
+            },
+        },
+    }
+
+
+@pytest.fixture
+def form_results(
+    session,
+    case_form_with_real_file: Case,
+    form_case_config: dict,
+):
 
     new_result = FormResult(
-        case=case_with_real_file,
-        status=ResultStatus.SUCCESS,
+        case=case_form_with_real_file,
+        status=ResultStatus.CREATED,
+        config=form_case_config,
     )
     session.add(new_result)
     session.commit()
