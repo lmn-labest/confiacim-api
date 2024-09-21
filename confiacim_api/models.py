@@ -16,7 +16,7 @@ from sqlalchemy import (
     false,
     func,
 )
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY, JSON
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -129,11 +129,18 @@ class FormResult(TimestampMixin, Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     task_id: Mapped[Optional[UUID]]
 
+    beta: Mapped[Optional[float]]
+    resid: Mapped[Optional[float]]
+    it: Mapped[Optional[int]]
+    Pf: Mapped[Optional[float]]
+
     error: Mapped[Optional[str]] = mapped_column(Text)
     status: Mapped[Optional[ResultStatus]] = mapped_column(
         Enum(ResultStatus, name="result_status"),
         default=ResultStatus.CREATED,
     )
+
+    config: Mapped[dict] = mapped_column(JSON, nullable=True)
 
     case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
     case: Mapped["Case"] = relationship(back_populates="form_results")

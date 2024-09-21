@@ -47,8 +47,7 @@ def test_positive_tencim_standalone_run(
 
     with session_factory as session:
         result_from_db = session.get(TencimResult, tencim_results.id)
-
-    assert result_from_db.status == ResultStatus.SUCCESS
+        assert result_from_db.status == ResultStatus.SUCCESS
 
 
 @pytest.mark.slow
@@ -65,8 +64,7 @@ def test_positive_tencim_standalone_run_rc_limit(
 
     with session_factory as session:
         result_from_db = session.get(TencimResult, tencim_results.id)
-
-    assert result_from_db.status == ResultStatus.SUCCESS
+        assert result_from_db.status == ResultStatus.SUCCESS
 
 
 @pytest.mark.slow
@@ -120,28 +118,10 @@ def test_negative_tencim_standalone_run_file_not_found(session_factory, case):
 
     with session_factory as session:
         result = TencimResult(case=case)
-        session.add_all([case, result])
+        session.add(result)
         session.commit()
         session.refresh(result)
         result_id = result.id
 
     with pytest.raises(TaskFileCaseNotFound, match="The case has no base file."):
         tencim_standalone_run(result_id)
-
-
-# @pytest.mark.slow
-# @pytest.mark.integration
-# def test_positive_form_run(
-#     tencim_results: TencimResult,
-#     session_factory,
-#     mocker,
-#     tmp_path,
-# ):
-
-#     mocker.patch("confiacim_api.tasks.get_simulation_base_dir", return_value=tmp_path)
-#     form_run()
-
-#     with session_factory as session:
-#         result_from_db = session.get(TencimResult, tencim_results.id)
-
-#     assert result_from_db.status == ResultStatus.SUCCESS
