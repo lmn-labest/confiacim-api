@@ -29,12 +29,11 @@ from confiacim_api.database import SessionFactory
 from confiacim_api.errors import ResultNotFound, TaskFileCaseNotFound
 from confiacim_api.files_and_folders_handlers import (
     clean_temporary_simulation_folder,
-    extract_materials_infos,
     rewrite_case_file,
     temporary_simulation_folder,
     unzip_tencim_case,
 )
-from confiacim_api.generate_templates_form import generate_materials_template
+from confiacim_api.generate_templates_form import generate_templates
 from confiacim_api.logger import logger
 from confiacim_api.models import FormResult, ResultStatus, TencimResult
 
@@ -147,6 +146,7 @@ def form_run(self, result_id: int):
     base_folder = Path(tmp_dir.name)
     unzip_tencim_case(result.case, tmp_dir)
     logger.info(f"Task {task_id} - Extract.")
+
     logger.info(f"Task {task_id} - Writing case file ...")
     rewrite_case_file(
         task_id=task_id,
@@ -155,26 +155,9 @@ def form_run(self, result_id: int):
     )
     logger.info(f"Task {task_id} - Write.")
 
-    logger.info(f"Task {task_id} - Creating templates ...")
-    materials = base_folder / "materials.dat"
-
-    base_folder_template = base_folder / "templates"
-    base_folder_template.mkdir(exist_ok=True)
-
-    logger.info(f"Task {task_id} - Generating materials.jinja ...")
-    variables_name = tuple(var["name"] for var in result.config["variables"])
-
-    materilas_str = materials.read_text()
-    mat_infos = extract_materials_infos(materilas_str)
-    mat_props = {name: getattr(mat_infos, name) for name in variables_name}
-    jinja_str = generate_materials_template(
-        materilas_str,
-        mat_props,
-    )
-    materials_jinja = base_folder_template / "materials.jinja"
-    materials_jinja.write_text(jinja_str)
-
-    logger.info(f"Task {task_id} - Create.")
+    logger.info(f"Task {task_id} - Writing templates ...")
+    generate_templates(task_id, base_folder, result.config)
+    logger.info(f"Task {task_id} - Write.")
 
     logger.info(f"Task {task_id} - Create case.yml ...")
     with open(base_folder / "case.yml", "w", encoding="utf-8") as yaml_file:
