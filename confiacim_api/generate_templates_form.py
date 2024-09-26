@@ -1,3 +1,9 @@
+from pathlib import Path
+from uuid import UUID
+
+from confiacim_api.files_and_folders_handlers import extract_materials_infos
+from confiacim_api.logger import logger
+
 PROP_MAT_POSITION = {
     "E_c": 2,
     "poisson_c": 3,
@@ -44,3 +50,35 @@ def generate_materials_template(materials_str: str, mat_props: dict[str, float])
     lines[LINE_FORMATION_MATERIAL] = " ".join(formation)
 
     return "\n".join(lines)
+
+
+def generate_templates(task_id: UUID | None, base_folder: Path, config: dict):
+    """
+    Gera os templates jinja.
+
+    Parameters:
+        task_id: ID da task do celery
+        base_folder: Caminho do diretorio base
+        config: Configuração do FORM
+
+    """
+
+    materials = base_folder / "materials.dat"
+
+    base_folder_template = base_folder / "templates"
+    base_folder_template.mkdir(exist_ok=True)
+
+    logger.info(f"Task {task_id} - Generating materials.jinja ...")
+    variables_name = tuple(var["name"] for var in config["variables"])
+
+    materilas_str = materials.read_text()
+    mat_infos = extract_materials_infos(materilas_str)
+    mat_props = {name: getattr(mat_infos, name) for name in variables_name}
+    jinja_str = generate_materials_template(
+        materilas_str,
+        mat_props,
+    )
+    materials_jinja = base_folder_template / "materials.jinja"
+    materials_jinja.write_text(jinja_str)
+
+    logger.info(f"Task {task_id} - Generated.")
