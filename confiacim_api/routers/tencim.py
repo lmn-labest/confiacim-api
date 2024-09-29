@@ -12,7 +12,11 @@ from confiacim_api.schemes import (
     TencimResultDetail,
     TencimResultStatus,
 )
-from confiacim_api.schemes.tencim import TencimOptions, TencimResultError, TencimResultSummary
+from confiacim_api.schemes.tencim import (  # TODO: Importar o __init__
+    TencimOptions,
+    TencimResultError,
+    TencimResultSummary,
+)
 from confiacim_api.security import CurrentUser
 from confiacim_api.tasks import tencim_standalone_run as tencim_run
 from confiacim_api.write_csv import write_rc_result_to_csv
