@@ -75,4 +75,30 @@ CREATE TABLE materials_base_case_average_prop (
 
 UPDATE alembic_version SET version_num='553a83605190' WHERE alembic_version.version_num = 'b2aac65bab92';
 
+-- Running upgrade 553a83605190 -> d0d2bbb452e9
+
+CREATE TABLE form_results (
+    id SERIAL NOT NULL,
+    task_id UUID,
+    beta FLOAT,
+    resid FLOAT,
+    it INTEGER,
+    "Pf" FLOAT,
+    error TEXT,
+    status result_status,
+    config JSON,
+    case_id INTEGER NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    PRIMARY KEY (id),
+    FOREIGN KEY(case_id) REFERENCES cases (id),
+    CONSTRAINT case_task_form_result UNIQUE (task_id, case_id)
+);
+
+ALTER TABLE tencim_results DROP CONSTRAINT case_task;
+
+ALTER TABLE tencim_results ADD CONSTRAINT case_task_tencim_result UNIQUE (task_id, case_id);
+
+UPDATE alembic_version SET version_num='d0d2bbb452e9' WHERE alembic_version.version_num = '553a83605190';
+
 COMMIT;

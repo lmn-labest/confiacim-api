@@ -1,5 +1,6 @@
 from confiacim_api.schemes.base import Health, Message, ResultCeleryTask, Token
 from confiacim_api.schemes.case import CaseCreate, CasePublic, MaterialsOut
+from confiacim_api.schemes.form import FormConfigCreate
 from confiacim_api.schemes.tencim import (
     TencimResultDetail,
     TencimResultStatus,
@@ -23,4 +24,5 @@ __all__ = (
     "TencimResultStatus",
     "UserOut",
     "UserCreate",
+    "FormConfigCreate",
 )
