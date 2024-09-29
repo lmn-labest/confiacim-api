@@ -126,7 +126,7 @@ def rm_setpnode_and_setptime(case_file_str: str) -> str:
         Returna o conteudo com as macros removidas setpnode e setptime.
     """
 
-    # TODO: transforma setpnode e setptime é uma constante
+    # TODO: transforma setpnode e setptime em uma constante
     return "\n".join(line for line in case_file_str.split("\n") if "setpnode" not in line and "setptime" not in line)
 
 

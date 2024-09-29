@@ -11,6 +11,7 @@ from confiacim_api.routers import (
     auth_router,
     base_router,
     case_router,
+    form_router,
     tencim_router,
     user_router,
 )
@@ -38,6 +39,7 @@ app.include_router(base_router)
 app.include_router(case_router)
 app.include_router(user_router)
 app.include_router(tencim_router)
+app.include_router(form_router)
 
 
 @app.exception_handler(RequestValidationError)
