@@ -66,7 +66,6 @@ def test_model_create_tag_name_must_be_unique_per_user(
     case2 = Case(tag="case1", user=user)
 
     session.add_all([case1, case2])
-
     with pytest.raises(IntegrityError) as e:
         session.commit()
 
