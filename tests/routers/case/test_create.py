@@ -34,7 +34,7 @@ def test_positive_create(client_auth: TestClient, session, user: User):
 
     assert body["id"] == case_db.id
     assert body["tag"] == case_db.tag
-    assert body["user"] == case_db.id
+    assert body["user"] == case_db.user.id
     assert body["description"] == case_db.description
 
 
@@ -62,7 +62,7 @@ def test_positive_create_description_is_optional(client_auth: TestClient, sessio
 
     assert body["id"] == case_db.id
     assert body["tag"] == case_db.tag
-    assert body["user"] == case_db.id
+    assert body["user"] == case_db.user.id
     assert body["description"] == case_db.description
 
 

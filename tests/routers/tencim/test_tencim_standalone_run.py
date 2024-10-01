@@ -32,12 +32,12 @@ def test_positive_run(
 
     assert resp.status_code == status.HTTP_200_OK
 
+    result = session.scalars(select(TencimResult)).one()
+
     tencim_standalone_run_mocker.assert_called_once()
-    tencim_standalone_run_mocker.assert_called_with(result_id=1)
+    tencim_standalone_run_mocker.assert_called_with(result_id=result.id)
 
     body = resp.json()
-
-    result = session.scalars(select(TencimResult)).one()
 
     assert body["result_id"] == result.id
     assert body["task_id"] == task.id
@@ -82,12 +82,12 @@ def test_positive_run_with_rc_limit(
 
     assert resp.status_code == status.HTTP_200_OK
 
+    result = session.scalars(select(TencimResult)).one()
+
     tencim_standalone_run_mocker.assert_called_once()
-    tencim_standalone_run_mocker.assert_called_with(result_id=1, rc_limit=boolean)
+    tencim_standalone_run_mocker.assert_called_with(result_id=result.id, rc_limit=boolean)
 
     body = resp.json()
-
-    result = session.scalars(select(TencimResult)).one()
 
     assert body["result_id"] == result.id
     assert body["task_id"] == task.id
@@ -115,12 +115,12 @@ def test_positive_run_with_last_step(
 
     assert resp.status_code == status.HTTP_200_OK
 
+    result = session.scalars(select(TencimResult)).one()
+
     tencim_standalone_run_mocker.assert_called_once()
-    tencim_standalone_run_mocker.assert_called_with(result_id=1, last_step=100)
+    tencim_standalone_run_mocker.assert_called_with(result_id=result.id, last_step=100)
 
     body = resp.json()
-
-    result = session.scalars(select(TencimResult)).one()
 
     assert body["result_id"] == result.id
     assert body["task_id"] == task.id

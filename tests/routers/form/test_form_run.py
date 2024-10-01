@@ -62,12 +62,12 @@ def test_positive_form_run(
     resp = client_auth.post(url, json=payload)
     assert resp.status_code == status.HTTP_200_OK
 
+    result = session.scalars(select(FormResult)).one()
+
     form_run_mocker.assert_called_once()
-    form_run_mocker.assert_called_with(result_id=1)
+    form_run_mocker.assert_called_with(result_id=result.id)
 
     body = resp.json()
-
-    result = session.scalars(select(FormResult)).one()
 
     assert body["result_id"] == result.id
     assert body["task_id"] == task.id
