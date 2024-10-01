@@ -4,8 +4,8 @@ import factory
 import factory.fuzzy
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, select
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy import create_engine, event, select
+from sqlalchemy.orm import Session
 
 from confiacim_api.app import app
 from confiacim_api.conf import settings
@@ -39,15 +39,36 @@ class MaterialsFactory(factory.Factory):
     poisson_f = factory.fuzzy.FuzzyFloat(low=0, high=0.49)
 
 
-@pytest.fixture
-def session():
+@pytest.fixture(scope="session")
+def db_connection():
     engine = create_engine(f"{database_url}_test", echo=settings.SQLALCHEMY_ECHO)
-    Session = sessionmaker(autocommit=False, autoflush=True, bind=engine)
-    Base.metadata.create_all(engine)
-    with Session() as session:
-        yield session
-        session.rollback()
-    Base.metadata.drop_all(engine)
+    connection = engine.connect()
+
+    Base.metadata.create_all(connection.engine)
+    yield connection
+
+    Base.metadata.drop_all(connection.engine)
+    connection.close()
+
+
+@pytest.fixture
+def session(db_connection):
+    transaction = db_connection.begin()
+    session = Session(bind=db_connection)
+    session.begin_nested()
+
+    @event.listens_for(session, "after_transaction_end")
+    def restart_savepoint(db_session, transaction):
+
+        if transaction.nested and not transaction._parent.nested:
+            session.expire_all()
+            session.begin_nested()
+
+    yield session
+
+    session.close()
+    if transaction.is_active:
+        transaction.rollback()
 
 
 @pytest.fixture
