@@ -20,7 +20,7 @@ def form_run(
     config: FormConfigCreate,
     user: CurrentUser,
 ):
-    """Envia uma simulação do `form` do caso `case_id` para a fila execução"""
+    """Envia uma simulação do `FORM` do caso `case_id` para a fila execução"""
 
     case = session.scalar(select(Case).filter(Case.id == case_id, Case.user == user))
 
