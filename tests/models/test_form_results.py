@@ -7,7 +7,7 @@ from confiacim_api.models import Case, FormResult, ResultStatus
 
 
 @pytest.mark.integration
-def test_create_case(session: Session, case: Case):
+def test_create_form_result(session: Session, case: Case):
 
     new_result = FormResult(
         case=case,
@@ -16,6 +16,7 @@ def test_create_case(session: Session, case: Case):
         resid=1e-3,
         it=3,
         Pf=1e-5,
+        critical_point=12,
     )
     session.add(new_result)
     session.commit()
@@ -34,6 +35,7 @@ def test_create_case(session: Session, case: Case):
     assert result_from_db.beta == pytest.approx(1.0)
     assert result_from_db.resid == pytest.approx(1e-3)
     assert result_from_db.it == 3
+    assert result_from_db.critical_point == 12
     assert result_from_db.Pf == pytest.approx(1e-5)
     assert result_from_db.status == ResultStatus.RUNNING
 

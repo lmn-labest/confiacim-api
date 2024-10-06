@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PositiveInt
 
 
 class RandomDistribution(BaseModel):
@@ -11,5 +11,10 @@ class FormVariables(BaseModel):
     dist: RandomDistribution
 
 
-class FormConfigCreate(BaseModel):
+class FormConfig(BaseModel):
     variables: list[FormVariables] = Field(min_length=1)
+
+
+class FormConfigCreate(BaseModel):
+    form: FormConfig
+    critical_point: PositiveInt

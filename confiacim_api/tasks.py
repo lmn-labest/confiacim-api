@@ -152,6 +152,7 @@ def form_run(self, result_id: int):
         task_id=task_id,
         case_path=base_folder / "case.dat",
         setpnode_and_setptime=True,
+        last_step=result.critical_point,
     )
     logger.info(f"Task {task_id} - Write.")
 
