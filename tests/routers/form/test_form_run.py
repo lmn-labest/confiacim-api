@@ -15,28 +15,31 @@ ROUTE_NAME = "form_run"
 @pytest.fixture
 def payload():
     return {
-        "variables": [
-            {
-                "name": "E_c",
-                "dist": {
-                    "name": "lognormal",
-                    "params": {
-                        "mean": 1.0,
-                        "cov": 0.1,
+        "critical_point": 120,
+        "form": {
+            "variables": [
+                {
+                    "name": "E_c",
+                    "dist": {
+                        "name": "lognormal",
+                        "params": {
+                            "mean": 1.0,
+                            "cov": 0.1,
+                        },
                     },
                 },
-            },
-            {
-                "name": "poisson_c",
-                "dist": {
-                    "name": "lognormal",
-                    "params": {
-                        "mean": 1.0,
-                        "cov": 0.1,
+                {
+                    "name": "poisson_c",
+                    "dist": {
+                        "name": "lognormal",
+                        "params": {
+                            "mean": 1.0,
+                            "cov": 0.1,
+                        },
                     },
                 },
-            },
-        ],
+            ],
+        },
     }
 
 
@@ -72,6 +75,9 @@ def test_positive_form_run(
     assert body["result_id"] == result.id
     assert body["task_id"] == task.id
 
+    assert result.config == payload["form"]
+    assert result.critical_point == 120
+
 
 @pytest.mark.integration
 @pytest.mark.parametrize(
@@ -89,7 +95,7 @@ def test_positive_form_run(
             },
             "Input should be a valid number, unable to parse string as a number",
             "float_parsing",
-            ["body", "variables", 0, "dist", "params", "mean"],
+            ["body", "form", "variables", 0, "dist", "params", "mean"],
         ),
         (
             {
@@ -102,7 +108,7 @@ def test_positive_form_run(
             },
             "Field required",
             "missing",
-            ["body", "variables", 0, "dist", "name"],
+            ["body", "form", "variables", 0, "dist", "name"],
         ),
         (
             {
@@ -115,12 +121,12 @@ def test_positive_form_run(
             },
             "Field required",
             "missing",
-            ["body", "variables", 0, "name"],
+            ["body", "form", "variables", 0, "name"],
         ),
     ],
-    ids=["mean_not_number", "dist_name_missing", "q"],
+    ids=["mean_not_number", "dist_name_missing", "varible_name_missing"],
 )
-def test_negative_form_run_invalid_variables_params(
+def test_negative_form_run_invalid_variables(
     client_auth: TestClient,
     case_with_file: Case,
     variable: dict,
@@ -131,7 +137,104 @@ def test_negative_form_run_invalid_variables_params(
     task = MagicMock()
     task.id = str(uuid4())
 
-    payload = {"variables": [variable]}
+    payload = {
+        "form": {"variables": [variable]},
+        "critical_point": 120,
+    }
+
+    resp = client_auth.post(app.url_path_for(ROUTE_NAME, case_id=case_with_file.id), json=payload)
+
+    assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    detail = resp.json()["detail"][0]
+
+    assert detail["loc"] == loc
+    assert detail["msg"] == msg
+    assert detail["type"] == type
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize(
+    "payload, msg, type, loc",
+    [
+        (
+            {
+                "critical_point": -1,
+                "form": {
+                    "variables": [
+                        {
+                            "name": "E_c",
+                            "dist": {
+                                "name": "lognormal",
+                                "params": {
+                                    "mean": 1.0,
+                                    "cov": 0.1,
+                                },
+                            },
+                        },
+                    ],
+                },
+            },
+            "Input should be greater than 0",
+            "greater_than",
+            ["body", "critical_point"],
+        ),
+        (
+            {
+                "critical_point": "not_number",
+                "form": {
+                    "variables": [
+                        {
+                            "name": "E_c",
+                            "dist": {
+                                "name": "lognormal",
+                                "params": {
+                                    "mean": 1.0,
+                                    "cov": 0.1,
+                                },
+                            },
+                        },
+                    ],
+                },
+            },
+            "Input should be a valid integer, unable to parse string as an integer",
+            "int_parsing",
+            ["body", "critical_point"],
+        ),
+        (
+            {
+                "form": {
+                    "variables": [
+                        {
+                            "name": "E_c",
+                            "dist": {
+                                "name": "lognormal",
+                                "params": {
+                                    "mean": 1.0,
+                                    "cov": 0.1,
+                                },
+                            },
+                        },
+                    ],
+                },
+            },
+            "Field required",
+            "missing",
+            ["body", "critical_point"],
+        ),
+    ],
+    ids=["negative_critical_point", "critical_point_not_a_number", "critiacal_point_missing"],
+)
+def test_negative_form_run_invalid_critical_point(
+    client_auth: TestClient,
+    case_with_file: Case,
+    payload: dict,
+    msg: str,
+    type: str,
+    loc: list,
+):
+    task = MagicMock()
+    task.id = str(uuid4())
 
     resp = client_auth.post(app.url_path_for(ROUTE_NAME, case_id=case_with_file.id), json=payload)
 
@@ -152,13 +255,13 @@ def test_negative_form_run_must_have_at_least_one_variable(
     task = MagicMock()
     task.id = str(uuid4())
 
-    resp = client_auth.post(app.url_path_for(ROUTE_NAME, case_id=case_with_file.id), json={"variables": []})
+    resp = client_auth.post(app.url_path_for(ROUTE_NAME, case_id=case_with_file.id), json={"form": {"variables": []}})
 
     assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     detail = resp.json()["detail"][0]
 
-    assert detail["loc"] == ["body", "variables"]
+    assert detail["loc"] == ["body", "form", "variables"]
     assert detail["msg"] == "List should have at least 1 item after validation, not 0"
     assert detail["type"] == "too_short"
 

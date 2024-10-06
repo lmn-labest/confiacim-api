@@ -64,6 +64,31 @@ def test_positive_form_run(
 
 @pytest.mark.slow
 @pytest.mark.integration
+def test_positive_form_run_with_critical_point(
+    form_results_with_critical_point: FormResult,
+    session_factory,
+    mocker,
+    tmp_path,
+):
+    import confiacim_api.tasks
+
+    mocker.patch("confiacim_api.tasks.get_simulation_base_dir", return_value=tmp_path)
+    rewrite_case_file_mocker = mocker.spy(confiacim_api.tasks, "rewrite_case_file")
+    form_run(form_results_with_critical_point.id)
+
+    with session_factory as session:
+        result_from_db = session.get(FormResult, form_results_with_critical_point.id)
+        assert result_from_db.status == ResultStatus.SUCCESS
+        assert result_from_db.beta is not None
+        assert result_from_db.resid is not None
+        assert result_from_db.it is not None
+        assert result_from_db.Pf is not None
+
+    assert str(rewrite_case_file_mocker.call_args).split(",")[-1] == " last_step=160)"
+
+
+@pytest.mark.slow
+@pytest.mark.integration
 def test_negative_form_run_file_not_found(session_factory, case: Case):
 
     with session_factory as session:

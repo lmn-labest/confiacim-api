@@ -129,6 +129,8 @@ class FormResult(TimestampMixin, Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     task_id: Mapped[Optional[UUID]]
 
+    critical_point: Mapped[Optional[int]]
+
     beta: Mapped[Optional[float]]
     resid: Mapped[Optional[float]]
     it: Mapped[Optional[int]]
