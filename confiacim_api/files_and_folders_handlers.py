@@ -136,7 +136,7 @@ def rewrite_case_file(
     case_path: Path,
     rc_limit: bool = False,
     setpnode_and_setptime: bool = True,
-    last_step: Optional[int] = None,
+    critical_point: Optional[int] = None,
 ):
     """
     Reescreve o arquivo case.dat
@@ -167,9 +167,9 @@ def rewrite_case_file(
         new_file_case = rm_setpnode_and_setptime(new_file_case)
         is_new_file = True
 
-    if last_step:
-        logger.info(f"Task {task_id} - Novo loop de tempo até passo {last_step} ...")
-        new_file_case = new_time_loop(new_file_case, last_step)
+    if critical_point:
+        logger.info(f"Task {task_id} - Novo loop de tempo até passo {critical_point} ...")
+        new_file_case = new_time_loop(new_file_case, critical_point)
         is_new_file = True
 
     if is_new_file:

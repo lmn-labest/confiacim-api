@@ -94,7 +94,7 @@ def test_positive_run_with_rc_limit(
 
 
 @pytest.mark.integration
-def test_positive_run_with_last_step(
+def test_positive_run_with_critical_point(
     client_auth: TestClient,
     session,
     mocker,
@@ -109,7 +109,7 @@ def test_positive_run_with_last_step(
         return_value=task,
     )
 
-    payload = {"last_step": 100}
+    payload = {"critical_point": 100}
 
     resp = client_auth.post(app.url_path_for(ROUTE_NAME, case_id=case_with_file.id), json=payload)
 
@@ -118,7 +118,7 @@ def test_positive_run_with_last_step(
     result = session.scalars(select(TencimResult)).one()
 
     tencim_standalone_run_mocker.assert_called_once()
-    tencim_standalone_run_mocker.assert_called_with(result_id=result.id, last_step=100)
+    tencim_standalone_run_mocker.assert_called_with(result_id=result.id, critical_point=100)
 
     body = resp.json()
 
@@ -137,25 +137,30 @@ def test_positive_run_with_last_step(
             "bool_parsing",
         ),
         (
-            "last_step",
+            "critical_point",
             "dd",
             "Input should be a valid integer, unable to parse string as an integer",
             "int_parsing",
         ),
         (
-            "last_step",
+            "critical_point",
             "-1",
             "Input should be greater than 0",
             "greater_than",
         ),
         (
-            "last_step",
+            "critical_point",
             "0",
             "Input should be greater than 0",
             "greater_than",
         ),
     ],
-    ids=["rc limit invalid type", "last_step invalid type", "last_step invalid value -1", "last_step invalid value 0"],
+    ids=[
+        "rc limit invalid type",
+        "critical_point invalid type",
+        "critical_point invalid value -1",
+        "critical_point invalid value 0",
+    ],
 )
 def test_negative_run_invalid_payload(
     client_auth: TestClient,

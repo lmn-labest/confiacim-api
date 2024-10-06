@@ -241,7 +241,7 @@ def test_rewrite_case_file_with_new_loop_time(tmp_path):
     assert "setpnode" in content
     assert "setptime" in content
 
-    rewrite_case_file(task_id=uuid4(), case_path=case_path, last_step=3)
+    rewrite_case_file(task_id=uuid4(), case_path=case_path, critical_point=3)
 
     content = case_path.read_text()
 
