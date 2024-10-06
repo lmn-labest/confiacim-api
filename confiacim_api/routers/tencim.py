@@ -120,7 +120,10 @@ def tencim_standalone_run(
     options: TencimOptions,
     user: CurrentUser,
 ):
-    """Envia uma simulação do `tencim` do caso `case_id` para a fila execução"""
+    """Envia uma simulação do `tencim` do caso `case_id` para a fila execução.
+    Caso `critical_point` seja omitido ou definido como `null` o ponto critico será o
+    ultimo passo de tempo definido no aquivo base.
+    """
 
     case = session.scalar(select(Case).filter(Case.id == case_id, Case.user == user))
 
