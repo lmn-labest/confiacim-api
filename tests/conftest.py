@@ -344,3 +344,23 @@ def form_results(
     session.refresh(new_result)
 
     return new_result
+
+
+@pytest.fixture
+def form_results_with_critical_point(
+    session,
+    case_form_with_real_file: Case,
+    form_case_config: dict,
+):
+
+    new_result = FormResult(
+        case=case_form_with_real_file,
+        status=ResultStatus.CREATED,
+        config=form_case_config,
+        critical_point=160,
+    )
+    session.add(new_result)
+    session.commit()
+    session.refresh(new_result)
+
+    return new_result

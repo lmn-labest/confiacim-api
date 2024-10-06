@@ -145,7 +145,7 @@ def rewrite_case_file(
         task_id: id da task celerey
         case_path: caminho do arquivo case.dat
         rc_limit: add a macro nocliprc.
-        setpnode_and_time: retira as macros setpnode e setptime
+        setpnode_and_setptime: retira as macros setpnode e setptime
     """
 
     with open(case_path, encoding="utf-8") as fp:
