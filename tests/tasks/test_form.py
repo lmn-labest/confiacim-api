@@ -84,7 +84,7 @@ def test_positive_form_run_with_critical_point(
         assert result_from_db.it is not None
         assert result_from_db.Pf is not None
 
-    assert str(rewrite_case_file_mocker.call_args).split(",")[-1] == " last_step=160)"
+    assert "critical_point=160" in str(rewrite_case_file_mocker.call_args)
 
 
 @pytest.mark.slow
