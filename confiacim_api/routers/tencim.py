@@ -139,7 +139,7 @@ def tencim_standalone_run(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         )
 
-    result = TencimResult(case=case)
+    result = TencimResult(case=case, critical_point=options.critical_point)
     session.add(result)
     session.commit()
     session.refresh(result)

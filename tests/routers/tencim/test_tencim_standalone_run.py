@@ -125,6 +125,8 @@ def test_positive_run_with_critical_point(
     assert body["result_id"] == result.id
     assert body["task_id"] == task.id
 
+    assert result.critical_point == 100
+
 
 @pytest.mark.integration
 @pytest.mark.parametrize(

@@ -21,6 +21,7 @@ def test_create_case(session: Session, case: Case):
         rankine_rc=rankine_rc,
         mohr_coulomb_rc=mohr_coulomb_rc,
         status=ResultStatus.RUNNING,
+        critical_point=100,
     )
     session.add(new_result)
     session.commit()
@@ -41,6 +42,8 @@ def test_create_case(session: Session, case: Case):
     assert result_from_db.rankine_rc == rankine_rc
     assert result_from_db.mohr_coulomb_rc == mohr_coulomb_rc
     assert result_from_db.status == ResultStatus.RUNNING
+
+    assert result_from_db.critical_point == 100
 
     assert result_from_db.created_at is not None
     assert isinstance(result_from_db.created_at, datetime)
