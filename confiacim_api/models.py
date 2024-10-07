@@ -115,6 +115,8 @@ class TencimResult(TimestampMixin, Base):
         default=ResultStatus.CREATED,
     )
 
+    critical_point: Mapped[Optional[int]]
+
     case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
     case: Mapped["Case"] = relationship(back_populates="tencim_results")
 
