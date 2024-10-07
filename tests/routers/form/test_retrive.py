@@ -34,6 +34,7 @@ def test_positive_retrive(
     assert body["it"] == form_results_with_critical_point.it
     assert body["Pf"] == form_results_with_critical_point.Pf
     assert body["config"] == form_results_with_critical_point.config
+    assert body["variables_stats"] == form_results_with_critical_point.variables_stats
 
     assert body["error"] == form_results_with_critical_point.error
     assert body["status"] == (
@@ -71,6 +72,7 @@ def test_positive_check_fields(client_auth: TestClient, form_results: FormResult
         "it",
         "Pf",
         "config",
+        "variables_stats",
         "error",
         "status",
         "created_at",
