@@ -45,6 +45,7 @@ class FormResultDetail(BaseModel):
     Pf: Optional[float] = None
     error: Optional[str] = None
     config: Optional[dict] = None
+    variables_stats: Optional[dict] = None
     status: ResultStatus
     created_at: datetime
     updated_at: datetime
