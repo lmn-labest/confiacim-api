@@ -1,4 +1,10 @@
+from datetime import datetime
+from typing import Optional
+from uuid import UUID
+
 from pydantic import BaseModel, Field, PositiveInt
+
+from confiacim_api.models import ResultStatus
 
 
 class RandomDistribution(BaseModel):
@@ -27,3 +33,18 @@ FORM_CONFIG_EXAMPLE = {
 class FormConfigCreate(BaseModel):
     form: FormConfig = Field(examples=[FORM_CONFIG_EXAMPLE])
     critical_point: PositiveInt
+
+
+class FormResultDetail(BaseModel):
+    id: int
+    task_id: Optional[UUID] = None
+    critical_point: Optional[PositiveInt] = None
+    beta: Optional[float] = None
+    resid: Optional[float] = None
+    it: Optional[PositiveInt] = None
+    Pf: Optional[float] = None
+    error: Optional[str] = None
+    config: Optional[dict] = None
+    status: ResultStatus
+    created_at: datetime
+    updated_at: datetime
