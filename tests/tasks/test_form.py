@@ -56,10 +56,19 @@ def test_positive_form_run(
     with session_factory as session:
         result_from_db = session.get(FormResult, form_results.id)
         assert result_from_db.status == ResultStatus.SUCCESS
-        assert result_from_db.beta is not None
-        assert result_from_db.resid is not None
-        assert result_from_db.it is not None
-        assert result_from_db.Pf is not None
+
+        assert result_from_db.beta == pytest.approx(1.984573)
+        assert result_from_db.resid == pytest.approx(1.244235e-05)
+        assert result_from_db.it == 3
+        assert result_from_db.Pf == pytest.approx(0.023595950368176397)
+
+        assert result_from_db.variables_stats is not None
+
+        assert result_from_db.variables_stats["E_c"]["importance_factor"] == pytest.approx(93.059092)
+        assert result_from_db.variables_stats["E_c"]["omission_factor"] == pytest.approx(3.795699)
+
+        assert result_from_db.variables_stats["poisson_c"]["importance_factor"] == pytest.approx(6.940907)
+        assert result_from_db.variables_stats["poisson_c"]["omission_factor"] == pytest.approx(1.0366224096144343)
 
 
 @pytest.mark.slow
@@ -79,10 +88,19 @@ def test_positive_form_run_with_critical_point(
     with session_factory as session:
         result_from_db = session.get(FormResult, form_results_with_critical_point.id)
         assert result_from_db.status == ResultStatus.SUCCESS
-        assert result_from_db.beta is not None
-        assert result_from_db.resid is not None
-        assert result_from_db.it is not None
-        assert result_from_db.Pf is not None
+
+        assert result_from_db.beta == pytest.approx(6.347582)
+        assert result_from_db.resid == pytest.approx(6.273780229081417e-05)
+        assert result_from_db.it == 4
+        assert result_from_db.Pf == pytest.approx(1.0936211430385317e-10)
+
+        assert result_from_db.variables_stats is not None
+
+        assert result_from_db.variables_stats["E_c"]["importance_factor"] == pytest.approx(96.71553532129761)
+        assert result_from_db.variables_stats["E_c"]["omission_factor"] == pytest.approx(5.517822199219298)
+
+        assert result_from_db.variables_stats["poisson_c"]["importance_factor"] == pytest.approx(3.2844646787024057)
+        assert result_from_db.variables_stats["poisson_c"]["omission_factor"] == pytest.approx(1.0168382628144947)
 
     assert "critical_point=160" in str(rewrite_case_file_mocker.call_args)
 

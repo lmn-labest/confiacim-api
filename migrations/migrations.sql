@@ -113,4 +113,10 @@ ALTER TABLE tencim_results ADD COLUMN critical_point INTEGER;
 
 UPDATE alembic_version SET version_num='25b0f40bb3ba' WHERE alembic_version.version_num = '49c45e37ed9a';
 
+-- Running upgrade 25b0f40bb3ba -> 097588d1c5ba
+
+ALTER TABLE form_results ADD COLUMN variables_stats JSON;
+
+UPDATE alembic_version SET version_num='097588d1c5ba' WHERE alembic_version.version_num = '25b0f40bb3ba';
+
 COMMIT;
