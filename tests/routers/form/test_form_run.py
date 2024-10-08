@@ -123,8 +123,27 @@ def test_positive_form_run(
             "missing",
             ["body", "form", "variables", 0, "name"],
         ),
+        (
+            {
+                "name": "E_i",
+                "dist": {
+                    "name": "lognormal",
+                    "params": {
+                        "mean": "not_number",
+                    },
+                },
+            },
+            "Input should be 'E_c', 'poisson_c', 'E_f' or 'poisson_f'",
+            "enum",
+            ["body", "form", "variables", 0, "name"],
+        ),
     ],
-    ids=["mean_not_number", "dist_name_missing", "varible_name_missing"],
+    ids=[
+        "mean_not_number",
+        "dist_name_missing",
+        "variable_name_missing",
+        "invalid_variable_name",
+    ],
 )
 def test_negative_form_run_invalid_variables(
     client_auth: TestClient,

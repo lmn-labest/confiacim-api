@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 from uuid import UUID
 
@@ -7,13 +8,20 @@ from pydantic import BaseModel, Field, PositiveInt
 from confiacim_api.models import ResultStatus
 
 
+class FormVariablesEnum(str, Enum):
+    E_c = "E_c"
+    poisson_c = "poisson_c"
+    E_f = "E_f"
+    poisson_f = "poisson_f"
+
+
 class RandomDistribution(BaseModel):
     name: str
     params: dict[str, float]
 
 
 class FormVariables(BaseModel):
-    name: str
+    name: FormVariablesEnum
     dist: RandomDistribution
 
 
