@@ -1,6 +1,11 @@
 from confiacim_api.schemes.base import Health, Message, ResultCeleryTask, Token
 from confiacim_api.schemes.case import CaseCreate, CasePublic, MaterialsOut
-from confiacim_api.schemes.form import FormConfigCreate, FormResultDetail
+from confiacim_api.schemes.form import (
+    FormConfigCreate,
+    FormResultDetail,
+    FormVariables,
+    RandomDistribution,
+)
 from confiacim_api.schemes.tencim import (
     TencimResultDetail,
     TencimResultStatus,
@@ -26,4 +31,6 @@ __all__ = (
     "UserCreate",
     "FormConfigCreate",
     "FormResultDetail",
+    "FormVariables",
+    "RandomDistribution",
 )
