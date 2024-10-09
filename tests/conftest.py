@@ -41,7 +41,9 @@ class MaterialsFactory(factory.Factory):
 
 @pytest.fixture(scope="session")
 def db_connection():
+
     engine = create_engine(f"{database_url}_test", echo=settings.SQLALCHEMY_ECHO)
+
     connection = engine.connect()
 
     Base.metadata.create_all(connection.engine)
@@ -49,10 +51,12 @@ def db_connection():
 
     Base.metadata.drop_all(connection.engine)
     connection.close()
+    engine.dispose()
 
 
 @pytest.fixture
 def session(db_connection):
+
     transaction = db_connection.begin()
     session = Session(bind=db_connection)
     session.begin_nested()

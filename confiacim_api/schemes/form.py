@@ -15,8 +15,18 @@ class FormVariablesEnum(str, Enum):
     poisson_f = "poisson_f"
 
 
+class RandomDistributionEnum(str, Enum):
+    normal = "normal"
+    lognormal = "lognormal"
+    gumbel_r = "gumbel_r"
+    weibull_min = "weibull_min"
+    triang = "triang"
+    sgld = "sgld"
+    sgld_t = "sgld_t"
+
+
 class RandomDistribution(BaseModel):
-    name: str
+    name: RandomDistributionEnum
     params: dict[str, float]
 
 
