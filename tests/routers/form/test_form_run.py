@@ -153,8 +153,6 @@ def test_negative_form_run_invalid_variables(
     type: str,
     loc: list,
 ):
-    task = MagicMock()
-    task.id = str(uuid4())
 
     payload = {
         "form": {"variables": [variable]},
@@ -252,8 +250,6 @@ def test_negative_form_run_invalid_critical_point(
     type: str,
     loc: list,
 ):
-    task = MagicMock()
-    task.id = str(uuid4())
 
     resp = client_auth.post(app.url_path_for(ROUTE_NAME, case_id=case_with_file.id), json=payload)
 
@@ -264,6 +260,27 @@ def test_negative_form_run_invalid_critical_point(
     assert detail["loc"] == loc
     assert detail["msg"] == msg
     assert detail["type"] == type
+
+
+def test_negative_form_run_invalid_distribution_name(
+    client_auth: TestClient,
+    case_with_file: Case,
+    payload: dict,
+):
+    payload_new = payload.copy()
+    payload_new["form"]["variables"][0]["dist"]["name"] = "invalid_name"
+
+    resp = client_auth.post(app.url_path_for(ROUTE_NAME, case_id=case_with_file.id), json=payload)
+
+    assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    detail = resp.json()["detail"][0]
+
+    assert detail["loc"] == ["body", "form", "variables", 0, "dist", "name"]
+    assert detail["msg"] == (
+        "Input should be 'normal', 'lognormal', 'gumbel_r', 'weibull_min', 'triang', 'sgld' or 'sgld_t'"
+    )
+    assert detail["type"] == "enum"
 
 
 @pytest.mark.integration
