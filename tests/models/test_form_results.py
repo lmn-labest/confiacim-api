@@ -12,6 +12,7 @@ def test_create_form_result(session: Session, case: Case):
     new_result = FormResult(
         case=case,
         status=ResultStatus.RUNNING,
+        description="Descrição do Resultado",
         beta=1.0,
         resid=1e-3,
         it=3,
@@ -38,6 +39,7 @@ def test_create_form_result(session: Session, case: Case):
     assert result_from_db.critical_point == 12
     assert result_from_db.Pf == pytest.approx(1e-5)
     assert result_from_db.status == ResultStatus.RUNNING
+    assert result_from_db.description == "Descrição do Resultado"
 
     assert result_from_db.config is None
     assert result_from_db.variables_stats is None

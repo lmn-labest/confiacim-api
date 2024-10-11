@@ -64,6 +64,7 @@ class FormResultDetail(BaseModel):
     error: Optional[str] = None
     config: Optional[dict] = None
     variables_stats: Optional[dict] = None
+    description: Optional[dict] = None
     status: ResultStatus
     created_at: datetime
     updated_at: datetime

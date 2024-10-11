@@ -32,6 +32,7 @@ def test_positive_retrive(client_auth: TestClient, tencim_results: TencimResult)
     assert body["critical_point"] == tencim_results.critical_point
     assert body["error"] == tencim_results.error
     assert body["status"] == tencim_results.status.value if tencim_results.status else None
+    assert body["description"] == tencim_results.description
     assert body["created_at"] == (tencim_results.created_at.isoformat() if tencim_results.created_at else None)
     assert body["updated_at"] == (tencim_results.updated_at.isoformat() if tencim_results.updated_at else None)
 
@@ -61,6 +62,7 @@ def test_positive_check_fields(client_auth: TestClient, tencim_results: TencimRe
         "error",
         "status",
         "critical_point",
+        "description",
         "created_at",
         "updated_at",
     }
