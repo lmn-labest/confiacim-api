@@ -62,7 +62,7 @@ services:
 
   worker:
     image: confiacim_api:dev
-    command: watchfiles --filter python 'celery -A confiacim_api.celery worker  --concurrency=2 -l INFO'
+    command: watchfiles --filter python 'celery -A confiacim_api.celery worker  --concurrency=2 -l INFO' confiacim_api
     depends_on:
       - sentinel
     volumes:

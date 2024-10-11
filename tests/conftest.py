@@ -269,6 +269,7 @@ def tencim_results(session, case_with_real_file: Case):
         rankine_rc=rankine_rc,
         mohr_coulomb_rc=mohr_coulomb_rc,
         status=ResultStatus.SUCCESS,
+        description="Descrição do caso",
     )
     session.add(new_result)
     session.commit()
@@ -342,6 +343,7 @@ def form_results(
         case=case_form_with_real_file,
         status=ResultStatus.CREATED,
         config=form_case_config,
+        description="Descrição do caso",
     )
     session.add(new_result)
     session.commit()

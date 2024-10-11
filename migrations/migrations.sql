@@ -127,4 +127,10 @@ ALTER TABLE tencim_results ADD COLUMN description TEXT;
 
 UPDATE alembic_version SET version_num='e9fd6582f431' WHERE alembic_version.version_num = '097588d1c5ba';
 
+-- Running upgrade e9fd6582f431 -> a14583722acf
+
+ALTER TABLE tencim_results ADD COLUMN rc_limit BOOLEAN;
+
+UPDATE alembic_version SET version_num='a14583722acf' WHERE alembic_version.version_num = 'e9fd6582f431';
+
 COMMIT;

@@ -51,6 +51,7 @@ FORM_CONFIG_EXAMPLE = {
 class FormConfigCreate(BaseModel):
     form: FormConfig = Field(examples=[FORM_CONFIG_EXAMPLE])
     critical_point: PositiveInt
+    description: Optional[str] = None
 
 
 class FormResultDetail(BaseModel):
@@ -64,7 +65,7 @@ class FormResultDetail(BaseModel):
     error: Optional[str] = None
     config: Optional[dict] = None
     variables_stats: Optional[dict] = None
-    description: Optional[dict] = None
+    description: Optional[str] = None
     status: ResultStatus
     created_at: datetime
     updated_at: datetime

@@ -64,9 +64,14 @@ def form_run(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         )
 
-    payload_configs = config.model_dump(exclude_unset=True)
+    payload_configs = config.model_dump()
 
-    result = FormResult(case=case, config=payload_configs["form"], critical_point=payload_configs["critical_point"])
+    result = FormResult(
+        case=case,
+        config=payload_configs["form"],
+        critical_point=payload_configs["critical_point"],
+        description=payload_configs["description"],
+    )
     session.add(result)
     session.commit()
     session.refresh(result)
