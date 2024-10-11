@@ -114,6 +114,7 @@ class TencimResult(TimestampMixin, Base):
         Enum(ResultStatus, name="result_status"),
         default=ResultStatus.CREATED,
     )
+    description: Mapped[str] = mapped_column(Text, nullable=True)
 
     critical_point: Mapped[Optional[int]]
 
@@ -143,6 +144,7 @@ class FormResult(TimestampMixin, Base):
         Enum(ResultStatus, name="result_status"),
         default=ResultStatus.CREATED,
     )
+    description: Mapped[str] = mapped_column(Text, nullable=True)
 
     config: Mapped[dict] = mapped_column(JSON, nullable=True)
     variables_stats: Mapped[dict] = mapped_column(JSON, nullable=True)
