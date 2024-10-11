@@ -1,0 +1,25 @@
+name: Redeploy
+run-name: Deploy ${{ inputs.version }} on ${{ inputs.environment }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: Versão do artefato
+        required: true
+
+      environment:
+        type: environment
+        description: Nome do ambiente
+        required: true
+
+jobs:
+  redeploy:
+    name: Redeploy
+    uses: petrobrasbr/d9i3-templates/.github/workflows/pipeline_redeploy.yml@main
+    secrets: inherit
+    with:
+      version: ${{ inputs.version }}
+      environment: ${{ inputs.environment }}
+      command: ${{ inputs.command }}
