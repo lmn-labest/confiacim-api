@@ -67,3 +67,11 @@ class FormResultDetail(BaseModel):
     status: ResultStatus
     created_at: datetime
     updated_at: datetime
+
+
+class FormResultSummary(BaseModel):
+    id: int
+    task_id: Optional[UUID] = None
+    status: Optional[ResultStatus] = None
+    created_at: datetime
+    updated_at: datetime
