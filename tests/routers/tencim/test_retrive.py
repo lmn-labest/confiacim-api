@@ -30,6 +30,7 @@ def test_positive_retrive(client_auth: TestClient, tencim_results: TencimResult)
     assert body["rankine_rc"] == list(tencim_results.rankine_rc) if tencim_results.rankine_rc else ""
     assert body["mohr_coulomb_rc"] == list(tencim_results.mohr_coulomb_rc) if tencim_results.mohr_coulomb_rc else ""
     assert body["critical_point"] == tencim_results.critical_point
+    assert body["rc_limit"] == tencim_results.rc_limit
     assert body["error"] == tencim_results.error
     assert body["status"] == tencim_results.status.value if tencim_results.status else None
     assert body["description"] == tencim_results.description
@@ -62,6 +63,7 @@ def test_positive_check_fields(client_auth: TestClient, tencim_results: TencimRe
         "error",
         "status",
         "critical_point",
+        "rc_limit",
         "description",
         "created_at",
         "updated_at",

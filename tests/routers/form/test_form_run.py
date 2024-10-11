@@ -80,6 +80,47 @@ def test_positive_form_run(
 
 
 @pytest.mark.integration
+def test_positive_form_run_with_description(
+    client_auth: TestClient,
+    session,
+    mocker,
+    case_with_file: Case,
+    payload,
+):
+
+    task = MagicMock()
+    task.id = str(uuid4())
+
+    form_run_mocker = mocker.patch(
+        "confiacim_api.routers.form.form_task.delay",
+        return_value=task,
+    )
+
+    url = app.url_path_for(ROUTE_NAME, case_id=case_with_file.id)
+
+    payload_new = payload.copy()
+    payload_new["description"] = "Descricao do resultado."
+
+    resp = client_auth.post(url, json=payload_new)
+
+    assert resp.status_code == status.HTTP_200_OK
+
+    result = session.scalars(select(FormResult)).one()
+
+    form_run_mocker.assert_called_once()
+    form_run_mocker.assert_called_with(result_id=result.id)
+
+    body = resp.json()
+
+    assert body["result_id"] == result.id
+    assert body["task_id"] == task.id
+
+    assert result.config == payload["form"]
+    assert result.critical_point == 120
+    assert result.description == "Descricao do resultado."
+
+
+@pytest.mark.integration
 @pytest.mark.parametrize(
     "variable, msg, type, loc",
     [

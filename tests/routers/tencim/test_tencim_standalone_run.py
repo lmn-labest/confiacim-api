@@ -129,6 +129,41 @@ def test_positive_run_with_critical_point(
 
 
 @pytest.mark.integration
+def test_positive_run_with_description(
+    client_auth: TestClient,
+    session,
+    mocker,
+    user: User,
+    case_with_file: Case,
+):
+    task = MagicMock()
+    task.id = str(uuid4())
+
+    tencim_standalone_run_mocker = mocker.patch(
+        "confiacim_api.routers.tencim.tencim_run.delay",
+        return_value=task,
+    )
+
+    payload = {"description": "Descrição do resultado tencim"}
+
+    resp = client_auth.post(app.url_path_for(ROUTE_NAME, case_id=case_with_file.id), json=payload)
+
+    assert resp.status_code == status.HTTP_200_OK
+
+    result = session.scalars(select(TencimResult)).one()
+
+    tencim_standalone_run_mocker.assert_called_once()
+    tencim_standalone_run_mocker.assert_called_with(result_id=result.id)
+
+    body = resp.json()
+
+    assert body["result_id"] == result.id
+    assert body["task_id"] == task.id
+
+    assert result.description == "Descrição do resultado tencim"
+
+
+@pytest.mark.integration
 @pytest.mark.parametrize(
     "key, value, msg, type",
     [

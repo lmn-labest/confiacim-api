@@ -13,7 +13,7 @@ from confiacim_api.schemes import (
     TencimResultStatus,
 )
 from confiacim_api.schemes.tencim import (  # TODO: Importar o __init__
-    TencimOptions,
+    TencimCreateRun,
     TencimResultError,
     TencimResultSummary,
 )
@@ -117,7 +117,7 @@ def tencim_result_delete(
 def tencim_standalone_run(
     session: ActiveSession,
     case_id: int,
-    options: TencimOptions,
+    payload: TencimCreateRun,
     user: CurrentUser,
 ):
     """Envia uma simulação do `tencim` do caso `case_id` para a fila execução.
@@ -139,12 +139,22 @@ def tencim_standalone_run(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         )
 
-    result = TencimResult(case=case, critical_point=options.critical_point)
+    result = TencimResult(
+        case=case,
+        **payload.model_dump(exclude_unset=True),
+    )
+
     session.add(result)
     session.commit()
     session.refresh(result)
 
-    task = tencim_run.delay(result_id=result.id, **options.model_dump(exclude_unset=True))
+    task = tencim_run.delay(
+        result_id=result.id,
+        **payload.model_dump(
+            exclude_unset=True,
+            exclude={"description"},
+        ),
+    )
 
     return {
         "task_id": task.id,
