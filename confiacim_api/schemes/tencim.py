@@ -26,7 +26,8 @@ class TencimResultDetail(BaseModel):
     rankine_rc: Optional[TArrayFloat] = None
     mohr_coulomb_rc: Optional[TArrayFloat] = None
     critical_point: Optional[PositiveInt] = None
-    description: Optional[dict] = None
+    rc_limit: Optional[bool] = None
+    description: Optional[str] = None
     error: Optional[str] = None
     status: ResultStatus
     created_at: datetime
@@ -41,6 +42,7 @@ class TencimResultError(BaseModel):
     error: Optional[str] = None
 
 
-class TencimOptions(BaseModel):
+class TencimCreateRun(BaseModel):
     rc_limit: bool = False
     critical_point: Optional[PositiveInt] = None
+    description: Optional[str] = None

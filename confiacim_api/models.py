@@ -116,6 +116,7 @@ class TencimResult(TimestampMixin, Base):
     )
     description: Mapped[str] = mapped_column(Text, nullable=True)
 
+    rc_limit: Mapped[Optional[bool]]
     critical_point: Mapped[Optional[int]]
 
     case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
