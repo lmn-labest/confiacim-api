@@ -3,6 +3,7 @@ from confiacim_api.schemes.case import CaseCreate, CasePublic, MaterialsOut
 from confiacim_api.schemes.form import (
     FormConfigCreate,
     FormResultDetail,
+    FormResultSummary,
     FormVariables,
     RandomDistribution,
 )
@@ -31,6 +32,7 @@ __all__ = (
     "UserCreate",
     "FormConfigCreate",
     "FormResultDetail",
+    "FormResultSummary",
     "FormVariables",
     "RandomDistribution",
 )
