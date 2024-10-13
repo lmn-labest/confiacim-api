@@ -3,7 +3,7 @@ from uuid import UUID
 from pydantic import BaseModel
 
 
-class Health(BaseModel):
+class HealthOut(BaseModel):
     status: str
 
 
@@ -16,6 +16,6 @@ class Token(BaseModel):
     token_type: str
 
 
-class ResultCeleryTask(BaseModel):
+class ResultCeleryTaskOut(BaseModel):
     result_id: int
     task_id: UUID
