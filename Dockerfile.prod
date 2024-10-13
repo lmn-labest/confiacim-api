@@ -42,7 +42,8 @@ COPY --from=requirements-stage /tmp/packages/confiacim-0.12.0a0-py3-none-any.whl
 # copy project
 RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY confiacim_api confiacim_api
+COPY static static
 
 RUN chown -R app:appgroup $USER_DIR
 USER app
