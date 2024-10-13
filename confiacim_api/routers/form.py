@@ -6,10 +6,10 @@ from sqlalchemy import select
 from confiacim_api.database import ActiveSession
 from confiacim_api.models import Case, FormResult
 from confiacim_api.schemes import (
-    FormConfigCreate,
-    FormResultDetail,
-    FormResultSummary,
-    ResultCeleryTask,
+    FormConfigCreateIn,
+    FormResultDetailOut,
+    FormResultSummaryOut,
+    ResultCeleryTaskOut,
 )
 from confiacim_api.security import CurrentUser
 from confiacim_api.tasks import form_run as form_task
@@ -17,7 +17,7 @@ from confiacim_api.tasks import form_run as form_task
 router = APIRouter(prefix="/api/case", tags=["Form"])
 
 
-@router.get("/{case_id}/form/results", response_model=Page[FormResultSummary])
+@router.get("/{case_id}/form/results", response_model=Page[FormResultSummaryOut])
 def form_result_list(session: ActiveSession, user: CurrentUser, case_id: int):
     """Lista o resultados do **FORM** do usuário logado para o `case_id`"""
 
@@ -41,11 +41,11 @@ def form_result_list(session: ActiveSession, user: CurrentUser, case_id: int):
     return paginate(session, stmt)
 
 
-@router.post("/{case_id}/form/run", response_model=ResultCeleryTask)
+@router.post("/{case_id}/form/run", response_model=ResultCeleryTaskOut)
 def form_run(
     session: ActiveSession,
     case_id: int,
-    config: FormConfigCreate,
+    config: FormConfigCreateIn,
     user: CurrentUser,
 ):
     """Envia uma simulação do `FORM` do caso `case_id` para a fila de execução"""
@@ -86,7 +86,7 @@ def form_run(
 
 @router.get(
     "/{case_id}/form/results/{result_id}",
-    response_model=FormResultDetail,
+    response_model=FormResultDetailOut,
 )
 def form_result_retrive(
     session: ActiveSession,

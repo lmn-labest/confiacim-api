@@ -12,8 +12,8 @@ from confiacim_api.database import ActiveSession
 from confiacim_api.files_and_folders_handlers import extract_materials_infos_from_blob
 from confiacim_api.models import Case, MaterialsBaseCaseAverageProps
 from confiacim_api.schemes import (
-    CaseCreate,
-    CasePublic,
+    CaseCreateIn,
+    CaseOut,
     MaterialsOut,
 )
 from confiacim_api.security import CurrentUser
@@ -22,16 +22,16 @@ from confiacim_api.utils import file_case_is_zipfile
 router = APIRouter(prefix="/api/case", tags=["Case"])
 
 
-@router.get("", response_model=Page[CasePublic])
+@router.get("", response_model=Page[CaseOut])
 def case_list(session: ActiveSession, user: CurrentUser):
     "Lista os casos do usuario logado"
     return paginate(session, select(Case).filter(Case.user == user).order_by(Case.tag))
 
 
-@router.post("", response_model=CasePublic, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=CaseOut, status_code=status.HTTP_201_CREATED)
 def case_create(
     session: ActiveSession,
-    payload: CaseCreate,
+    payload: CaseCreateIn,
     user: CurrentUser,
 ):
     """Cria um caso"""
@@ -53,7 +53,7 @@ def case_create(
     return new_case
 
 
-@router.get("/{case_id}", response_model=CasePublic)
+@router.get("/{case_id}", response_model=CaseOut)
 def case_retrive(session: ActiveSession, case_id: int, user: CurrentUser):
     """Retorna o caso `case_id`"""
 
