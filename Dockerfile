@@ -23,6 +23,7 @@ WORKDIR /user/app
 COPY requirements.txt .
 COPY confiacim_api/ confiacim_api/
 COPY packages packages
+COPY static static
 
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
