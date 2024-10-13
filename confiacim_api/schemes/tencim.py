@@ -10,7 +10,7 @@ TArrayInt = tuple[int, ...]
 TArrayFloat = tuple[float, ...]
 
 
-class TencimResultSummary(BaseModel):
+class TencimResultSummaryOut(BaseModel):
     id: int
     task_id: Optional[UUID] = None
     status: Optional[ResultStatus] = None
@@ -18,7 +18,7 @@ class TencimResultSummary(BaseModel):
     updated_at: datetime
 
 
-class TencimResultDetail(BaseModel):
+class TencimResultDetailOut(BaseModel):
     id: int
     task_id: Optional[UUID] = None
     istep: Optional[TArrayInt] = None
@@ -34,15 +34,15 @@ class TencimResultDetail(BaseModel):
     updated_at: datetime
 
 
-class TencimResultStatus(BaseModel):
+class TencimResultStatusOut(BaseModel):
     status: ResultStatus
 
 
-class TencimResultError(BaseModel):
+class TencimResultErrorOut(BaseModel):
     error: Optional[str] = None
 
 
-class TencimCreateRun(BaseModel):
+class TencimCreateRunIn(BaseModel):
     rc_limit: bool = False
     critical_point: Optional[PositiveInt] = None
     description: Optional[str] = None

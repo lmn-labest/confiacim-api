@@ -3,7 +3,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
 
 from confiacim_api.database import ActiveSession
-from confiacim_api.schemes import Health, Message
+from confiacim_api.schemes import HealthOut, Message
 
 router = APIRouter(prefix="/api", tags=["Base"])
 
@@ -21,7 +21,7 @@ def index():
     return {"message": "Api do confiacim"}
 
 
-@router.get("/health", response_model=Health)
+@router.get("/HealthOut", response_model=HealthOut)
 def health(session: ActiveSession):
-    """Testa a conecção com banco de dados"""
+    """Testa a conexão com banco de dados"""
     return {"status": "ok" if check_db(session) else "fail"}

@@ -3,14 +3,14 @@ from sqlalchemy import select
 
 from confiacim_api.database import ActiveSession
 from confiacim_api.models import User
-from confiacim_api.schemes import UserCreate, UserOut
+from confiacim_api.schemes import UserCreateIn, UserOut
 from confiacim_api.security import CurrentUser, get_password_hash
 
 router = APIRouter(prefix="/api/user", tags=["User"])
 
 
 @router.post("/", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-def create_user(session: ActiveSession, payload: UserCreate):
+def create_user(session: ActiveSession, payload: UserCreateIn):
     """Cria usuário com `email` e `senha`"""
     if session.scalar(select(User).where(User.email == payload.email)):
         raise HTTPException(

@@ -6,6 +6,6 @@ class UserOut(BaseModel):
     email: EmailStr
 
 
-class UserCreate(BaseModel):
+class UserCreateIn(BaseModel):
     email: EmailStr
     password: str

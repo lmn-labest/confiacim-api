@@ -8,14 +8,12 @@ from sqlalchemy import select
 from confiacim_api.database import ActiveSession
 from confiacim_api.models import Case, TencimResult
 from confiacim_api.schemes import (
-    ResultCeleryTask,
-    TencimResultDetail,
-    TencimResultStatus,
-)
-from confiacim_api.schemes.tencim import (  # TODO: Importar o __init__
-    TencimCreateRun,
-    TencimResultError,
-    TencimResultSummary,
+    ResultCeleryTaskOut,
+    TencimCreateRunIn,
+    TencimResultDetailOut,
+    TencimResultErrorOut,
+    TencimResultStatusOut,
+    TencimResultSummaryOut,
 )
 from confiacim_api.security import CurrentUser
 from confiacim_api.tasks import tencim_standalone_run as tencim_run
@@ -24,7 +22,7 @@ from confiacim_api.write_csv import write_rc_result_to_csv
 router = APIRouter(prefix="/api/case", tags=["Tencim"])
 
 
-@router.get("/{case_id}/tencim/results", response_model=Page[TencimResultSummary])
+@router.get("/{case_id}/tencim/results", response_model=Page[TencimResultSummaryOut])
 def tencim_result_list(session: ActiveSession, user: CurrentUser, case_id: int):
     """Lista o resultados do usuário logado para o `case_id`"""
 
@@ -50,7 +48,7 @@ def tencim_result_list(session: ActiveSession, user: CurrentUser, case_id: int):
 
 @router.get(
     "/{case_id}/tencim/results/{result_id}",
-    response_model=TencimResultDetail,
+    response_model=TencimResultDetailOut,
 )
 def tencim_result_retrive(
     session: ActiveSession,
@@ -113,11 +111,11 @@ def tencim_result_delete(
     session.commit()
 
 
-@router.post("/{case_id}/tencim/run", response_model=ResultCeleryTask)
+@router.post("/{case_id}/tencim/run", response_model=ResultCeleryTaskOut)
 def tencim_standalone_run(
     session: ActiveSession,
     case_id: int,
-    payload: TencimCreateRun,
+    payload: TencimCreateRunIn,
     user: CurrentUser,
 ):
     """Envia uma simulação do `tencim` do caso `case_id` para a fila execução.
@@ -162,7 +160,7 @@ def tencim_standalone_run(
     }
 
 
-@router.get("/{case_id}/tencim/results/{result_id}/status", response_model=TencimResultStatus)
+@router.get("/{case_id}/tencim/results/{result_id}/status", response_model=TencimResultStatusOut)
 def tencim_result_status_retrive(
     session: ActiveSession,
     case_id: int,
@@ -200,7 +198,7 @@ def tencim_result_status_retrive(
     return {"status": result.status}
 
 
-@router.get("/{case_id}/tencim/results/{result_id}/error", response_model=TencimResultError)
+@router.get("/{case_id}/tencim/results/{result_id}/error", response_model=TencimResultErrorOut)
 def tencim_result_error_retrive(
     session: ActiveSession,
     case_id: int,

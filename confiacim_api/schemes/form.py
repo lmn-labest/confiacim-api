@@ -48,13 +48,13 @@ FORM_CONFIG_EXAMPLE = {
 }
 
 
-class FormConfigCreate(BaseModel):
+class FormConfigCreateIn(BaseModel):
     form: FormConfig = Field(examples=[FORM_CONFIG_EXAMPLE])
     critical_point: PositiveInt
     description: Optional[str] = None
 
 
-class FormResultDetail(BaseModel):
+class FormResultDetailOut(BaseModel):
     id: int
     task_id: Optional[UUID] = None
     critical_point: Optional[PositiveInt] = None
@@ -71,7 +71,7 @@ class FormResultDetail(BaseModel):
     updated_at: datetime
 
 
-class FormResultSummary(BaseModel):
+class FormResultSummaryOut(BaseModel):
     id: int
     task_id: Optional[UUID] = None
     status: Optional[ResultStatus] = None
