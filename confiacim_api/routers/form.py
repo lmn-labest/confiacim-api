@@ -94,7 +94,7 @@ def form_result_retrive(
     case_id: int,
     result_id: int,
 ):
-    """Retorna o resultado do `FORM` vom `result_id` do caso `case_id` do usuário logado"""
+    """Retorna o resultado do `FORM` com `result_id` do caso `case_id` do usuário logado"""
 
     stmt = (
         select(FormResult)
@@ -114,3 +114,36 @@ def form_result_retrive(
         )
 
     return result
+
+
+@router.delete(
+    "/{case_id}/form/results/{result_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def form_result_delete(
+    session: ActiveSession,
+    user: CurrentUser,
+    case_id: int,
+    result_id: int,
+):
+    """Deleta o resultado do `FORM` com `result_id` do caso co `case_id` do usuário logado"""
+
+    stmt = (
+        select(FormResult)
+        .join(FormResult.case)
+        .where(
+            FormResult.id == result_id,
+            Case.id == case_id,
+            Case.user_id == user.id,
+        )
+    )
+    result = session.scalar(stmt)
+
+    if not result:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Result/Case not found",
+        )
+
+    session.delete(result)
+    session.commit()
