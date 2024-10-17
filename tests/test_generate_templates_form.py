@@ -17,11 +17,11 @@ end materials
 return
 """
 
-MATERIALS_JINJA = """\
+MATERIALS_JINJA_ALL = """\
 materials
 1 1 1.999e+11 0.3000 1.400e-05 0 0 4.292e+01 3.894e+06 0 0 0
 2 2 1.019e+10 0.3200 0 0 0 3.360e+00
-3 1 {{ "%.16e"|format(E_c * 5.0) }} {{ "%.16e"|format(poisson_c * 0.2) }} 9.810e-06 0 7 3.360e+00 2.077e+06 0 1 0 3.200e+06 1.500e+01 2.540e+07 0 0 0 0 0 0 3 8 3.000e-03
+3 1 {{ "%.16e"|format(E_c * 5.0) }} {{ "%.16e"|format(poisson_c * 0.2) }} {{ "%.16e"|format(thermal_expansion_c * 2.0) }} 0 7 {{ "%.16e"|format(thermal_conductivity_c * 10.0) }} {{ "%.16e"|format(volumetric_heat_capacity_c * 0.1) }} 0 1 0 3.200e+06 {{ "%.16e"|format(friction_angle_c * 0.3) }} {{ "%.16e"|format(cohesion_c * 0.4) }} 0 0 0 0 0 0 3 8 3.000e-03
 4 1 {{ "%.16e"|format(E_f * 2.0) }} {{ "%.16e"|format(poisson_f * 0.1) }} 1.000e-05 0 0 6.006e+00 1.901e+06 0 0 0
 end materials
 return
@@ -40,7 +40,8 @@ return
 MATERIALS_JINJA_STR = """\
 materials
 1 1 1.999e+11 0.3000 1.400e-05 0 0 4.292e+01 3.894e+06 0 0 0
-2 2 1.019e+10 0.3200 0 0 0 3.360e+00\n3 1 {{ "%.16e"|format(E_c * 10190000000.0) }} {{ "%.16e"|format(poisson_c * 0.32) }} 9.810e-06 0 7 3.360e+00 2.077e+06 0 1 0 3.200e+06 1.500e+01 2.540e+07 0 0 0 0 0 0 3 8 3.000e-03
+2 2 1.019e+10 0.3200 0 0 0 3.360e+00
+3 1 {{ "%.16e"|format(E_c * 10190000000.0) }} {{ "%.16e"|format(poisson_c * 0.32) }} 9.810e-06 0 7 3.360e+00 2.077e+06 0 1 0 3.200e+06 1.500e+01 2.540e+07 0 0 0 0 0 0 3 8 3.000e-03
 4 1 2.040e+10 0.3600 1.000e-05 0 0 6.006e+00 1.901e+06 0 0 0
 end materials
 return
@@ -49,16 +50,23 @@ return
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
-    "mat_props,expected",
+    "mat_props,expected_str",
     [
         (
             {
+                # Cement
                 "E_c": 5.0,
                 "poisson_c": 0.2,
+                "thermal_expansion_c": 2.0,
+                "thermal_conductivity_c": 10.0,
+                "volumetric_heat_capacity_c": 0.1,
+                "friction_angle_c": 0.3,
+                "cohesion_c": 0.4,
+                # Formantion
                 "E_f": 2.0,
                 "poisson_f": 0.1,
             },
-            MATERIALS_JINJA,
+            MATERIALS_JINJA_ALL,
         ),
         (
             {
@@ -73,8 +81,9 @@ return
         "E_c_poisson_f",
     ],
 )
-def test_generate_materials_template(mat_props, expected):
-    assert generate_materials_template(MATERIALS_STR, mat_props) == expected
+def test_generate_materials_template(mat_props, expected_str):
+    materials_jinja_str = generate_materials_template(MATERIALS_STR, mat_props)
+    assert materials_jinja_str == expected_str
 
 
 @pytest.mark.integration
