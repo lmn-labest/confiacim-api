@@ -22,7 +22,7 @@ materials
 1 1 1.999e+11 0.3000 1.400e-05 0 0 4.292e+01 3.894e+06 0 0 0
 2 2 1.019e+10 0.3200 0 0 0 3.360e+00
 3 1 {{ "%.16e"|format(E_c * 5.0) }} {{ "%.16e"|format(poisson_c * 0.2) }} {{ "%.16e"|format(thermal_expansion_c * 2.0) }} 0 7 {{ "%.16e"|format(thermal_conductivity_c * 10.0) }} {{ "%.16e"|format(volumetric_heat_capacity_c * 0.1) }} 0 1 0 3.200e+06 {{ "%.16e"|format(friction_angle_c * 0.3) }} {{ "%.16e"|format(cohesion_c * 0.4) }} 0 0 0 0 0 0 3 8 3.000e-03
-4 1 {{ "%.16e"|format(E_f * 2.0) }} {{ "%.16e"|format(poisson_f * 0.1) }} 1.000e-05 0 0 6.006e+00 1.901e+06 0 0 0
+4 1 {{ "%.16e"|format(E_f * 2.0) }} {{ "%.16e"|format(poisson_f * 0.1) }} {{ "%.16e"|format(thermal_expansion_f * 0.4) }} 0 0 {{ "%.16e"|format(thermal_conductivity_f * 20.0) }} {{ "%.16e"|format(volumetric_heat_capacity_f * 0.3) }} 0 0 0
 end materials
 return
 """  # noqa: E501
@@ -65,6 +65,9 @@ return
                 # Formantion
                 "E_f": 2.0,
                 "poisson_f": 0.1,
+                "thermal_expansion_f": 0.4,
+                "thermal_conductivity_f": 20.0,
+                "volumetric_heat_capacity_f": 0.3,
             },
             MATERIALS_JINJA_ALL,
         ),
