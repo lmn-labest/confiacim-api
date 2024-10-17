@@ -7,11 +7,18 @@ from confiacim_api.logger import logger
 PROP_MAT_POSITION = {
     "E_c": 2,
     "poisson_c": 3,
+    "thermal_expansion_c": 4,
+    "thermal_conductivity_c": 7,
+    "volumetric_heat_capacity_c": 8,
+    "friction_angle_c": 13,
+    "cohesion_c": 14,
     "E_f": 2,
     "poisson_f": 3,
 }
 
-PROP_CEMENT = "E_c,poisson_c"
+PROP_CEMENT = (
+    "E_c,poisson_c,thermal_expansion_c,thermal_conductivity_c,volumetric_heat_capacity_c,friction_angle_c,cohesion_c"
+)
 PROP_FORMANTION = "E_f,poisson_f"
 LINE_CEMENT_MATERIAL = 3
 LINE_FORMATION_MATERIAL = 4
