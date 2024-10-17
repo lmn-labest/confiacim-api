@@ -5,6 +5,11 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from confiacim_api.app import app
+from confiacim_api.errors import (
+    MaterialsFileEmptyError,
+    MaterialsFileNotFoundInZipError,
+    MaterialsFileValueError,
+)
 from confiacim_api.files_and_folders_handlers import MaterialsInfos
 from confiacim_api.models import Case, MaterialsBaseCaseAverageProps
 
@@ -149,6 +154,75 @@ def test_negative_upload_case_must_be_a_zipfile(
     is_zipfile_mocker.assert_called_once()
 
     assert resp.json() == {"detail": "The file must be a zip file."}
+
+
+@pytest.mark.integration
+def test_negative_upload_file_raise_materials_file_value_error(
+    session,
+    client_auth: TestClient,
+    mocker,
+    case: Case,
+):
+
+    mocker.patch(
+        "confiacim_api.files_and_folders_handlers.extract_materials_infos",
+        side_effect=MaterialsFileValueError("Invalid material number: 1"),
+    )
+
+    with open("tests/fixtures/case1.zip", mode="rb") as fp:
+        resp = client_auth.post(
+            app.url_path_for(ROUTE_VIEW_NAME, case_id=case.id),
+            files={"case_file": fp},
+        )
+
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+    assert resp.json() == {"detail": "Invalid material number: 1"}
+
+
+@pytest.mark.integration
+def test_negative_upload_file_raise_empty_materials_file(
+    session,
+    client_auth: TestClient,
+    mocker,
+    case: Case,
+):
+
+    mocker.patch(
+        "confiacim_api.files_and_folders_handlers.extract_materials_infos",
+        side_effect=MaterialsFileEmptyError("Empty materials file."),
+    )
+
+    with open("tests/fixtures/case1.zip", mode="rb") as fp:
+        resp = client_auth.post(
+            app.url_path_for(ROUTE_VIEW_NAME, case_id=case.id),
+            files={"case_file": fp},
+        )
+
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+    assert resp.json() == {"detail": "Empty materials file."}
+
+
+@pytest.mark.integration
+def test_negative_upload_file_raise_materials_file_not_found_in_zip_error(
+    session,
+    client_auth: TestClient,
+    mocker,
+    case: Case,
+):
+
+    mocker.patch(
+        "confiacim_api.routers.case.extract_materials_infos_from_blob",
+        side_effect=MaterialsFileNotFoundInZipError("Materials file not found in zip."),
+    )
+
+    with open("tests/fixtures/case1.zip", mode="rb") as fp:
+        resp = client_auth.post(
+            app.url_path_for(ROUTE_VIEW_NAME, case_id=case.id),
+            files={"case_file": fp},
+        )
+
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+    assert resp.json() == {"detail": "Materials file not found in zip."}
 
 
 @pytest.mark.integration
