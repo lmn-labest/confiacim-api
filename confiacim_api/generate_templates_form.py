@@ -14,12 +14,15 @@ PROP_MAT_POSITION = {
     "cohesion_c": 14,
     "E_f": 2,
     "poisson_f": 3,
+    "thermal_expansion_f": 4,
+    "thermal_conductivity_f": 7,
+    "volumetric_heat_capacity_f": 8,
 }
 
 PROP_CEMENT = (
     "E_c,poisson_c,thermal_expansion_c,thermal_conductivity_c,volumetric_heat_capacity_c,friction_angle_c,cohesion_c"
 )
-PROP_FORMANTION = "E_f,poisson_f"
+PROP_FORMANTION = "E_f,poisson_f,thermal_expansion_f,thermal_conductivity_f,volumetric_heat_capacity_f"
 LINE_CEMENT_MATERIAL = 3
 LINE_FORMATION_MATERIAL = 4
 
