@@ -216,11 +216,11 @@ def extract_materials_infos(file_str: str) -> MaterialsInfos:
 
     for lin in lines:
 
-        if "materials" == lin:
-            continue
-
-        if "end materials" == lin:
+        if "end materials" in lin:
             break
+
+        if "materials" in lin:
+            continue
 
         words = lin.split()
 
