@@ -34,9 +34,18 @@ class MaterialsFactory(factory.Factory):
         model = MaterialsBaseCaseAverageProps
 
     E_c = factory.fuzzy.FuzzyFloat(low=1e6, high=1e10)
-    E_f = factory.fuzzy.FuzzyFloat(low=1e6, high=1e10)
     poisson_c = factory.fuzzy.FuzzyFloat(low=0, high=0.49)
+    thermal_expansion_c = factory.fuzzy.FuzzyFloat(low=0, high=1e10)
+    thermal_conductivity_c = factory.fuzzy.FuzzyFloat(low=0, high=1e10)
+    volumetric_heat_capacity_c = factory.fuzzy.FuzzyFloat(low=0, high=1e10)
+    friction_angle_c = factory.fuzzy.FuzzyFloat(low=0, high=1e10)
+    cohesion_c = factory.fuzzy.FuzzyFloat(low=0, high=1e10)
+
     poisson_f = factory.fuzzy.FuzzyFloat(low=0, high=0.49)
+    E_f = factory.fuzzy.FuzzyFloat(low=1e6, high=0.49)
+    thermal_expansion_f = factory.fuzzy.FuzzyFloat(low=0, high=1e10)
+    thermal_conductivity_f = factory.fuzzy.FuzzyFloat(low=0, high=1e10)
+    volumetric_heat_capacity_f = factory.fuzzy.FuzzyFloat(low=0, high=1e10)
 
 
 @pytest.fixture(scope="session")

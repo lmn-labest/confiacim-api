@@ -164,9 +164,18 @@ class MaterialsBaseCaseAverageProps(TimestampMixin, Base):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     E_c: Mapped[float]
-    E_f: Mapped[float]
     poisson_c: Mapped[float]
+    thermal_expansion_c: Mapped[float]
+    thermal_conductivity_c: Mapped[float]
+    volumetric_heat_capacity_c: Mapped[float]
+    friction_angle_c: Mapped[float]
+    cohesion_c: Mapped[float]
+
+    E_f: Mapped[float]
     poisson_f: Mapped[float]
+    thermal_expansion_f: Mapped[float]
+    thermal_conductivity_f: Mapped[float]
+    volumetric_heat_capacity_f: Mapped[float]
 
     case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
     case: Mapped["Case"] = relationship(back_populates="materials")

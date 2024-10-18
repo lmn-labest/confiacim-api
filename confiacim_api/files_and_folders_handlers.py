@@ -29,14 +29,28 @@ class MaterialsFileColumnsIndex(Enum):
     MAT_NUMBER = 0
     E_COEF = 2
     POISSON_COEF = 3
+    THERMAL_EXPANSION_COEF = 4
+    THERMAL_CONDUTIVITY_COEF = 7
+    VOLUMETRIC_HEAT_CAPACITY_COEF = 8
+    FRICTION_ANGLE_COEF = 13
+    COHESION_COEF = 14
 
 
 @dataclass(frozen=True)
 class MaterialsInfos:
     E_c: float
     poisson_c: float
+    thermal_expansion_c: float
+    thermal_conductivity_c: float
+    volumetric_heat_capacity_c: float
+    friction_angle_c: float
+    cohesion_c: float
+
     E_f: float
     poisson_f: float
+    thermal_expansion_f: float
+    thermal_conductivity_f: float
+    volumetric_heat_capacity_f: float
 
 
 def temporary_simulation_folder(origin_dir: Path) -> TemporaryDirectory:
@@ -233,6 +247,15 @@ def extract_materials_infos(file_str: str) -> MaterialsInfos:
             try:
                 tmp_dict["E_c"] = float(words[MaterialsFileColumnsIndex.E_COEF.value])
                 tmp_dict["poisson_c"] = float(words[MaterialsFileColumnsIndex.POISSON_COEF.value])
+                tmp_dict["thermal_expansion_c"] = float(words[MaterialsFileColumnsIndex.THERMAL_EXPANSION_COEF.value])
+                tmp_dict["thermal_conductivity_c"] = float(
+                    words[MaterialsFileColumnsIndex.THERMAL_CONDUTIVITY_COEF.value]
+                )
+                tmp_dict["volumetric_heat_capacity_c"] = float(
+                    words[MaterialsFileColumnsIndex.VOLUMETRIC_HEAT_CAPACITY_COEF.value]
+                )
+                tmp_dict["friction_angle_c"] = float(words[MaterialsFileColumnsIndex.FRICTION_ANGLE_COEF.value])
+                tmp_dict["cohesion_c"] = float(words[MaterialsFileColumnsIndex.COHESION_COEF.value])
             except ValueError as e:
                 raise MaterialsFileValueError(f"Invalid prop value in material {mat_number}: {e}") from e
 
@@ -240,6 +263,13 @@ def extract_materials_infos(file_str: str) -> MaterialsInfos:
             try:
                 tmp_dict["E_f"] = float(words[MaterialsFileColumnsIndex.E_COEF.value])
                 tmp_dict["poisson_f"] = float(words[MaterialsFileColumnsIndex.POISSON_COEF.value])
+                tmp_dict["thermal_expansion_f"] = float(words[MaterialsFileColumnsIndex.THERMAL_EXPANSION_COEF.value])
+                tmp_dict["thermal_conductivity_f"] = float(
+                    words[MaterialsFileColumnsIndex.THERMAL_CONDUTIVITY_COEF.value]
+                )
+                tmp_dict["volumetric_heat_capacity_f"] = float(
+                    words[MaterialsFileColumnsIndex.VOLUMETRIC_HEAT_CAPACITY_COEF.value]
+                )
             except ValueError as e:
                 raise MaterialsFileValueError(f"Invalid prop value in material {mat_number}: {e}") from e
 

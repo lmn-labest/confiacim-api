@@ -330,8 +330,17 @@ def test_positive_read_materials():
 
     assert materials.E_c == pytest.approx(1.019e10)
     assert materials.poisson_c == pytest.approx(0.32)
+    assert materials.thermal_expansion_c == pytest.approx(9.810e-06)
+    assert materials.thermal_conductivity_c == pytest.approx(3.360e00)
+    assert materials.volumetric_heat_capacity_c == pytest.approx(2.077e06)
+    assert materials.friction_angle_c == pytest.approx(1.500e01)
+    assert materials.cohesion_c == pytest.approx(2.540e07)
+
     assert materials.E_f == pytest.approx(2.040e10)
     assert materials.poisson_f == pytest.approx(0.36)
+    assert materials.thermal_expansion_f == pytest.approx(1.000e-05)
+    assert materials.thermal_conductivity_f == pytest.approx(6.006e00)
+    assert materials.volumetric_heat_capacity_f == pytest.approx(1.901e06)
 
 
 @pytest.mark.unit
@@ -340,9 +349,18 @@ def test_positive_extract_materials_infos_from_blob(case_with_real_file):
     mat_infos = extract_materials_infos_from_blob(case_with_real_file)
 
     assert mat_infos.E_c == pytest.approx(10960000000.0)
-    assert mat_infos.E_f == pytest.approx(37920000000.0)
     assert mat_infos.poisson_c == pytest.approx(0.228)
+    assert mat_infos.thermal_expansion_c == pytest.approx(1e-5)
+    assert mat_infos.thermal_conductivity_c == pytest.approx(1.75)
+    assert mat_infos.volumetric_heat_capacity_c == pytest.approx(1869000.0)
+    assert mat_infos.friction_angle_c == pytest.approx(14.0)
+    assert mat_infos.cohesion_c == pytest.approx(18170000.0)
+
+    assert mat_infos.E_f == pytest.approx(37920000000.0)
     assert mat_infos.poisson_f == pytest.approx(0.21)
+    assert mat_infos.thermal_expansion_f == pytest.approx(4.14e-05)
+    assert mat_infos.thermal_conductivity_f == pytest.approx(6.006)
+    assert mat_infos.volumetric_heat_capacity_f == pytest.approx(1929000.0)
 
 
 @pytest.mark.unit
