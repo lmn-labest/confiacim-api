@@ -36,7 +36,21 @@ def test_upload_case(
 
     extract_materials_infos_from_blob_mocker = mocker.patch(
         "confiacim_api.routers.case.extract_materials_infos_from_blob",
-        return_value=MaterialsInfos(E_c=1.0, E_f=0.5, poisson_c=0.2, poisson_f=0.3),
+        return_value=MaterialsInfos(
+            E_c=1.0,
+            poisson_c=0.2,
+            thermal_expansion_c=0.3,
+            thermal_conductivity_c=0.4,
+            volumetric_heat_capacity_c=0.5,
+            friction_angle_c=0.6,
+            cohesion_c=0.7,
+            #
+            E_f=1.0,
+            poisson_f=0.1,
+            thermal_expansion_f=0.2,
+            thermal_conductivity_f=0.3,
+            volumetric_heat_capacity_f=0.4,
+        ),
     )
 
     resp = client_auth.post(
@@ -53,12 +67,19 @@ def test_upload_case(
 
     case_from_db = session.get(Case, case.id)
 
-    case_from_db = session.get(Case, case.id)
-
     assert case_from_db.materials.E_c == pytest.approx(1.0)
-    assert case_from_db.materials.E_f == pytest.approx(0.5)
     assert case_from_db.materials.poisson_c == pytest.approx(0.2)
-    assert case_from_db.materials.poisson_f == pytest.approx(0.3)
+    assert case_from_db.materials.thermal_expansion_c == pytest.approx(0.3)
+    assert case_from_db.materials.thermal_conductivity_c == pytest.approx(0.4)
+    assert case_from_db.materials.volumetric_heat_capacity_c == pytest.approx(0.5)
+    assert case_from_db.materials.friction_angle_c == pytest.approx(0.6)
+    assert case_from_db.materials.cohesion_c == pytest.approx(0.7)
+
+    assert case_from_db.materials.E_f == pytest.approx(1.0)
+    assert case_from_db.materials.poisson_f == pytest.approx(0.1)
+    assert case_from_db.materials.thermal_expansion_f == pytest.approx(0.2)
+    assert case_from_db.materials.thermal_conductivity_f == pytest.approx(0.3)
+    assert case_from_db.materials.volumetric_heat_capacity_f == pytest.approx(0.4)
 
     assert case_from_db.base_file == b"Fake zip file."
 
