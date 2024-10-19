@@ -21,7 +21,7 @@ def index():
     return {"message": "Api do confiacim"}
 
 
-@router.get("/HealthOut", response_model=HealthOut)
+@router.get("/db_health_check", response_model=HealthOut)
 def health(session: ActiveSession):
     """Testa a conexão com banco de dados"""
     return {"status": "ok" if check_db(session) else "fail"}
