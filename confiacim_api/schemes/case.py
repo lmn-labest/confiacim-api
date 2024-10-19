@@ -24,9 +24,20 @@ class CaseOut(BaseModel):
 
 class MaterialsOut(BaseModel):
     id: int
+    #
     E_c: float
-    E_f: float
     poisson_c: float
+    thermal_expansion_c: float
+    thermal_conductivity_c: float
+    volumetric_heat_capacity_c: float
+    friction_angle_c: float
+    cohesion_c: float
+    #
     poisson_f: float
+    E_f: float
+    thermal_expansion_f: float
+    thermal_conductivity_f: float
+    volumetric_heat_capacity_f: float
+    #
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
