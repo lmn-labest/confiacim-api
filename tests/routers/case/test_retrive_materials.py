@@ -21,9 +21,18 @@ def test_positive_retrive(client_auth: TestClient, case_with_materials_info: Cas
 
     assert body["id"] == materials.id
     assert body["E_c"] == materials.E_c
-    assert body["E_f"] == materials.E_f
     assert body["poisson_c"] == materials.poisson_c
+    assert body["thermal_expansion_c"] == materials.thermal_expansion_c
+    assert body["thermal_conductivity_c"] == materials.thermal_conductivity_c
+    assert body["volumetric_heat_capacity_c"] == materials.volumetric_heat_capacity_c
+    assert body["friction_angle_c"] == materials.friction_angle_c
+    assert body["cohesion_c"] == materials.cohesion_c
+
+    assert body["E_f"] == materials.E_f
     assert body["poisson_f"] == materials.poisson_f
+    assert body["thermal_expansion_f"] == materials.thermal_expansion_f
+    assert body["thermal_conductivity_f"] == materials.thermal_conductivity_f
+    assert body["volumetric_heat_capacity_f"] == materials.volumetric_heat_capacity_f
 
     assert body["created_at"] == (materials.created_at.isoformat() if materials.created_at is not None else None)
     assert body["updated_at"] == (materials.updated_at.isoformat() if materials.updated_at is not None else None)
