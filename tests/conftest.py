@@ -1,3 +1,4 @@
+from io import BytesIO
 from typing import Generator
 
 import factory
@@ -379,3 +380,8 @@ def form_results_with_critical_point(
     session.refresh(new_result)
 
     return new_result
+
+
+@pytest.fixture
+def zip_file_fake():
+    return BytesIO(b"Fake zip file.")
