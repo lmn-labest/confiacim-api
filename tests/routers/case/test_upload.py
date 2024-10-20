@@ -16,11 +16,6 @@ from confiacim_api.models import Case, MaterialsBaseCaseAverageProps
 ROUTE_VIEW_NAME = "upload_case_file"
 
 
-@pytest.fixture
-def zip_file_fake():
-    return BytesIO(b"Fake zip file.")
-
-
 @pytest.mark.integration
 def test_upload_case(
     session,

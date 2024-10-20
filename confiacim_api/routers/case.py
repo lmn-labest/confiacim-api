@@ -1,13 +1,14 @@
 from dataclasses import asdict
-from typing import Annotated
+from typing import Annotated, Optional
 
-from fastapi import APIRouter, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
 from fastapi.responses import Response
 from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlalchemy import paginate
 from slugify import slugify
 from sqlalchemy import select
 
+from confiacim_api.const import MAX_TAG_NAME_LENGTH
 from confiacim_api.database import ActiveSession
 from confiacim_api.files_and_folders_handlers import extract_materials_infos_from_blob
 from confiacim_api.models import Case, MaterialsBaseCaseAverageProps
@@ -31,12 +32,14 @@ def case_list(session: ActiveSession, user: CurrentUser):
 @router.post("", response_model=CaseOut, status_code=status.HTTP_201_CREATED)
 def case_create(
     session: ActiveSession,
-    payload: CaseCreateIn,
     user: CurrentUser,
+    case_file: Annotated[UploadFile, File()],
+    tag: Annotated[str, Form(max_length=MAX_TAG_NAME_LENGTH)],
+    description: Annotated[Optional[str], Form()] = None,
 ):
-    """Cria um caso"""
-    # TODO: Query lenta
-    db_case_with_new_tag_name = session.scalar(select(Case).where(Case.tag == payload.tag, Case.user == user))
+    form_data = CaseCreateIn(tag=tag, description=description)
+
+    db_case_with_new_tag_name = session.scalar(select(Case).where(Case.tag == form_data.tag, Case.user == user))
 
     if db_case_with_new_tag_name:
         raise HTTPException(
@@ -44,9 +47,22 @@ def case_create(
             detail="Case Tag name shoud be unique per user.",
         )
 
-    new_case = Case(**payload.model_dump(exclude_unset=True), user=user)
+    if not file_case_is_zipfile(case_file.file):
+        raise HTTPException(
+            detail="The file must be a zip file.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
 
-    session.add(new_case)
+    new_case = Case(**form_data.model_dump(exclude_unset=True), user=user)
+
+    new_case.base_file = case_file.file.read()
+
+    mat_infos = extract_materials_infos_from_blob(new_case)
+
+    mat = MaterialsBaseCaseAverageProps(case=new_case, **asdict(mat_infos))
+    session.add(mat)
+
+    session.add_all([new_case, mat])
     session.commit()
     session.refresh(new_case)
 
