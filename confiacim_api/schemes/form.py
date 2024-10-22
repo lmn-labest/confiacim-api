@@ -77,3 +77,7 @@ class FormResultSummaryOut(BaseModel):
     status: Optional[ResultStatus] = None
     created_at: datetime
     updated_at: datetime
+
+
+class FormResultErrorOut(BaseModel):
+    error: Optional[str] = None

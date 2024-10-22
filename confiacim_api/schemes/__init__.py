@@ -3,6 +3,7 @@ from confiacim_api.schemes.case import CaseCreateIn, CaseCreateOut, CaseOut, Mat
 from confiacim_api.schemes.form import (
     FormConfigCreateIn,
     FormResultDetailOut,
+    FormResultErrorOut,
     FormResultSummaryOut,
     FormVariables,
     RandomDistribution,
@@ -38,6 +39,7 @@ __all__ = (
     "FormConfigCreateIn",
     "FormResultDetailOut",
     "FormResultSummaryOut",
+    "FormResultErrorOut",
     "FormVariables",
     "RandomDistribution",
 )
