@@ -14,6 +14,7 @@ from confiacim_api.files_and_folders_handlers import extract_materials_infos_fro
 from confiacim_api.models import Case, MaterialsBaseCaseAverageProps
 from confiacim_api.schemes import (
     CaseCreateIn,
+    CaseCreateOut,
     CaseOut,
     MaterialsOut,
 )
@@ -29,7 +30,7 @@ def case_list(session: ActiveSession, user: CurrentUser):
     return paginate(session, select(Case).filter(Case.user == user).order_by(Case.tag))
 
 
-@router.post("", response_model=CaseOut, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=CaseCreateOut, status_code=status.HTTP_201_CREATED)
 def case_create(
     session: ActiveSession,
     user: CurrentUser,

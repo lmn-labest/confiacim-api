@@ -60,6 +60,20 @@ def test_positive_create(client_auth: TestClient, session, user: User, payload):
     assert body["user"] == case_from_db.user.id
     assert body["description"] == case_from_db.description
 
+    assert body["materials"]["E_c"] == case_from_db.materials.E_c
+    assert body["materials"]["poisson_c"] == case_from_db.materials.poisson_c
+    assert body["materials"]["thermal_expansion_c"] == case_from_db.materials.thermal_expansion_c
+    assert body["materials"]["thermal_conductivity_c"] == case_from_db.materials.thermal_conductivity_c
+    assert body["materials"]["volumetric_heat_capacity_c"] == case_from_db.materials.volumetric_heat_capacity_c
+    assert body["materials"]["friction_angle_c"] == case_from_db.materials.friction_angle_c
+    assert body["materials"]["cohesion_c"] == case_from_db.materials.cohesion_c
+
+    assert body["materials"]["E_f"] == case_from_db.materials.E_f
+    assert body["materials"]["poisson_f"] == case_from_db.materials.poisson_f
+    assert body["materials"]["thermal_expansion_f"] == case_from_db.materials.thermal_expansion_f
+    assert body["materials"]["thermal_conductivity_f"] == case_from_db.materials.thermal_conductivity_f
+    assert body["materials"]["volumetric_heat_capacity_f"] == case_from_db.materials.volumetric_heat_capacity_f
+
 
 @pytest.mark.integration
 def test_positive_create_description_is_optional(
