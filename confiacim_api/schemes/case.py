@@ -7,21 +7,6 @@ from confiacim_api.const import MAX_TAG_NAME_LENGTH
 from confiacim_api.schemes.tencim import TencimResultSummaryOut
 
 
-class CaseCreateIn(BaseModel):
-    tag: str = Field(max_length=MAX_TAG_NAME_LENGTH)
-    description: Optional[str] = None
-
-
-class CaseOut(BaseModel):
-    id: int
-    user_id: int = Field(serialization_alias="user")
-    tag: str = Field(max_length=MAX_TAG_NAME_LENGTH)
-    description: Optional[str] = None
-    tencim_results: list[TencimResultSummaryOut] = Field(serialization_alias="tencim_result_ids")
-    created_at: datetime
-    updated_at: datetime
-
-
 class MaterialsOut(BaseModel):
     id: int
     #
@@ -41,3 +26,28 @@ class MaterialsOut(BaseModel):
     #
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+
+
+class CaseCreateIn(BaseModel):
+    tag: str = Field(max_length=MAX_TAG_NAME_LENGTH)
+    description: Optional[str] = None
+
+
+class CaseCreateOut(BaseModel):
+    id: int
+    user_id: int = Field(serialization_alias="user")
+    tag: str = Field(max_length=MAX_TAG_NAME_LENGTH)
+    description: Optional[str] = None
+    materials: MaterialsOut
+    created_at: datetime
+    updated_at: datetime
+
+
+class CaseOut(BaseModel):
+    id: int
+    user_id: int = Field(serialization_alias="user")
+    tag: str = Field(max_length=MAX_TAG_NAME_LENGTH)
+    description: Optional[str] = None
+    tencim_results: list[TencimResultSummaryOut] = Field(serialization_alias="tencim_result_ids")
+    created_at: datetime
+    updated_at: datetime
