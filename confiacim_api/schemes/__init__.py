@@ -4,6 +4,7 @@ from confiacim_api.schemes.form import (
     FormConfigCreateIn,
     FormResultDetailOut,
     FormResultErrorOut,
+    FormResultStatusOut,
     FormResultSummaryOut,
     FormVariables,
     RandomDistribution,
@@ -40,6 +41,7 @@ __all__ = (
     "FormResultDetailOut",
     "FormResultSummaryOut",
     "FormResultErrorOut",
+    "FormResultStatusOut",
     "FormVariables",
     "RandomDistribution",
 )

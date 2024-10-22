@@ -81,3 +81,7 @@ class FormResultSummaryOut(BaseModel):
 
 class FormResultErrorOut(BaseModel):
     error: Optional[str] = None
+
+
+class FormResultStatusOut(BaseModel):
+    status: Optional[str] = None
