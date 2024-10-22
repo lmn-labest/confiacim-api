@@ -8,6 +8,7 @@ from confiacim_api.models import Case, FormResult
 from confiacim_api.schemes import (
     FormConfigCreateIn,
     FormResultDetailOut,
+    FormResultErrorOut,
     FormResultSummaryOut,
     ResultCeleryTaskOut,
 )
@@ -147,3 +148,31 @@ def form_result_delete(
 
     session.delete(result)
     session.commit()
+
+
+@router.get("/{case_id}/form/results/{result_id}/error", response_model=FormResultErrorOut)
+def form_result_error_retrive(
+    session: ActiveSession,
+    case_id: int,
+    result_id: int,
+    user: CurrentUser,
+):
+    """Retorna o error do resultado do `FORM`."""
+
+    result = session.scalar(
+        select(FormResult)
+        .join(FormResult.case)
+        .where(
+            FormResult.id == result_id,
+            Case.id == case_id,
+            Case.user_id == user.id,
+        )
+    )
+
+    if not result:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Result/Case not found",
+        )
+
+    return {"error": result.error}
