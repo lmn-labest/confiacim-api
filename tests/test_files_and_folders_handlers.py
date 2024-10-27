@@ -1,9 +1,11 @@
 import re
 import shutil
+from io import BytesIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from textwrap import dedent
 from uuid import uuid4
+from zipfile import ZipFile
 
 import pytest
 from sqlalchemy import select
@@ -23,9 +25,12 @@ from confiacim_api.files_and_folders_handlers import (
     rewrite_case_file,
     rm_nocliprc_macro,
     rm_setpnode_and_setptime,
+    save_generated_form_files,
+    save_zip_in_db,
     temporary_simulation_folder,
     unzip_file,
     unzip_tencim_case,
+    zip_generated_form_case,
 )
 from confiacim_api.models import Case
 from tests.constants import (
@@ -368,3 +373,73 @@ def test_negative_extract_materials_infos_from_blob_zipfile_without_materials(ca
 
     with pytest.raises(MaterialsFileNotFoundInZipError, match="Materials file not found in zip."):
         extract_materials_infos_from_blob(case_with_real_file_without_materials)
+
+
+@pytest.mark.unit
+def test_zip_form_case(tmp_path):
+    with open("tests/fixtures/case_form_generated.zip", mode="rb") as file:
+        with ZipFile(file, "r") as zip_ref:
+            zip_ref.extractall(tmp_path)
+
+    zip_generated_form_case(tmp_path)
+
+    expected_zip_generated = tmp_path / "tmp_case_form.zip"
+
+    assert expected_zip_generated.exists() is True
+
+    with ZipFile(expected_zip_generated, "r") as zip_ref:
+        assert set(zip_ref.namelist()) == {
+            "materials.dat",
+            "templates/materials.jinja",
+            "mesh.dat",
+            "case.yml",
+            "case.dat",
+            "loads.dat",
+            "initialtemperature.dat",
+        }
+
+
+@pytest.mark.integration
+def test_salve_the_zip_in_db(session, tmp_path, form_results):
+
+    shutil.copy2("tests/fixtures/case_form_generated.zip", tmp_path)
+
+    save_zip_in_db(session, tmp_path / "case_form_generated.zip", form_results)
+
+    assert form_results.generated_case_files is not None
+
+    with ZipFile(BytesIO(form_results.generated_case_files), "r") as zip_ref:
+        assert set(zip_ref.namelist()) == {
+            "materials.dat",
+            "templates/materials.jinja",
+            "mesh.dat",
+            "case.yml",
+            "case.dat",
+            "loads.dat",
+            "initialtemperature.dat",
+            "templates/",
+        }
+
+
+@pytest.mark.integration
+def test_save_generated_form_files(session, tmp_path, form_results):
+    with open("tests/fixtures/case_form_generated.zip", mode="rb") as file:
+        with ZipFile(file, "r") as zip_ref:
+            zip_ref.extractall(tmp_path)
+
+    save_generated_form_files(session, tmp_path, form_results)
+
+    assert form_results.generated_case_files is not None
+
+    assert (tmp_path / "tmp_case_form.zip").exists() is False
+
+    with ZipFile(BytesIO(form_results.generated_case_files), "r") as zip_ref:
+        assert set(zip_ref.namelist()) == {
+            "materials.dat",
+            "templates/materials.jinja",
+            "mesh.dat",
+            "case.yml",
+            "case.dat",
+            "loads.dat",
+            "initialtemperature.dat",
+        }
