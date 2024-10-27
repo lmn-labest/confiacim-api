@@ -33,7 +33,13 @@ def test_valid_form_variables(name):
 @pytest.mark.unit
 def test_invalid_choice_form_variables_name():
 
-    msg = "Input should be 'E_c', 'poisson_c', 'E_f' or 'poisson_f'"
+    msg = (
+        "Input should be "
+        "'E_c', 'poisson_c', 'thermal_expansion_c', "
+        "'thermal_conductivity_c', 'volumetric_heat_capacity_c', 'friction_angle_c', "
+        "'cohesion_c', 'E_f', 'poisson_f', 'thermal_expansion_f', "
+        "'thermal_conductivity_f' or 'volumetric_heat_capacity_f'"
+    )
     with pytest.raises(ValidationError, match=msg):
         FormVariables(
             name="invalid_name",

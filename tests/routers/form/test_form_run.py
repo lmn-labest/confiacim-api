@@ -174,7 +174,13 @@ def test_positive_form_run_with_description(
                     },
                 },
             },
-            "Input should be 'E_c', 'poisson_c', 'E_f' or 'poisson_f'",
+            (
+                "Input should be "
+                "'E_c', 'poisson_c', 'thermal_expansion_c', "
+                "'thermal_conductivity_c', 'volumetric_heat_capacity_c', 'friction_angle_c', "
+                "'cohesion_c', 'E_f', 'poisson_f', 'thermal_expansion_f', "
+                "'thermal_conductivity_f' or 'volumetric_heat_capacity_f'"
+            ),
             "enum",
             ["body", "form", "variables", 0, "name"],
         ),
