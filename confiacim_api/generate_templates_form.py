@@ -5,7 +5,7 @@ from confiacim_api.files_and_folders_handlers import extract_materials_infos
 from confiacim_api.logger import logger
 
 PROP_MAT_POSITION = {
-    # CEMENT
+    # cement
     "E_c": 2,
     "poisson_c": 3,
     "thermal_expansion_c": 4,

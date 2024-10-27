@@ -9,10 +9,21 @@ from confiacim_api.models import ResultStatus
 
 
 class FormVariablesEnum(str, Enum):
+    # cement
     E_c = "E_c"
     poisson_c = "poisson_c"
+    thermal_expansion_c = "thermal_expansion_c"
+    thermal_conductivity_c = "thermal_conductivity_c"
+    volumetric_heat_capacity_c = "volumetric_heat_capacity_c"
+    friction_angle_c = "friction_angle_c"
+    cohesion_c = "cohesion_c"
+
+    # formation
     E_f = "E_f"
     poisson_f = "poisson_f"
+    thermal_expansion_f = "thermal_expansion_f"
+    thermal_conductivity_f = "thermal_conductivity_f"
+    volumetric_heat_capacity_f = "volumetric_heat_capacity_f"
 
 
 class RandomDistributionEnum(str, Enum):
