@@ -1,13 +1,15 @@
 from dataclasses import dataclass
 from enum import Enum
 from io import BytesIO
+from itertools import chain
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import BinaryIO, Optional
 from uuid import UUID
-from zipfile import ZipFile
+from zipfile import ZIP_DEFLATED, ZipFile
 
 from confiacim.tencim.deterministic import new_case_with_until_the_step
+from sqlalchemy.orm import Session
 
 from confiacim_api.errors import (
     MaterialsFileEmptyError,
@@ -15,7 +17,7 @@ from confiacim_api.errors import (
     MaterialsFileValueError,
 )
 from confiacim_api.logger import logger
-from confiacim_api.models import Case
+from confiacim_api.models import Case, FormResult
 
 NO_CLIP_RC = "nocliprc"
 
@@ -309,3 +311,54 @@ def extract_materials_infos_from_blob(case: Case) -> MaterialsInfos:
             raise MaterialsFileNotFoundInZipError("Materials file not found in zip.") from e
 
     return mat_infos
+
+
+def zip_generated_form_case(path_folder: Path):
+    """
+    Gera um zip com os arquivos da pasta.
+
+    Parameters:
+        path_folder: Caminho para a pasta com o conteudo
+    """
+
+    with ZipFile(path_folder / "tmp_case_form.zip", "w", ZIP_DEFLATED) as zipf:
+        files = chain(
+            path_folder.rglob("*.dat"),
+            path_folder.rglob("*.yml"),
+            path_folder.rglob("*.jinja"),
+        )
+        for file in files:
+            zipf.write(file, file.relative_to(path_folder))
+
+
+def save_zip_in_db(session: Session, zip_path: Path, form_result: FormResult):
+    """
+    Salva zip no DB.
+
+    Parameters:
+        session: Secção aberta com o banco
+        zip_path: Caminho para o arquivo zipado
+        form_result: Resultado do `FORM`
+    """
+
+    with open(zip_path, "rb") as zip_ref:
+        form_result.generated_case_files = zip_ref.read()
+
+    session.add(form_result)
+    session.commit()
+
+
+def save_generated_form_files(session: Session, path_folder: Path, form_result: FormResult):
+    """
+    Salva os arquivos do caso `FORM` no DB.
+
+    Parameters:
+        session: Secção aberta com o banco
+        path_folder: Caminho para o arquivo zipado
+        form_result: Resultado do `FORM`
+    """
+
+    zip_path = path_folder / "tmp_case_form.zip"
+    zip_generated_form_case(path_folder)
+    save_zip_in_db(session, zip_path, form_result)
+    zip_path.unlink()

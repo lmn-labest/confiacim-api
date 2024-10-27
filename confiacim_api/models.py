@@ -153,6 +153,8 @@ class FormResult(TimestampMixin, Base):
     case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
     case: Mapped["Case"] = relationship(back_populates="form_results")
 
+    generated_case_files: Mapped[bytes] = mapped_column(LargeBinary, nullable=True)
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id}, case={self.case.tag})"
 

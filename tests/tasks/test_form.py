@@ -70,6 +70,8 @@ def test_positive_form_run(
         assert result_from_db.variables_stats["poisson_c"]["importance_factor"] == pytest.approx(6.940907)
         assert result_from_db.variables_stats["poisson_c"]["omission_factor"] == pytest.approx(1.0366224096144343)
 
+        assert result_from_db.generated_case_files is not None
+
 
 @pytest.mark.slow
 @pytest.mark.integration

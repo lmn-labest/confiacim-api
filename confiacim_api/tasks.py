@@ -30,6 +30,7 @@ from confiacim_api.errors import ResultNotFound, TaskFileCaseNotFound
 from confiacim_api.files_and_folders_handlers import (
     clean_temporary_simulation_folder,
     rewrite_case_file,
+    save_generated_form_files,
     temporary_simulation_folder,
     unzip_tencim_case,
 )
@@ -168,6 +169,7 @@ def form_run(self, result_id: int):
     input_base_dir = Path(tmp_dir.name)
 
     with SessionFactory() as session:
+        save_generated_form_files(session, base_folder, result)
         result.task_id = self.request.id
         result.status = ResultStatus.RUNNING
         session.add(result)
