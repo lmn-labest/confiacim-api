@@ -363,6 +363,21 @@ def form_results(
 
 
 @pytest.fixture
+def form_results_with_generated_case_files(
+    session,
+    form_results: FormResult,
+):
+
+    with open("tests/fixtures/case_form_generated.zip", mode="rb") as fp:
+        form_results.generated_case_files = fp.read()
+        session.add(form_results)
+        session.commit()
+        session.refresh(form_results)
+
+    return form_results
+
+
+@pytest.fixture
 def form_results_with_critical_point(
     session,
     case_form_with_real_file: Case,

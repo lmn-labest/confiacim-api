@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, status
+from fastapi.responses import Response
 from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlalchemy import paginate
+from slugify import slugify
 from sqlalchemy import select
 
 from confiacim_api.database import ActiveSession
@@ -215,3 +217,42 @@ def form_result_status_retrive(
         )
 
     return {"status": result.status}
+
+
+@router.get("/{case_id}/form/results/{result_id}/download-generated-case-file")
+def download_form_generated_case_file(
+    session: ActiveSession,
+    case_id: int,
+    result_id: int,
+    user: CurrentUser,
+):
+    """Download do arquivos gerados para rodar o `confiacim` do `case_id` do resultado `result_id`"""
+
+    stmt = (
+        select(FormResult)
+        .join(FormResult.case)
+        .where(
+            FormResult.id == result_id,
+            Case.id == case_id,
+            Case.user_id == user.id,
+        )
+    )
+    result = session.scalar(stmt)
+
+    if not result:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Result/Case not found.",
+        )
+
+    if result.generated_case_files is None:
+        raise HTTPException(
+            detail="The form result has no generated case file.",
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+    filename = f"{slugify(result.case.tag)}.zip"
+    response = Response(content=result.generated_case_files, media_type="application/zip")
+    response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+
+    return response
