@@ -77,7 +77,7 @@ class Case(TimestampMixin, Base):
     tag: Mapped[str] = mapped_column(String(MAX_TAG_NAME_LENGTH))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(back_populates="cases")
-    base_file: Mapped[bytes] = mapped_column(LargeBinary, nullable=True)
+    base_file: Mapped[bytes] = mapped_column(LargeBinary, nullable=True, deferred=True)
     description: Mapped[str] = mapped_column(Text, nullable=True)
 
     tencim_results: Mapped[list["TencimResult"]] = relationship(
@@ -153,7 +153,7 @@ class FormResult(TimestampMixin, Base):
     case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
     case: Mapped["Case"] = relationship(back_populates="form_results")
 
-    generated_case_files: Mapped[bytes] = mapped_column(LargeBinary, nullable=True)
+    generated_case_files: Mapped[bytes] = mapped_column(LargeBinary, nullable=True, deferred=True)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id}, case={self.case.tag})"

@@ -22,7 +22,7 @@ from confiacim.simulation_config import (
 from confiacim.tencim.results import read_rc_file
 from confiacim.variables.weibull_params import NoConvergenceWeibullParams
 from sqlalchemy import select
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import defer, joinedload
 
 from confiacim_api.celery import celery_app
 from confiacim_api.database import SessionFactory
@@ -36,7 +36,7 @@ from confiacim_api.files_and_folders_handlers import (
 )
 from confiacim_api.generate_templates_form import generate_templates
 from confiacim_api.logger import logger
-from confiacim_api.models import FormResult, ResultStatus, TencimResult
+from confiacim_api.models import Case, FormResult, ResultStatus, TencimResult
 
 
 def get_simulation_base_dir(user_id: int) -> Path:
@@ -53,7 +53,7 @@ def tencim_standalone_run(self, result_id: int, **options):
             select(TencimResult)
             .where(TencimResult.id == result_id)
             .options(
-                joinedload(TencimResult.case),
+                joinedload(TencimResult.case, innerjoin=True).load_only(Case.user_id, Case.base_file),
             )
         )
         result = session.scalar(stmt)
@@ -126,7 +126,9 @@ def form_run(self, result_id: int):
             select(FormResult)
             .where(FormResult.id == result_id)
             .options(
-                joinedload(FormResult.case),
+                joinedload(FormResult.case, innerjoin=True).load_only(Case.user_id, Case.base_file),
+                defer(FormResult.created_at),
+                defer(FormResult.updated_at),
             )
         )
         result = session.scalar(stmt)
