@@ -32,3 +32,23 @@ def test_negative_health(mocker, client: TestClient):
     assert resp.status_code == status.HTTP_200_OK
 
     assert resp.json() == {"status": "fail"}
+
+
+@pytest.mark.integration
+def test_system_stats(mocker, client: TestClient):
+
+    mocker.patch("confiacim_api.routers.base.celery_app.control.inspect")
+    mocker.patch("confiacim_api.routers.base.count_tasks", return_value=2)
+    mocker.patch("confiacim_api.routers.base.total_success_simulations", return_value=3)
+    mocker.patch("confiacim_api.routers.base.count_case_with_simulation_success", return_value=10)
+
+    resp = client.get(app.url_path_for("system_stats"))
+
+    assert resp.status_code == status.HTTP_200_OK
+
+    assert resp.json() == {
+        "number_of_simulations_in_queue": 2,
+        "runnings_simulation": 2,
+        "total_simulation": 3,
+        "total_projects_with_simulations": 10,
+    }
