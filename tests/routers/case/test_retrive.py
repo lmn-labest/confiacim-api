@@ -26,6 +26,7 @@ def test_positive_retrive(client_auth: TestClient, case_with_result: Case):
     assert body["tencim_result_ids"] == [
         {
             "id": case_with_result.tencim_results[0].id,
+            "description": case_with_result.tencim_results[0].description,
             "status": (
                 case_with_result.tencim_results[0].status.value
                 if case_with_result.tencim_results[0].status is not None

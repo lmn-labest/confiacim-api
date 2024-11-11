@@ -86,6 +86,8 @@ class FormResultSummaryOut(BaseModel):
     id: int
     task_id: Optional[UUID] = None
     status: Optional[ResultStatus] = None
+    description: Optional[str] = None
+    critical_point: Optional[int] = None
     created_at: datetime
     updated_at: datetime
 

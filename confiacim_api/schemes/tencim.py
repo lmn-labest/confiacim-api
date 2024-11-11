@@ -14,6 +14,7 @@ class TencimResultSummaryOut(BaseModel):
     id: int
     task_id: Optional[UUID] = None
     status: Optional[ResultStatus] = None
+    description: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
