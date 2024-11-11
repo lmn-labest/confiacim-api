@@ -26,6 +26,7 @@ def test_positive_list(client_auth: TestClient, tencim_results: TencimResult):
     assert response_tencim_results[0]["id"] == tencim_results.id
     assert response_tencim_results[0]["task_id"] == tencim_results.task_id
     assert response_tencim_results[0]["status"] == tencim_results.status.value if tencim_results.status else None
+    assert response_tencim_results[0]["description"] == tencim_results.description
     assert response_tencim_results[0]["created_at"] == (
         tencim_results.created_at.isoformat() if tencim_results.created_at else None
     )
@@ -51,7 +52,7 @@ def test_positive_check_fields(client_auth: TestClient, tencim_results: TencimRe
 
     fields = response_tencim_results[0].keys()
 
-    exepected = {"id", "task_id", "status", "created_at", "updated_at"}
+    exepected = {"id", "task_id", "status", "created_at", "updated_at", "description"}
 
     assert set(fields) == exepected
 
