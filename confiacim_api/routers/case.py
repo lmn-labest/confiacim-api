@@ -8,7 +8,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from slugify import slugify
 from sqlalchemy import select
 
-from confiacim_api.const import MAX_TAG_NAME_LENGTH
+from confiacim_api.const import MAX_TAG_NAME_LENGTH, MIN_TAG_NAME_LENGTH
 from confiacim_api.database import ActiveSession
 from confiacim_api.files_and_folders_handlers import extract_materials_infos_from_blob
 from confiacim_api.models import Case, MaterialsBaseCaseAverageProps
@@ -35,7 +35,7 @@ def case_create(
     session: ActiveSession,
     user: CurrentUser,
     case_file: Annotated[UploadFile, File()],
-    tag: Annotated[str, Form(max_length=MAX_TAG_NAME_LENGTH)],
+    tag: Annotated[str, Form(min_length=MIN_TAG_NAME_LENGTH, max_length=MAX_TAG_NAME_LENGTH)],
     description: Annotated[Optional[str], Form()] = None,
 ):
     form_data = CaseCreateIn(tag=tag, description=description)

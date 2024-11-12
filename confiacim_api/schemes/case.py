@@ -3,7 +3,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from confiacim_api.const import MAX_TAG_NAME_LENGTH
+from confiacim_api.const import MAX_TAG_NAME_LENGTH, MIN_TAG_NAME_LENGTH
 from confiacim_api.schemes.tencim import TencimResultSummaryOut
 
 
@@ -29,7 +29,7 @@ class MaterialsOut(BaseModel):
 
 
 class CaseCreateIn(BaseModel):
-    tag: str = Field(max_length=MAX_TAG_NAME_LENGTH)
+    tag: str = Field(min_length=MIN_TAG_NAME_LENGTH, max_length=MAX_TAG_NAME_LENGTH)
     description: Optional[str] = None
 
 
