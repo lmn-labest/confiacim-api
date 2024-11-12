@@ -158,6 +158,33 @@ def test_negative_create_tag_must_be_lt_30(
 
 
 @pytest.mark.integration
+def test_negative_create_tag_must_be_gt_3(
+    client_auth: TestClient,
+    session,
+    zip_file_fake: BytesIO,
+):
+
+    payload = {"tag": "s" * 2}
+
+    resp = client_auth.post(
+        app.url_path_for(ROUTE_VIEW_NAME),
+        data=payload,
+        files={"case_file": zip_file_fake},
+    )
+    assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    case_db = session.scalars(select(Case)).first()
+
+    assert not case_db
+
+    body = resp.json()
+
+    assert body["detail"][0]["loc"] == ["body", "tag"]
+    assert body["detail"][0]["msg"] == "String should have at least 3 characters"
+    assert body["detail"][0]["type"] == "string_too_short"
+
+
+@pytest.mark.integration
 def test_negative_create_tag_name_must_be_unique_per_user(
     client_auth: TestClient,
     case: Case,
