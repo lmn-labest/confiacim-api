@@ -15,7 +15,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2'
+          cpus: '1.0'
           memory: '500M'
 
   redis-master:
@@ -29,7 +29,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: '1.0'
           memory: '250M'
 
   sentinel:
@@ -48,7 +48,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: '1.0'
           memory: '250M'
 
   database:
@@ -69,7 +69,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '3'
+          cpus: '1.0'
           memory: '1G'
 
   api:
@@ -90,6 +90,8 @@ services:
       CONFIACIM_API_SENTINEL_MASTER_NAME: mymaster
       CONFIACIM_API_SENTINEL_HOST: sentinel
       CONFIACIM_API_JWT_SECRET_KEY: Chave Secreta JWT
+      CONFIACIM_CORE_EXEC_TENCIM_MODE: SEQUENTIAL
+      ACCESS_TOKEN_EXPIRE_MINUTES: 864000
 
     depends_on:
       - database
@@ -98,12 +100,12 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: '1.0'
           memory: '500M'
 
   worker:
     image: confiacim_api:latest
-    command: celery -A confiacim_api.celery worker  --concurrency=4 -l INFO
+    command: celery -A confiacim_api.celery worker  --concurrency=1 -l INFO
     restart: 'no'
     networks:
       - internal_nw
@@ -118,11 +120,13 @@ services:
       CONFIACIM_API_SENTINEL_MASTER_NAME: mymaster
       CONFIACIM_API_SENTINEL_HOST: sentinel
       CONFIACIM_API_JWT_SECRET_KEY: Chave Secreta JWT
+      CONFIACIM_CORE_EXEC_TENCIM_MODE: SEQUENTIAL
+      ACCESS_TOKEN_EXPIRE_MINUTES: 864000
 
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: '1.0'
           memory: '500M'
 
   flower:
@@ -146,7 +150,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: '1.0'
           memory: '200M'
 
 volumes:
