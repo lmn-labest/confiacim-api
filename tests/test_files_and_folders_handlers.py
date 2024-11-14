@@ -22,6 +22,7 @@ from confiacim_api.files_and_folders_handlers import (
     extract_materials_infos_from_blob,
     new_time_loop,
     read_materials_file,
+    remove_tab_and_unnecessary_spaces,
     rewrite_case_file,
     rm_nocliprc_macro,
     rm_setpnode_and_setptime,
@@ -443,3 +444,9 @@ def test_save_generated_form_files(session, tmp_path, form_results):
             "loads.dat",
             "initialtemperature.dat",
         }
+
+
+@pytest.mark.unit
+def test_remove_tab_and_unnecessary_spaces():
+    case_str = "case  \ndt\t 1 \nend\t \n"
+    assert remove_tab_and_unnecessary_spaces(case_str) == "case\ndt 1\nend\n"

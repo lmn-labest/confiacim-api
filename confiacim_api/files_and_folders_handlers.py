@@ -167,31 +167,41 @@ def rewrite_case_file(
     with open(case_path, encoding="utf-8") as fp:
         new_file_case = fp.read()
 
-    is_new_file = False
+    new_file_case = remove_tab_and_unnecessary_spaces(new_file_case)
 
     if rc_limit:
         logger.info(f"Task {task_id} - Removing norcclip ...")
         new_file_case = rm_nocliprc_macro(new_file_case)
-        is_new_file = True
     else:
         logger.info(f"Task {task_id} - Add norcclip ...")
         new_file_case = add_nocliprc_macro(new_file_case)
-        is_new_file = True
 
     if setpnode_and_setptime:
         logger.info(f"Task {task_id} - Removing setpnode and setptime ...")
         new_file_case = rm_setpnode_and_setptime(new_file_case)
-        is_new_file = True
 
     if critical_point:
         logger.info(f"Task {task_id} - Novo loop de tempo até passo {critical_point} ...")
         new_file_case = new_time_loop(new_file_case, critical_point)
-        is_new_file = True
 
-    if is_new_file:
-        logger.debug(f"Task {task_id} - Writing the new file in disk ...")
-        with open(case_path, mode="w", encoding="utf-8") as fp:
-            fp.write(new_file_case)
+    logger.debug(f"Task {task_id} - Writing the new file in disk ...")
+    with open(case_path, mode="w", encoding="utf-8") as fp:
+        fp.write(new_file_case)
+
+
+def remove_tab_and_unnecessary_spaces(file_case_str: str) -> str:
+    """
+    Remove espações e tabulações desncessarias do arquivo
+
+    Parameters:
+        file_case_str: Conteudo do arquivo no formato de `str`.
+
+    Returns:
+        Retorna o conteudo file_case_str
+    """
+    new_lines = [line.strip() for line in file_case_str.split("\n")]
+    new_file_case = "\n".join(new_lines)
+    return new_file_case.replace("\t", "")
 
 
 def new_time_loop(case_file_str: str, last_step: int) -> str:
@@ -217,7 +227,7 @@ def extract_materials_infos(file_str: str) -> MaterialsInfos:
     Extrai o valores do materias desejados
 
     Parameters:
-        case_data_str: Conteudo do arquivo de `materials.dat` no formato de `str`.
+        file_str: Conteudo do arquivo de `materials.dat` no formato de `str`.
 
     Returns:
         Retorna o valor dos materiais.
