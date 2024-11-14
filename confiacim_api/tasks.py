@@ -105,6 +105,12 @@ def tencim_standalone_run(self, result_id: int, **options):
         result.status = ResultStatus.FAILED
         raise e
 
+    except Exception as e:
+        logger.warning(f"Task {task_id} - Generic error.")
+        result.error = str(e)
+        result.status = ResultStatus.FAILED
+        raise e
+
     finally:
         with SessionFactory() as session:
             session.add(result)
@@ -180,6 +186,7 @@ def form_run(self, result_id: int):
 
     try:
         logger.info(f"Task {task_id} - Running task ...")
+
         run_form_core(input_dir=input_base_dir, output_dir=None, verbose_level=0)
 
         result_form = json.load((base_folder / "output/form/results.json").open())
@@ -212,6 +219,12 @@ def form_run(self, result_id: int):
         RCCriteriaInvalidOptionError,
     ) as e:
         logger.warning(f"Task {task_id} - Form error.")
+        result.error = str(e)
+        result.status = ResultStatus.FAILED
+        raise e
+
+    except Exception as e:
+        logger.warning(f"Task {task_id} - Generic error.")
         result.error = str(e)
         result.status = ResultStatus.FAILED
         raise e
