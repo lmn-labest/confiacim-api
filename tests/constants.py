@@ -28,7 +28,8 @@ loop 20
 solvt
 solvm
 next
-stop"""
+stop
+"""
 
 
 RES_CASE_FILE_1 = """\
@@ -47,7 +48,8 @@ loop 1
 solvt
 solvm
 next
-stop"""
+stop
+"""
 
 RES_CASE_FILE_2 = """\
 mesh
@@ -65,7 +67,8 @@ loop 9
 solvt
 solvm
 next
-stop"""
+stop
+"""
 
 
 RES_CASE_FILE_3 = """\
@@ -89,7 +92,8 @@ loop 1
 solvt
 solvm
 next
-stop"""
+stop
+"""
 
 RES_CASE_FILE_4 = """\
 mesh
@@ -112,7 +116,8 @@ loop 10
 solvt
 solvm
 next
-stop"""
+stop
+"""
 
 
 NEW_CASE_FILE_LAST_STEP_3 = """\
@@ -139,7 +144,8 @@ loop 2
 solvt
 solvm
 next
-stop"""
+stop
+"""
 
 MATERIALS_FILE = """\
 materials

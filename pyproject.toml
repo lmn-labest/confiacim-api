@@ -24,7 +24,7 @@ pydantic = {extras = ["email"], version = "^2.7.3"}
 typer = "^0.12.3"
 python-slugify = "^8.0.4"
 
-confiacim = {path = "packages/confiacim-0.12.0a0-py3-none-any.whl"}
+confiacim = {path = "packages/confiacim-0.16.0a0-py3-none-any.whl"}
 fastapi-pagination = "^0.12.26"
 loguru = "^0.7.2"
 types-pyyaml = "^6.0.12.20240917"

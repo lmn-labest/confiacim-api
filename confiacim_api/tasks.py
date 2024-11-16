@@ -90,12 +90,12 @@ def tencim_standalone_run(self, result_id: int, **options):
         logger.info(f"Task {task_id} - Running task ...")
         run_tencim_core(input_dir=input_base_dir, output_dir=None, verbose_level=0)
 
-        result_tencim = read_rc_file(input_base_dir / "output/case_RC.txt")
+        result_tencim = read_rc_file(input_base_dir / "output/case_RC.txt", stride=10)
 
         result.istep = result_tencim.istep.tolist()
         result.t = result_tencim.t.tolist()
         result.rankine_rc = result_tencim.rc_rankine.tolist()
-        result.mohr_coulomb_rc = result_tencim.rc_mhor_coulomb.tolist()
+        result.mohr_coulomb_rc = result_tencim.rc_mohr_coulomb.tolist()
         result.status = ResultStatus.SUCCESS
         logger.info(f"Task {task_id} - Analysis completed.")
 
