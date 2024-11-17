@@ -12,6 +12,7 @@ from confiacim.tencim.deterministic import new_case_with_until_the_step
 from sqlalchemy.orm import Session
 
 from confiacim_api.errors import (
+    LoadsFileEmptyError,
     MaterialsFileEmptyError,
     MaterialsFileNotFoundInZipError,
     MaterialsFileValueError,
@@ -53,6 +54,26 @@ class MaterialsInfos:
     thermal_expansion_f: float
     thermal_conductivity_f: float
     volumetric_heat_capacity_f: float
+
+
+@dataclass(frozen=True)
+class MechanicalLoads:
+    istep: tuple[int, ...]
+    force: tuple[float, ...]
+
+
+@dataclass(frozen=True)
+class ThermalLoads:
+    istep: tuple[int, ...]
+    h: tuple[float, ...]
+    temperature: tuple[float, ...]
+
+
+@dataclass(frozen=True)
+class LoadsInfos:
+    nodalsource: float
+    mechanical_loads: MechanicalLoads
+    thermal_loads: ThermalLoads
 
 
 def temporary_simulation_folder(origin_dir: Path) -> TemporaryDirectory:
@@ -372,3 +393,75 @@ def save_generated_form_files(session: Session, path_folder: Path, form_result: 
     zip_generated_form_case(path_folder)
     save_zip_in_db(session, zip_path, form_result)
     zip_path.unlink()
+
+
+def extract_loads_infos(file_str: str) -> LoadsInfos:
+    """
+    Extrai o valores do loads desejados
+
+    Parameters:
+        file_str: Conteudo do arquivo de `loads.dat` no formato de `str`.
+
+    Returns:
+        Retorna o valor dos loads.
+    """
+
+    if file_str == "":
+        raise LoadsFileEmptyError("Empty loads file.")
+
+    lines_generator = iter(file_str.split("\n"))
+
+    for line in lines_generator:
+
+        if "end" in line:
+            continue
+
+        elif "nodalsources" in line:
+            words = next(lines_generator).split()
+            nodalsources = float(words[1])
+            next(lines_generator)
+
+        elif "loads" in line and "nodalloads" not in line and "nodalthermloads" not in line:
+            words = next(lines_generator).split()
+            tmp1: list[tuple[int, float]] = []
+            for _ in range(int(words[-1])):
+                words = next(lines_generator).split()
+                tmp1.append((int(words[0]), float(words[1])))
+
+            mechanical_loads = MechanicalLoads(
+                istep=tuple(x[0] for x in tmp1),
+                force=tuple(x[1] for x in tmp1),
+            )
+
+            words = next(lines_generator).split()
+            tmp2: list[tuple[int, float, float]] = []
+            for _ in range(int(words[-1])):
+                words = next(lines_generator).split()
+                tmp2.append((int(words[0]), float(words[1]), float(words[2])))
+
+            therm_loads = ThermalLoads(
+                istep=tuple(x[0] for x in tmp2),
+                h=tuple(x[1] for x in tmp2),
+                temperature=tuple(x[2] for x in tmp2),
+            )
+
+            next(lines_generator)
+
+    return LoadsInfos(
+        nodalsource=nodalsources,
+        mechanical_loads=mechanical_loads,
+        thermal_loads=therm_loads,
+    )
+
+
+def read_loads_file(path_file: Path) -> LoadsInfos:
+    """
+    Lê o arquivo de loads e extrai os valores desejados
+
+    Parameters:
+        path_file: Lê o arquivos `loads.dat`.
+
+    Returns:
+        Retorna o valor dos loads.
+    """
+    return extract_loads_infos(path_file.read_text())

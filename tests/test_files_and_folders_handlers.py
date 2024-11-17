@@ -11,6 +11,7 @@ import pytest
 from sqlalchemy import select
 
 from confiacim_api.errors import (
+    LoadsFileEmptyError,
     MaterialsFileEmptyError,
     MaterialsFileNotFoundInZipError,
     MaterialsFileValueError,
@@ -18,9 +19,11 @@ from confiacim_api.errors import (
 from confiacim_api.files_and_folders_handlers import (
     add_nocliprc_macro,
     clean_temporary_simulation_folder,
+    extract_loads_infos,
     extract_materials_infos,
     extract_materials_infos_from_blob,
     new_time_loop,
+    read_loads_file,
     read_materials_file,
     remove_tab_and_unnecessary_spaces,
     rewrite_case_file,
@@ -36,6 +39,7 @@ from confiacim_api.files_and_folders_handlers import (
 from confiacim_api.models import Case
 from tests.constants import (
     CASE_FILE,
+    LOADS_FILE,
     MATERIALS_FILE,
     NEW_CASE_FILE_LAST_STEP_3,
     RES_CASE_FILE_1,
@@ -450,3 +454,40 @@ def test_save_generated_form_files(session, tmp_path, form_results):
 def test_remove_tab_and_unnecessary_spaces():
     case_str = "case  \ndt\t 1 \nend\t \n"
     assert remove_tab_and_unnecessary_spaces(case_str) == "case\ndt 1\nend\n"
+
+
+@pytest.mark.integration
+def test_positive_read_loads():
+
+    path = Path("tests/fixtures/loads.dat")
+
+    loads = read_loads_file(path)
+
+    assert loads.nodalsource == 291.639
+    assert loads.mechanical_loads.istep == (0, 600, 1200, 1800)
+    assert loads.mechanical_loads.force == (0, 0, 6.8947e07, 6.8947e07)
+
+    assert loads.thermal_loads.istep == (600, 1200, 1800)
+    assert loads.thermal_loads.h == (0, 0, 0)
+    assert loads.thermal_loads.temperature == (299.073, 299.073, 299.073)
+
+
+@pytest.mark.unit
+def test_positive_extract_loads_infos():
+
+    loads = extract_loads_infos(LOADS_FILE)
+
+    assert loads.nodalsource == 291.639
+    assert loads.mechanical_loads.istep == (0, 600, 1200, 1800)
+    assert loads.mechanical_loads.force == (0, 0, 6.8947e07, 6.8947e07)
+
+    assert loads.thermal_loads.istep == (600, 1200, 1800)
+    assert loads.thermal_loads.h == (15, 15, 15)
+    assert loads.thermal_loads.temperature == (299.073, 299.073, 299.073)
+
+
+@pytest.mark.unit
+def test_negative_extract_extract_loads_infos_empty_file():
+
+    with pytest.raises(LoadsFileEmptyError, match="Empty loads file."):
+        extract_loads_infos("")

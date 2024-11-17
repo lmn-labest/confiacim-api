@@ -161,3 +161,34 @@ materials
     d 1 1.999e+11 0.3000 1.400e-05 0 0 4.292e+01 3.894e+06 0 0 0
 end materials
 return"""
+
+
+LOADS_FILE = """\
+constraindisp
+83 1
+end constraindisp
+constraintemp
+83 1
+end constraintemp
+nodalloads
+1 1
+end nodalloads
+nodalthermloads
+1 2
+end nodalthermloads
+nodalsources
+83 291.639
+end nodalsources
+loads
+1 11 0.11123 4
+0    0.0000e+00
+600  0.0000e+00
+1200 6.8947e+07
+1800 6.8947e+07
+2 4 3
+600  15 299.073
+1200 15 299.073
+1800 15 299.073
+end loads
+return
+"""
