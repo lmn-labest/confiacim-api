@@ -7,6 +7,7 @@ from sqlalchemy import func, select
 
 from confiacim_api.app import app
 from confiacim_api.errors import (
+    LoadsFileEmptyError,
     MaterialsFileEmptyError,
     MaterialsFileNotFoundInZipError,
 )
@@ -53,6 +54,14 @@ def test_positive_create(client_auth: TestClient, session, user: User, payload):
     assert case_from_db.materials.thermal_conductivity_f == pytest.approx(6.006e00)
     assert case_from_db.materials.volumetric_heat_capacity_f == pytest.approx(1.929e06)
 
+    assert case_from_db.loads.nodalsource == pytest.approx(329.07)
+    assert case_from_db.loads.mechanical_istep == (0, 864_000)
+    assert case_from_db.loads.mechanical_force == (0, 0)
+
+    assert case_from_db.loads.thermal_istep == (864_000,)
+    assert case_from_db.loads.thermal_h == (0.0,)
+    assert case_from_db.loads.thermal_temperature == (329.362,)
+
     body = resp.json()
 
     assert body["id"] == case_from_db.id
@@ -73,6 +82,15 @@ def test_positive_create(client_auth: TestClient, session, user: User, payload):
     assert body["materials"]["thermal_expansion_f"] == case_from_db.materials.thermal_expansion_f
     assert body["materials"]["thermal_conductivity_f"] == case_from_db.materials.thermal_conductivity_f
     assert body["materials"]["volumetric_heat_capacity_f"] == case_from_db.materials.volumetric_heat_capacity_f
+
+    assert body["loads"]["nodalsource"] == case_from_db.loads.nodalsource
+
+    assert body["loads"]["mechanical_istep"] == list(case_from_db.loads.mechanical_istep)
+    assert body["loads"]["mechanical_force"] == list(case_from_db.loads.mechanical_force)
+
+    assert body["loads"]["thermal_istep"] == list(case_from_db.loads.thermal_istep)
+    assert body["loads"]["thermal_h"] == list(case_from_db.loads.thermal_h)
+    assert body["loads"]["thermal_temperature"] == list(case_from_db.loads.thermal_temperature)
 
 
 @pytest.mark.integration
@@ -313,6 +331,49 @@ def test_negative_file_problem_raise_empty_materials_file(
 
     assert resp.status_code == status.HTTP_400_BAD_REQUEST
     assert resp.json() == {"detail": "Empty materials file."}
+
+
+@pytest.mark.integration
+def test_negative_file_problem_case_zipfile_without_loads(
+    session,
+    client_auth: TestClient,
+    payload,
+):
+
+    with open("tests/fixtures/case_without_loads.zip", mode="rb") as fp:
+        resp = client_auth.post(
+            app.url_path_for(ROUTE_VIEW_NAME),
+            data=payload,
+            files={"case_file": fp},
+        )
+
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+
+    assert resp.json() == {"detail": "Loads file not found in zip."}
+
+
+@pytest.mark.integration
+def test_negative_file_problem_raise_empty_loads_file(
+    session,
+    client_auth: TestClient,
+    mocker,
+    payload,
+):
+
+    mocker.patch(
+        "confiacim_api.files_and_folders_handlers.extract_loads_infos",
+        side_effect=LoadsFileEmptyError("Empty loads file."),
+    )
+
+    with open("tests/fixtures/case1.zip", mode="rb") as fp:
+        resp = client_auth.post(
+            app.url_path_for(ROUTE_VIEW_NAME),
+            data=payload,
+            files={"case_file": fp},
+        )
+
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+    assert resp.json() == {"detail": "Empty loads file."}
 
 
 @pytest.mark.integration
