@@ -133,4 +133,77 @@ ALTER TABLE tencim_results ADD COLUMN rc_limit BOOLEAN;
 
 UPDATE alembic_version SET version_num='a14583722acf' WHERE alembic_version.version_num = 'e9fd6582f431';
 
+-- Running upgrade a14583722acf -> 949a58ef46fc
+
+ALTER TABLE materials_base_case_average_prop ADD COLUMN thermal_expansion_c FLOAT;
+
+ALTER TABLE materials_base_case_average_prop ADD COLUMN thermal_conductivity_c FLOAT;
+
+ALTER TABLE materials_base_case_average_prop ADD COLUMN volumetric_heat_capacity_c FLOAT;
+
+ALTER TABLE materials_base_case_average_prop ADD COLUMN friction_angle_c FLOAT;
+
+ALTER TABLE materials_base_case_average_prop ADD COLUMN cohesion_c FLOAT;
+
+ALTER TABLE materials_base_case_average_prop ADD COLUMN thermal_expansion_f FLOAT;
+
+ALTER TABLE materials_base_case_average_prop ADD COLUMN thermal_conductivity_f FLOAT;
+
+ALTER TABLE materials_base_case_average_prop ADD COLUMN volumetric_heat_capacity_f FLOAT;
+
+UPDATE materials_base_case_average_prop
+        SET
+            thermal_expansion_c = 0.0,
+            thermal_conductivity_c = 0.0,
+            volumetric_heat_capacity_c = 0.0,
+            friction_angle_c = 0.0,
+            cohesion_c = 0.0,
+            thermal_expansion_f = 0.0,
+            thermal_conductivity_f = 0.0,
+            volumetric_heat_capacity_f = 0.0;
+
+ALTER TABLE materials_base_case_average_prop ALTER COLUMN thermal_expansion_c SET NOT NULL;
+
+ALTER TABLE materials_base_case_average_prop ALTER COLUMN thermal_conductivity_c SET NOT NULL;
+
+ALTER TABLE materials_base_case_average_prop ALTER COLUMN volumetric_heat_capacity_c SET NOT NULL;
+
+ALTER TABLE materials_base_case_average_prop ALTER COLUMN friction_angle_c SET NOT NULL;
+
+ALTER TABLE materials_base_case_average_prop ALTER COLUMN cohesion_c SET NOT NULL;
+
+ALTER TABLE materials_base_case_average_prop ALTER COLUMN thermal_expansion_f SET NOT NULL;
+
+ALTER TABLE materials_base_case_average_prop ALTER COLUMN thermal_conductivity_f SET NOT NULL;
+
+ALTER TABLE materials_base_case_average_prop ALTER COLUMN volumetric_heat_capacity_f SET NOT NULL;
+
+UPDATE alembic_version SET version_num='949a58ef46fc' WHERE alembic_version.version_num = 'a14583722acf';
+
+-- Running upgrade 949a58ef46fc -> 1ab12ae567d7
+
+ALTER TABLE form_results ADD COLUMN generated_case_files BYTEA;
+
+UPDATE alembic_version SET version_num='1ab12ae567d7' WHERE alembic_version.version_num = '949a58ef46fc';
+
+-- Running upgrade 1ab12ae567d7 -> bf6ce47c0449
+
+CREATE TABLE loads_base_case_infos (
+    id SERIAL NOT NULL,
+    nodalsource FLOAT,
+    mechanical_istep INTEGER[],
+    mechanical_force FLOAT[],
+    thermal_istep INTEGER[],
+    thermal_h FLOAT[],
+    thermal_temperature FLOAT[],
+    case_id INTEGER NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    PRIMARY KEY (id),
+    FOREIGN KEY(case_id) REFERENCES cases (id),
+    UNIQUE (case_id)
+);
+
+UPDATE alembic_version SET version_num='bf6ce47c0449' WHERE alembic_version.version_num = '1ab12ae567d7';
+
 COMMIT;
