@@ -256,6 +256,16 @@ def case_with_materials_info(session, user: User):
 
 
 @pytest.fixture
+def case_with_loads_info(session, user: User):
+    case = Case(tag="case_1", user=user)
+    load = LoadsFactory(case=case)
+    session.add_all([case, load])
+    session.commit()
+    session.refresh(case)
+    return case
+
+
+@pytest.fixture
 def case_with_real_file(session, user: User):
     with open("tests/fixtures/case1.zip", mode="rb") as fp:
         case = Case(tag="case1", user=user, base_file=fp.read())
@@ -331,7 +341,7 @@ def case_with_result(session, user: User):
 
 @pytest.fixture
 def materials(session: Session, case: Case):
-    mat = MaterialsFactory(case_id=case.id)
+    mat = MaterialsFactory(case=case)
     session.add(mat)
     session.commit()
     return mat
@@ -339,7 +349,7 @@ def materials(session: Session, case: Case):
 
 @pytest.fixture
 def loads(session: Session, case: Case):
-    load = LoadsFactory(case_id=case.id)
+    load = LoadsFactory(case=case)
     session.add(load)
     session.commit()
     return load
