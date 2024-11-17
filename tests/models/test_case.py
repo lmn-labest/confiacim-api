@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from confiacim_api.models import (
     Case,
     FormResult,
+    LoadsBaseCaseInfos,
     MaterialsBaseCaseAverageProps,
     TencimResult,
     User,
@@ -175,3 +176,14 @@ def test_deleting_the_case_should_delete_the_tencim_results(session: Session, ca
     session.commit()
 
     assert session.scalar(select(func.count()).select_from(TencimResult)) == 0
+
+
+@pytest.mark.integration
+def test_deleting_the_case_should_delete_the_loads(session: Session, loads: LoadsBaseCaseInfos):
+    """Testa a configuracao do cascate"""
+
+    case = loads.case
+    session.delete(case)
+    session.commit()
+
+    assert session.scalar(select(func.count()).select_from(LoadsBaseCaseInfos)) == 0

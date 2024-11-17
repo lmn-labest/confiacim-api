@@ -95,6 +95,11 @@ class Case(TimestampMixin, Base):
         cascade="all, delete-orphan",
     )
 
+    loads: Mapped["LoadsBaseCaseInfos"] = relationship(
+        back_populates="case",
+        cascade="all, delete-orphan",
+    )
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id}, case={self.tag})"
 
@@ -184,3 +189,25 @@ class MaterialsBaseCaseAverageProps(TimestampMixin, Base):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id}, case={self.case.tag}, E_c={self.E_c}, ...)"
+
+
+class LoadsBaseCaseInfos(TimestampMixin, Base):
+    __tablename__ = "loads_base_case_infos"
+    __table_args__ = (UniqueConstraint("case_id"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    nodalsource: Mapped[Optional[float]]
+
+    mechanical_istep: Mapped[Optional[tuple[int]]] = mapped_column(ARRAY(Integer, as_tuple=True), deferred=True)
+    mechanical_force: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+
+    thermal_istep: Mapped[Optional[tuple[int]]] = mapped_column(ARRAY(Integer, as_tuple=True), deferred=True)
+    thermal_h: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    thermal_temperature: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+
+    case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
+    case: Mapped["Case"] = relationship(back_populates="loads")
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(id={self.id}, case={self.case.tag}, nodalsource={self.nodalsource}, ...)"

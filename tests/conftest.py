@@ -15,12 +15,18 @@ from confiacim_api.models import (
     Base,
     Case,
     FormResult,
+    LoadsBaseCaseInfos,
     MaterialsBaseCaseAverageProps,
     ResultStatus,
     TencimResult,
     User,
 )
 from confiacim_api.security import create_access_token, get_password_hash
+
+
+class TupleFactory(factory.BaseListFactory):
+    class Meta:
+        model = tuple
 
 
 class UserFactory(factory.Factory):
@@ -47,6 +53,20 @@ class MaterialsFactory(factory.Factory):
     thermal_expansion_f = factory.fuzzy.FuzzyFloat(low=0, high=1e10)
     thermal_conductivity_f = factory.fuzzy.FuzzyFloat(low=0, high=1e10)
     volumetric_heat_capacity_f = factory.fuzzy.FuzzyFloat(low=0, high=1e10)
+
+
+class LoadsFactory(factory.Factory):
+    class Meta:
+        model = LoadsBaseCaseInfos
+
+    nodalsource = factory.fuzzy.FuzzyFloat(low=1e6, high=1e10)
+
+    mechanical_istep = factory.List([1, 2, 3], list_factory="tests.conftest.TupleFactory")
+    mechanical_force = factory.List([20.0, 21.0, 22.0], list_factory="tests.conftest.TupleFactory")
+
+    thermal_istep = factory.List([1, 2], list_factory="tests.conftest.TupleFactory")
+    thermal_h = factory.List([6.0, 5.0], list_factory="tests.conftest.TupleFactory")
+    thermal_temperature = factory.List([20.0, 21.0], list_factory="tests.conftest.TupleFactory")
 
 
 @pytest.fixture(scope="session")
@@ -315,6 +335,14 @@ def materials(session: Session, case: Case):
     session.add(mat)
     session.commit()
     return mat
+
+
+@pytest.fixture
+def loads(session: Session, case: Case):
+    load = LoadsFactory(case_id=case.id)
+    session.add(load)
+    session.commit()
+    return load
 
 
 @pytest.fixture
