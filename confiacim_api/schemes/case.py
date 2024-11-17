@@ -28,6 +28,33 @@ class MaterialsOut(BaseModel):
     updated_at: Optional[datetime] = None
 
 
+class MechanicalLoads(BaseModel):
+    istep: tuple[int, ...]
+    force: tuple[float, ...]
+
+
+class ThermalLoads(BaseModel):
+    istep: tuple[int, ...]
+    h: tuple[float, ...]
+    temperature: tuple[float, ...]
+
+
+class LoadInfosOut(BaseModel):
+    id: int
+    #
+    nodalsource: float
+    #
+    mechanical_istep: tuple[int, ...]
+    mechanical_force: tuple[float, ...]
+    #
+    thermal_istep: tuple[int, ...]
+    thermal_h: tuple[float, ...]
+    thermal_temperature: tuple[float, ...]
+    #
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+
 class CaseCreateIn(BaseModel):
     tag: str = Field(min_length=MIN_TAG_NAME_LENGTH, max_length=MAX_TAG_NAME_LENGTH)
     description: Optional[str] = None
@@ -39,6 +66,7 @@ class CaseCreateOut(BaseModel):
     tag: str = Field(max_length=MAX_TAG_NAME_LENGTH)
     description: Optional[str] = None
     materials: MaterialsOut
+    loads: LoadInfosOut
     created_at: datetime
     updated_at: datetime
 

@@ -10,8 +10,15 @@ from sqlalchemy import select
 
 from confiacim_api.const import MAX_TAG_NAME_LENGTH, MIN_TAG_NAME_LENGTH
 from confiacim_api.database import ActiveSession
-from confiacim_api.files_and_folders_handlers import extract_materials_infos_from_blob
-from confiacim_api.models import Case, MaterialsBaseCaseAverageProps
+from confiacim_api.files_and_folders_handlers import (
+    extract_loads_infos_from_blob,
+    extract_materials_infos_from_blob,
+)
+from confiacim_api.models import (
+    Case,
+    LoadsBaseCaseInfos,
+    MaterialsBaseCaseAverageProps,
+)
 from confiacim_api.schemes import (
     CaseCreateIn,
     CaseCreateOut,
@@ -59,11 +66,22 @@ def case_create(
     new_case.base_file = case_file.file.read()
 
     mat_infos = extract_materials_infos_from_blob(new_case)
+    loads_infos = extract_loads_infos_from_blob(new_case)
 
     mat = MaterialsBaseCaseAverageProps(case=new_case, **asdict(mat_infos))
-    session.add(mat)
-
-    session.add_all([new_case, mat])
+    loads = LoadsBaseCaseInfos(
+        case=new_case,
+        #
+        nodalsource=loads_infos.nodalsource,
+        #
+        mechanical_istep=loads_infos.mechanical_loads.istep,
+        mechanical_force=loads_infos.mechanical_loads.force,
+        #
+        thermal_istep=loads_infos.thermal_loads.istep,
+        thermal_h=loads_infos.thermal_loads.h,
+        thermal_temperature=loads_infos.thermal_loads.temperature,
+    )
+    session.add_all([new_case, mat, loads])
     session.commit()
     session.refresh(new_case)
 
