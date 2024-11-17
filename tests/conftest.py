@@ -266,6 +266,16 @@ def case_with_real_file_without_materials(session, user: User):
 
 
 @pytest.fixture
+def case_with_real_file_without_loads(session, user: User):
+    with open("tests/fixtures/case_without_loads.zip", mode="rb") as fp:
+        case = Case(tag="case1", user=user, base_file=fp.read())
+        session.add(case)
+        session.commit()
+        session.refresh(case)
+    return case
+
+
+@pytest.fixture
 def tencim_results(session, case_with_real_file: Case):
     istep = (1, 2, 3)
     t = (1.0, 2.0, 3.0)

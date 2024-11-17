@@ -12,6 +12,7 @@ from sqlalchemy import select
 
 from confiacim_api.errors import (
     LoadsFileEmptyError,
+    LoadsFileNotFoundInZipError,
     MaterialsFileEmptyError,
     MaterialsFileNotFoundInZipError,
     MaterialsFileValueError,
@@ -20,6 +21,7 @@ from confiacim_api.files_and_folders_handlers import (
     add_nocliprc_macro,
     clean_temporary_simulation_folder,
     extract_loads_infos,
+    extract_loads_infos_from_blob,
     extract_materials_infos,
     extract_materials_infos_from_blob,
     new_time_loop,
@@ -491,3 +493,23 @@ def test_negative_extract_extract_loads_infos_empty_file():
 
     with pytest.raises(LoadsFileEmptyError, match="Empty loads file."):
         extract_loads_infos("")
+
+
+@pytest.mark.unit
+def test_positive_extract_loads_infos_from_blob(case_with_real_file):
+
+    loads = extract_loads_infos_from_blob(case_with_real_file)
+
+    assert loads.nodalsource == 329.07
+    assert loads.mechanical_loads.istep == (0, 864_000)
+    assert loads.mechanical_loads.force == (0, 0)
+
+    assert loads.thermal_loads.istep == (864_000,)
+    assert loads.thermal_loads.h == (0.0,)
+    assert loads.thermal_loads.temperature == (329.362,)
+
+
+@pytest.mark.unit
+def test_negative_extract_loads_infos_from_blob_zipfile_without_loads(case_with_real_file_without_loads):
+    with pytest.raises(LoadsFileNotFoundInZipError, match="Loads file not found in zip."):
+        extract_loads_infos_from_blob(case_with_real_file_without_loads)
