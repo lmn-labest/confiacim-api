@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 
 from confiacim_api.errors import (
     LoadsFileEmptyError,
+    LoadsFileNotFoundInZipError,
     MaterialsFileEmptyError,
     MaterialsFileNotFoundInZipError,
     MaterialsFileValueError,
@@ -465,3 +466,25 @@ def read_loads_file(path_file: Path) -> LoadsInfos:
         Retorna o valor dos loads.
     """
     return extract_loads_infos(path_file.read_text())
+
+
+def extract_loads_infos_from_blob(case: Case) -> LoadsInfos:
+    """
+    Extrai as informações dos loads diretamentamente do blob salvo no
+    DB.
+
+    Parameters:
+        case: Caso
+
+    Returns:
+        LoadsInfos: Retorna o valor dos loads.
+    """
+
+    with ZipFile(BytesIO(case.base_file), "r") as zip_ref:
+        try:
+            with zip_ref.open("loads.dat") as fp:
+                loads_infos = extract_loads_infos(fp.read().decode())
+        except KeyError as e:
+            raise LoadsFileNotFoundInZipError("Loads file not found in zip.") from e
+
+    return loads_infos
