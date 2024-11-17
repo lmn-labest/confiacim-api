@@ -1,5 +1,11 @@
 from confiacim_api.schemes.base import HealthOut, Message, ResultCeleryTaskOut, Token
-from confiacim_api.schemes.case import CaseCreateIn, CaseCreateOut, CaseOut, MaterialsOut
+from confiacim_api.schemes.case import (
+    CaseCreateIn,
+    CaseCreateOut,
+    CaseOut,
+    LoadInfosOut,
+    MaterialsOut,
+)
 from confiacim_api.schemes.form import (
     FormConfigCreateIn,
     FormResultDetailOut,
@@ -30,6 +36,7 @@ __all__ = (
     "CaseCreateOut",
     "CaseOut",
     "MaterialsOut",
+    "LoadInfosOut",
     "TencimResultDetailOut",
     "TencimResultStatusOut",
     "TencimResultSummaryOut",
