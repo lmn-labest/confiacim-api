@@ -75,7 +75,7 @@ def generate_materials_template(materials_str: str, mat_props: dict[str, float])
     return "\n".join(lines)
 
 
-def generate_loads_template(loads_str: str, loads_infos: dict[str, float]) -> str:
+def generate_loads_template(loads_str: str, loads_infos: dict[str, bool]) -> str:
     """
     Gera o template jinja do conteudo loads.dat. As propriedades que serão add
     estão definidads no dicionario loads_infos. O template gerado é da versão unitaria
@@ -108,10 +108,8 @@ def generate_loads_template(loads_str: str, loads_infos: dict[str, float]) -> st
             npoints = int(load_line.split()[-1])
             if loads_infos.get(LOADS_INTERNAL_PRESSURE):
                 for _ in range(npoints):
-                    load_line = next(lines).split()
-                    new_lines.append(
-                        f'{load_line[0]} {{{{ "%.16e"|format({LOADS_INTERNAL_PRESSURE} * {load_line[1]}) }}}}'
-                    )
+                    words = next(lines).split()
+                    new_lines.append(f'{words[0]} {{{{ "%.16e"|format({LOADS_INTERNAL_PRESSURE} * {words[1]}) }}}}')
 
             else:
                 for _ in range(npoints):
@@ -123,10 +121,9 @@ def generate_loads_template(loads_str: str, loads_infos: dict[str, float]) -> st
             npoints = int(load_line.split()[-1])
             if loads_infos.get(LOADS_INTERNAL_TEMPERATURE):
                 for _ in range(npoints):
-                    load_line = next(lines).split()
+                    words = next(lines).split()
                     new_lines.append(
-                        f"{load_line[0]} {load_line[1]} "
-                        f'{{{{ "%.16e"|format({LOADS_INTERNAL_TEMPERATURE} * {load_line[2]}) }}}}'
+                        f"{words[0]} {words[1]} " f'{{{{ "%.16e"|format({LOADS_INTERNAL_TEMPERATURE} * {words[2]}) }}}}'
                     )
             else:
                 for _ in range(npoints):
