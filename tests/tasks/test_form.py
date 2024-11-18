@@ -57,18 +57,28 @@ def test_positive_form_run(
         result_from_db = session.get(FormResult, form_results.id)
         assert result_from_db.status == ResultStatus.SUCCESS
 
-        assert result_from_db.beta == pytest.approx(1.984573)
-        assert result_from_db.resid == pytest.approx(1.244235e-05)
+        assert result_from_db.beta == pytest.approx(1.0745444487743427)
+        assert result_from_db.resid == pytest.approx(0.00013781849291374292)
         assert result_from_db.it == 3
-        assert result_from_db.Pf == pytest.approx(0.023595950368176397)
+        assert result_from_db.Pf == pytest.approx(0.14128936713932422)
 
         assert result_from_db.variables_stats is not None
 
-        assert result_from_db.variables_stats["E_c"]["importance_factor"] == pytest.approx(93.059092)
-        assert result_from_db.variables_stats["E_c"]["omission_factor"] == pytest.approx(3.795699)
+        assert result_from_db.variables_stats["E_c"]["importance_factor"] == pytest.approx(24.739161756102167)
+        assert result_from_db.variables_stats["E_c"]["omission_factor"] == pytest.approx(1.1526978269674566)
 
-        assert result_from_db.variables_stats["poisson_c"]["importance_factor"] == pytest.approx(6.940907)
-        assert result_from_db.variables_stats["poisson_c"]["omission_factor"] == pytest.approx(1.0366224096144343)
+        assert result_from_db.variables_stats["poisson_c"]["importance_factor"] == pytest.approx(2.3769124601955625)
+        assert result_from_db.variables_stats["poisson_c"]["omission_factor"] == pytest.approx(1.0121007122432817)
+
+        assert result_from_db.variables_stats["internal_pressure"]["importance_factor"] == pytest.approx(
+            72.88392578370228
+        )
+        assert result_from_db.variables_stats["internal_pressure"]["omission_factor"] == pytest.approx(
+            1.9203774297491962
+        )
+
+        assert result_from_db.variables_stats["internal_temperature"]["importance_factor"] == pytest.approx(0.0)
+        assert result_from_db.variables_stats["internal_temperature"]["omission_factor"] == pytest.approx(1.0)
 
         assert result_from_db.generated_case_files is not None
 
@@ -91,18 +101,28 @@ def test_positive_form_run_with_critical_point(
         result_from_db = session.get(FormResult, form_results_with_critical_point.id)
         assert result_from_db.status == ResultStatus.SUCCESS
 
-        assert result_from_db.beta == pytest.approx(6.347582)
-        assert result_from_db.resid == pytest.approx(6.273780229081417e-05)
+        assert result_from_db.beta == pytest.approx(3.3495977717461436)
+        assert result_from_db.resid == pytest.approx(4.103337767469164e-06)
         assert result_from_db.it == 4
-        assert result_from_db.Pf == pytest.approx(1.0936211430385317e-10)
+        assert result_from_db.Pf == pytest.approx(0.00040464494007775854)
 
         assert result_from_db.variables_stats is not None
 
-        assert result_from_db.variables_stats["E_c"]["importance_factor"] == pytest.approx(96.71553532129761)
-        assert result_from_db.variables_stats["E_c"]["omission_factor"] == pytest.approx(5.517822199219298)
+        assert result_from_db.variables_stats["E_c"]["importance_factor"] == pytest.approx(25.01631795137409)
+        assert result_from_db.variables_stats["E_c"]["omission_factor"] == pytest.approx(1.154826174529115)
 
-        assert result_from_db.variables_stats["poisson_c"]["importance_factor"] == pytest.approx(3.2844646787024057)
-        assert result_from_db.variables_stats["poisson_c"]["omission_factor"] == pytest.approx(1.0168382628144947)
+        assert result_from_db.variables_stats["poisson_c"]["importance_factor"] == pytest.approx(1.9448809633433028)
+        assert result_from_db.variables_stats["poisson_c"]["omission_factor"] == pytest.approx(1.0098685896580692)
+
+        assert result_from_db.variables_stats["internal_pressure"]["importance_factor"] == pytest.approx(
+            73.03880108528261
+        )
+        assert result_from_db.variables_stats["internal_pressure"]["omission_factor"] == pytest.approx(
+            1.9258852177209818
+        )
+
+        assert result_from_db.variables_stats["internal_temperature"]["importance_factor"] == pytest.approx(0.0)
+        assert result_from_db.variables_stats["internal_temperature"]["omission_factor"] == pytest.approx(1.0)
 
     assert "critical_point=160" in str(rewrite_case_file_mocker.call_args)
 

@@ -379,6 +379,26 @@ def form_case_config():
                     },
                 },
             },
+            {
+                "name": "internal_pressure",
+                "dist": {
+                    "name": "lognormal",
+                    "params": {
+                        "mean": 1.0,
+                        "cov": 0.1,
+                    },
+                },
+            },
+            {
+                "name": "internal_temperature",
+                "dist": {
+                    "name": "lognormal",
+                    "params": {
+                        "mean": 1.0,
+                        "cov": 0.1,
+                    },
+                },
+            },
         ],
         "config": {
             "form": {
