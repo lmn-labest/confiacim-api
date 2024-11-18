@@ -1,32 +1,17 @@
-import re
 import shutil
 from io import BytesIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from textwrap import dedent
 from uuid import uuid4
 from zipfile import ZipFile
 
 import pytest
 from sqlalchemy import select
 
-from confiacim_api.errors import (
-    LoadsFileEmptyError,
-    LoadsFileNotFoundInZipError,
-    MaterialsFileEmptyError,
-    MaterialsFileNotFoundInZipError,
-    MaterialsFileValueError,
-)
 from confiacim_api.files_and_folders_handlers import (
     add_nocliprc_macro,
     clean_temporary_simulation_folder,
-    extract_loads_infos,
-    extract_loads_infos_from_blob,
-    extract_materials_infos,
-    extract_materials_infos_from_blob,
     new_time_loop,
-    read_loads_file,
-    read_materials_file,
     remove_tab_and_unnecessary_spaces,
     rewrite_case_file,
     rm_nocliprc_macro,
@@ -41,8 +26,6 @@ from confiacim_api.files_and_folders_handlers import (
 from confiacim_api.models import Case
 from tests.constants import (
     CASE_FILE,
-    LOADS_FILE,
-    MATERIALS_FILE,
     NEW_CASE_FILE_LAST_STEP_3,
     RES_CASE_FILE_1,
     RES_CASE_FILE_2,
@@ -280,109 +263,6 @@ def test_new_time_loop(last_step: int, result_file):
 
 
 @pytest.mark.unit
-def test_positive_extract_materials_infos():
-
-    materials = extract_materials_infos(MATERIALS_FILE)
-
-    assert materials.E_c == pytest.approx(1.019e10)
-    assert materials.poisson_c == pytest.approx(0.32)
-    assert materials.E_f == pytest.approx(2.040e10)
-    assert materials.poisson_f == pytest.approx(0.36)
-
-
-@pytest.mark.unit
-def test_negative_extract_materials_infos_empty_file():
-
-    with pytest.raises(MaterialsFileEmptyError, match="Empty materials file"):
-        extract_materials_infos("")
-
-
-@pytest.mark.unit
-def test_negative_extract_materials_invalid_mat_number():
-
-    file_str = dedent(
-        """\
-    materials
-        invalid 1 1.999e+11 0.3000 1.400e-05 0 0 4.292e+01 3.894e+06 0 0 0
-    end materials
-    return"""
-    )
-
-    with pytest.raises(
-        MaterialsFileValueError,
-        match=re.escape("Invalid material number: invalid literal for int() with base 10: 'invalid'"),
-    ):
-        extract_materials_infos(file_str)
-
-
-@pytest.mark.unit
-def test_negative_extract_materials_invalid_prop_value():
-
-    file_str = dedent(
-        """\
-    materials
-        3 1 invalid 0.3000 1.400e-05 0 0 4.292e+01 3.894e+06 0 0 0
-    end materials
-    return"""
-    )
-
-    with pytest.raises(
-        MaterialsFileValueError,
-        match="Invalid prop value in material 3: could not convert string to float: 'invalid'",
-    ):
-        extract_materials_infos(file_str)
-
-
-@pytest.mark.integration
-def test_positive_read_materials():
-
-    path = Path("tests/fixtures/materials.dat")
-
-    materials = read_materials_file(path)
-
-    assert materials.E_c == pytest.approx(1.019e10)
-    assert materials.poisson_c == pytest.approx(0.32)
-    assert materials.thermal_expansion_c == pytest.approx(9.810e-06)
-    assert materials.thermal_conductivity_c == pytest.approx(3.360e00)
-    assert materials.volumetric_heat_capacity_c == pytest.approx(2.077e06)
-    assert materials.friction_angle_c == pytest.approx(1.500e01)
-    assert materials.cohesion_c == pytest.approx(2.540e07)
-
-    assert materials.E_f == pytest.approx(2.040e10)
-    assert materials.poisson_f == pytest.approx(0.36)
-    assert materials.thermal_expansion_f == pytest.approx(1.000e-05)
-    assert materials.thermal_conductivity_f == pytest.approx(6.006e00)
-    assert materials.volumetric_heat_capacity_f == pytest.approx(1.901e06)
-
-
-@pytest.mark.unit
-def test_positive_extract_materials_infos_from_blob(case_with_real_file):
-
-    mat_infos = extract_materials_infos_from_blob(case_with_real_file)
-
-    assert mat_infos.E_c == pytest.approx(10960000000.0)
-    assert mat_infos.poisson_c == pytest.approx(0.228)
-    assert mat_infos.thermal_expansion_c == pytest.approx(1e-5)
-    assert mat_infos.thermal_conductivity_c == pytest.approx(1.75)
-    assert mat_infos.volumetric_heat_capacity_c == pytest.approx(1869000.0)
-    assert mat_infos.friction_angle_c == pytest.approx(14.0)
-    assert mat_infos.cohesion_c == pytest.approx(18170000.0)
-
-    assert mat_infos.E_f == pytest.approx(37920000000.0)
-    assert mat_infos.poisson_f == pytest.approx(0.21)
-    assert mat_infos.thermal_expansion_f == pytest.approx(4.14e-05)
-    assert mat_infos.thermal_conductivity_f == pytest.approx(6.006)
-    assert mat_infos.volumetric_heat_capacity_f == pytest.approx(1929000.0)
-
-
-@pytest.mark.unit
-def test_negative_extract_materials_infos_from_blob_zipfile_without_materials(case_with_real_file_without_materials):
-
-    with pytest.raises(MaterialsFileNotFoundInZipError, match="Materials file not found in zip."):
-        extract_materials_infos_from_blob(case_with_real_file_without_materials)
-
-
-@pytest.mark.unit
 def test_zip_form_case(tmp_path):
     with open("tests/fixtures/case_form_generated.zip", mode="rb") as file:
         with ZipFile(file, "r") as zip_ref:
@@ -456,60 +336,3 @@ def test_save_generated_form_files(session, tmp_path, form_results):
 def test_remove_tab_and_unnecessary_spaces():
     case_str = "case  \ndt\t 1 \nend\t \n"
     assert remove_tab_and_unnecessary_spaces(case_str) == "case\ndt 1\nend\n"
-
-
-@pytest.mark.integration
-def test_positive_read_loads():
-
-    path = Path("tests/fixtures/loads.dat")
-
-    loads = read_loads_file(path)
-
-    assert loads.nodalsource == 291.639
-    assert loads.mechanical_loads.istep == (0, 600, 1200, 1800)
-    assert loads.mechanical_loads.force == (0, 0, 6.8947e07, 6.8947e07)
-
-    assert loads.thermal_loads.istep == (600, 1200, 1800)
-    assert loads.thermal_loads.h == (0, 0, 0)
-    assert loads.thermal_loads.temperature == (299.073, 299.073, 299.073)
-
-
-@pytest.mark.unit
-def test_positive_extract_loads_infos():
-
-    loads = extract_loads_infos(LOADS_FILE)
-
-    assert loads.nodalsource == 291.639
-    assert loads.mechanical_loads.istep == (0, 600, 1200, 1800)
-    assert loads.mechanical_loads.force == (0, 0, 6.8947e07, 6.8947e07)
-
-    assert loads.thermal_loads.istep == (600, 1200, 1800)
-    assert loads.thermal_loads.h == (15, 15, 15)
-    assert loads.thermal_loads.temperature == (299.073, 299.073, 299.073)
-
-
-@pytest.mark.unit
-def test_negative_extract_extract_loads_infos_empty_file():
-
-    with pytest.raises(LoadsFileEmptyError, match="Empty loads file."):
-        extract_loads_infos("")
-
-
-@pytest.mark.unit
-def test_positive_extract_loads_infos_from_blob(case_with_real_file):
-
-    loads = extract_loads_infos_from_blob(case_with_real_file)
-
-    assert loads.nodalsource == 329.07
-    assert loads.mechanical_loads.istep == (0, 864_000)
-    assert loads.mechanical_loads.force == (0, 0)
-
-    assert loads.thermal_loads.istep == (864_000,)
-    assert loads.thermal_loads.h == (0.0,)
-    assert loads.thermal_loads.temperature == (329.362,)
-
-
-@pytest.mark.unit
-def test_negative_extract_loads_infos_from_blob_zipfile_without_loads(case_with_real_file_without_loads):
-    with pytest.raises(LoadsFileNotFoundInZipError, match="Loads file not found in zip."):
-        extract_loads_infos_from_blob(case_with_real_file_without_loads)

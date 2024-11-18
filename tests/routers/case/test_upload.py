@@ -181,7 +181,7 @@ def test_negative_upload_file_raise_materials_file_value_error(
 ):
 
     mocker.patch(
-        "confiacim_api.files_and_folders_handlers.extract_materials_infos",
+        "confiacim_api.files_and_folders_handlers.materials.extract_materials_infos",
         side_effect=MaterialsFileValueError("Invalid material number: 1"),
     )
 
@@ -204,7 +204,7 @@ def test_negative_upload_file_raise_empty_materials_file(
 ):
 
     mocker.patch(
-        "confiacim_api.files_and_folders_handlers.extract_materials_infos",
+        "confiacim_api.files_and_folders_handlers.materials.extract_materials_infos",
         side_effect=MaterialsFileEmptyError("Empty materials file."),
     )
 
