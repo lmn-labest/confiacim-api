@@ -25,6 +25,11 @@ class FormVariablesEnum(str, Enum):
     thermal_conductivity_f = "thermal_conductivity_f"
     volumetric_heat_capacity_f = "volumetric_heat_capacity_f"
 
+    # loads
+    internal_pressure = "internal_pressure"
+    internal_temperature = "internal_temperature"
+    external_temperature = "external_temperature"
+
 
 class RandomDistributionEnum(str, Enum):
     normal = "normal"
@@ -51,11 +56,9 @@ class FormConfig(BaseModel):
 
 
 FORM_CONFIG_EXAMPLE = {
-    "form": {
-        "variables": [
-            {"name": "E_c", "dist": {"name": "lognormal", "params": {"mean": 1.0, "cov": 0.1}}},
-        ],
-    },
+    "variables": [
+        {"name": "E_c", "dist": {"name": "lognormal", "params": {"mean": 1.0, "cov": 0.1}}},
+    ],
 }
 
 

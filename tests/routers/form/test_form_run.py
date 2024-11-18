@@ -179,7 +179,8 @@ def test_positive_form_run_with_description(
                 "'E_c', 'poisson_c', 'thermal_expansion_c', "
                 "'thermal_conductivity_c', 'volumetric_heat_capacity_c', 'friction_angle_c', "
                 "'cohesion_c', 'E_f', 'poisson_f', 'thermal_expansion_f', "
-                "'thermal_conductivity_f' or 'volumetric_heat_capacity_f'"
+                "'thermal_conductivity_f', 'volumetric_heat_capacity_f', "
+                "'internal_pressure', 'internal_temperature' or 'external_temperature'"
             ),
             "enum",
             ["body", "form", "variables", 0, "name"],
