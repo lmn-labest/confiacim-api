@@ -318,7 +318,7 @@ def test_negative_file_problem_raise_empty_materials_file(
 ):
 
     mocker.patch(
-        "confiacim_api.files_and_folders_handlers.extract_materials_infos",
+        "confiacim_api.files_and_folders_handlers.materials.extract_materials_infos",
         side_effect=MaterialsFileEmptyError("Empty materials file."),
     )
 
@@ -361,7 +361,7 @@ def test_negative_file_problem_raise_empty_loads_file(
 ):
 
     mocker.patch(
-        "confiacim_api.files_and_folders_handlers.extract_loads_infos",
+        "confiacim_api.files_and_folders_handlers.loads.extract_loads_infos",
         side_effect=LoadsFileEmptyError("Empty loads file."),
     )
 
