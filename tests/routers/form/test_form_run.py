@@ -326,7 +326,8 @@ def test_negative_form_run_invalid_distribution_name(
 
     assert detail["loc"] == ["body", "form", "variables", 0, "dist", "name"]
     assert detail["msg"] == (
-        "Input should be 'normal', 'lognormal', 'gumbel_r', 'weibull_min', 'triang', 'sgld' or 'sgld_t'"
+        "Input should be 'normal', 'lognormal', 'gumbel_r', "
+        "'weibull_min', 'triang', 'sgld', 'sgld_lower_t' or 'sgld_lower_upper_t'"
     )
     assert detail["type"] == "enum"
 

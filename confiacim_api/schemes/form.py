@@ -38,7 +38,8 @@ class RandomDistributionEnum(str, Enum):
     weibull_min = "weibull_min"
     triang = "triang"
     sgld = "sgld"
-    sgld_t = "sgld_t"
+    sgld_lower_t = "sgld_lower_t"
+    sgld_lower_upper_t = "sgld_lower_upper_t"
 
 
 class RandomDistribution(BaseModel):
