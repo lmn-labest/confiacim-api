@@ -3,6 +3,7 @@ import shutil
 import pytest
 
 from confiacim_api.generate_templates_form import (
+    generate_hidrationprop_template,
     generate_loads_template,
     generate_materials_template,
     generate_templates,
@@ -168,6 +169,131 @@ end loads
 return
 """  # noqa: E501
 
+HIDRATIONPROP_STR = """\
+hidrprop
+3 1 7
+0.00 2.200e+08
+0.04 2.200e+08
+0.045 8.592e+08
+0.08 2.429e+09
+0.20 4.858e+09
+0.49 8.148e+09
+1.00 1.190e+10
+3 2 4
+0.00 4.900e-01
+0.04 4.900e-01
+0.08 1.800e-01
+1.00 1.800e-01
+3 7 3
+0.00 2.420e+06
+0.50 1.936e+06
+1.00 1.936e+06
+3 11 3
+0.00 8.000e+04
+0.04 8.000e+04
+1.00 4.708e+06
+3 13 3
+0.00 8.000e+05
+0.04 8.000e+05
+1.00 1.970e+07
+end hidrprop
+return
+"""  # noqa: E501
+
+
+HIDRATIONPROP_JINJA_ALL = """\
+hidrprop
+3 1 7
+0.0 {{ "%.16e"|format(E_c * 2.200e+08) }}
+0.04 {{ "%.16e"|format(E_c * 2.200e+08) }}
+0.045 {{ "%.16e"|format(E_c * 8.592e+08) }}
+0.08 {{ "%.16e"|format(E_c * 2.429e+09) }}
+0.2 {{ "%.16e"|format(E_c * 4.858e+09) }}
+0.49 {{ "%.16e"|format(E_c * 8.148e+09) }}
+1.0 {{ "%.16e"|format(E_c * 1.190e+10) }}
+3 2 4
+0.0 {{ "%.16e"|format(poisson_c * 4.900e-01) }}
+0.04 {{ "%.16e"|format(poisson_c * 4.900e-01) }}
+0.08 {{ "%.16e"|format(poisson_c * 1.800e-01) }}
+1.0 {{ "%.16e"|format(poisson_c * 1.800e-01) }}
+3 7 3
+0.00 2.420e+06
+0.50 1.936e+06
+1.00 1.936e+06
+3 11 3
+0.00 8.000e+04
+0.04 8.000e+04
+1.00 4.708e+06
+3 13 3
+0.0 {{ "%.16e"|format(cohesion_c * 8.000e+05) }}
+0.04 {{ "%.16e"|format(cohesion_c * 8.000e+05) }}
+1.0 {{ "%.16e"|format(cohesion_c * 1.970e+07) }}
+end hidrprop
+return
+"""  # noqa: E501
+
+HIDRATIONPROP_JINJA_E_C = """\
+hidrprop
+3 1 7
+0.0 {{ "%.16e"|format(E_c * 2.200e+08) }}
+0.04 {{ "%.16e"|format(E_c * 2.200e+08) }}
+0.045 {{ "%.16e"|format(E_c * 8.592e+08) }}
+0.08 {{ "%.16e"|format(E_c * 2.429e+09) }}
+0.2 {{ "%.16e"|format(E_c * 4.858e+09) }}
+0.49 {{ "%.16e"|format(E_c * 8.148e+09) }}
+1.0 {{ "%.16e"|format(E_c * 1.190e+10) }}
+3 2 4
+0.00 4.900e-01
+0.04 4.900e-01
+0.08 1.800e-01
+1.00 1.800e-01
+3 7 3
+0.00 2.420e+06
+0.50 1.936e+06
+1.00 1.936e+06
+3 11 3
+0.00 8.000e+04
+0.04 8.000e+04
+1.00 4.708e+06
+3 13 3
+0.00 8.000e+05
+0.04 8.000e+05
+1.00 1.970e+07
+end hidrprop
+return
+"""  # noqa: E501
+
+HIDRATIONPROP_JINJA_STR = """\
+hidrprop
+3 1 7
+0.0 {{ "%.16e"|format(E_c * 2.200e+08) }}
+0.04 {{ "%.16e"|format(E_c * 2.200e+08) }}
+0.045 {{ "%.16e"|format(E_c * 8.592e+08) }}
+0.08 {{ "%.16e"|format(E_c * 2.429e+09) }}
+0.2 {{ "%.16e"|format(E_c * 4.858e+09) }}
+0.49 {{ "%.16e"|format(E_c * 8.148e+09) }}
+1.0 {{ "%.16e"|format(E_c * 1.190e+10) }}
+3 2 4
+0.0 {{ "%.16e"|format(poisson_c * 4.900e-01) }}
+0.04 {{ "%.16e"|format(poisson_c * 4.900e-01) }}
+0.08 {{ "%.16e"|format(poisson_c * 1.800e-01) }}
+1.0 {{ "%.16e"|format(poisson_c * 1.800e-01) }}
+3 7 3
+0.00 2.420e+06
+0.50 1.936e+06
+1.00 1.936e+06
+3 11 3
+0.00 8.000e+04
+0.04 8.000e+04
+1.00 4.708e+06
+3 13 3
+0.00 8.000e+05
+0.04 8.000e+05
+1.00 1.970e+07
+end hidrprop
+return
+"""  # noqa: E501
+
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
@@ -206,23 +332,8 @@ return
     ],
 )
 def test_generate_materials_template(mat_props, expected_str):
-    materials_jinja_str = generate_materials_template(MATERIALS_STR, mat_props)
-    assert materials_jinja_str == expected_str
-
-
-@pytest.mark.integration
-def test_generate_templates(tmp_path, form_case_config):
-
-    shutil.copy2("tests/fixtures/materials.dat", tmp_path)
-    shutil.copy2("tests/fixtures/loads.dat", tmp_path)
-
-    generate_templates(None, tmp_path, form_case_config)
-
-    materials_jinja_str = (tmp_path / "templates/materials.jinja").read_text()
-    loads_jinja_str = (tmp_path / "templates/loads.jinja").read_text()
-
-    assert materials_jinja_str == MATERIALS_JINJA_STR
-    assert loads_jinja_str == LOADS_JINJA_STR
+    jinja_str = generate_materials_template(MATERIALS_STR, mat_props)
+    assert jinja_str == expected_str
 
 
 @pytest.mark.unit
@@ -250,5 +361,150 @@ def test_generate_templates(tmp_path, form_case_config):
     ],
 )
 def test_generate_loads_template(loads_infos, expected_str):
-    loads_jinja_str = generate_loads_template(LOAD_JINJA_STR, loads_infos)
-    assert loads_jinja_str == expected_str
+    jinja_str = generate_loads_template(LOAD_JINJA_STR, loads_infos)
+    assert jinja_str == expected_str
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "mat_props,expected_str",
+    [
+        (
+            {
+                "E_c": True,
+                "poisson_c": True,
+                "cohesion_c": True,
+            },
+            HIDRATIONPROP_JINJA_ALL,
+        ),
+        (
+            {
+                "E_c": True,
+            },
+            HIDRATIONPROP_JINJA_E_C,
+        ),
+    ],
+    ids=[
+        "all",
+        "E_c",
+    ],
+)
+def test_generate_hidrationprop_template(mat_props, expected_str):
+    jinja_str = generate_hidrationprop_template(HIDRATIONPROP_STR, mat_props)
+    assert jinja_str == expected_str
+
+
+@pytest.mark.integration
+def test_generate_templates(tmp_path, form_case_config):
+
+    shutil.copy2("tests/fixtures/materials.dat", tmp_path)
+    shutil.copy2("tests/fixtures/hidrationprop.dat", tmp_path)
+    shutil.copy2("tests/fixtures/loads.dat", tmp_path)
+
+    generate_templates(None, tmp_path, form_case_config)
+
+    materials_jinja_str = (tmp_path / "templates/materials.jinja").read_text()
+    hidrprop_jinja_str = (tmp_path / "templates/hidrationprop.jinja").read_text()
+    loads_jinja_str = (tmp_path / "templates/loads.jinja").read_text()
+
+    assert materials_jinja_str == MATERIALS_JINJA_STR
+    assert hidrprop_jinja_str == HIDRATIONPROP_JINJA_STR
+    assert loads_jinja_str == LOADS_JINJA_STR
+
+
+@pytest.mark.integration
+def test_generate_templates_must_generate_hidration_only_with_file_exists(tmp_path, form_case_config):
+
+    shutil.copy2("tests/fixtures/materials.dat", tmp_path)
+    shutil.copy2("tests/fixtures/loads.dat", tmp_path)
+
+    generate_templates(None, tmp_path, form_case_config)
+
+    assert (tmp_path / "templates/materials.jinja").exists()
+    assert not (tmp_path / "templates/hidrationprop.jinja").exists()
+    assert (tmp_path / "templates/loads.jinja").exists()
+
+
+@pytest.mark.integration
+def test_generate_templates_for_this_vars_must_generate_only_loads(tmp_path):
+
+    shutil.copy2("tests/fixtures/materials.dat", tmp_path)
+    shutil.copy2("tests/fixtures/loads.dat", tmp_path)
+    shutil.copy2("tests/fixtures/hidrationprop.dat", tmp_path)
+
+    config = {
+        "variables": [
+            {
+                "name": "internal_pressure",
+                "dist": {
+                    "name": "lognormal",
+                    "params": {
+                        "mean": 1.0,
+                        "cov": 0.1,
+                    },
+                },
+            },
+        ]
+    }
+    generate_templates(None, tmp_path, config)
+
+    assert not (tmp_path / "templates/materials.jinja").exists()
+    assert not (tmp_path / "templates/hidrationprop.jinja").exists()
+    assert (tmp_path / "templates/loads.jinja").exists()
+
+
+@pytest.mark.integration
+def test_generate_templates_for_this_vars_must_generate_only_materials(tmp_path):
+
+    shutil.copy2("tests/fixtures/materials.dat", tmp_path)
+    shutil.copy2("tests/fixtures/loads.dat", tmp_path)
+    shutil.copy2("tests/fixtures/hidrationprop.dat", tmp_path)
+
+    config = {
+        "variables": [
+            {
+                "name": "volumetric_heat_capacity_f",
+                "dist": {
+                    "name": "lognormal",
+                    "params": {
+                        "mean": 1.0,
+                        "cov": 0.1,
+                    },
+                },
+            },
+        ]
+    }
+    generate_templates(None, tmp_path, config)
+
+    assert (tmp_path / "templates/materials.jinja").exists()
+    assert not (tmp_path / "templates/hidrationprop.jinja").exists()
+    assert not (tmp_path / "templates/loads.jinja").exists()
+
+
+@pytest.mark.integration
+def test_generate_templates_for_this_vars_must_generate_materials_and_hidratation(tmp_path):
+
+    shutil.copy2("tests/fixtures/materials.dat", tmp_path)
+    shutil.copy2("tests/fixtures/loads.dat", tmp_path)
+    shutil.copy2("tests/fixtures/hidrationprop.dat", tmp_path)
+
+    config = {
+        "variables": [
+            {
+                "name": "cohesion_c",
+                "dist": {
+                    "name": "lognormal",
+                    "params": {
+                        "mean": 1.0,
+                        "cov": 0.1,
+                    },
+                },
+            },
+        ]
+    }
+
+    generate_templates(None, tmp_path, config)
+
+    assert (tmp_path / "templates/materials.jinja").exists()
+    assert (tmp_path / "templates/hidrationprop.jinja").exists()
+    assert not (tmp_path / "templates/loads.jinja").exists()
