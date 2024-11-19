@@ -21,11 +21,21 @@ PROP_MAT_POSITION = {
     "volumetric_heat_capacity_f": 8,
 }
 
+HIDRATIONPROP_E_C = 1
+HIDRATIONPROP_POISSON_C = 2
+HIDRATIONPROP_COHESION_C = 13
+
+HIDRATIONPROP_MAP = {
+    HIDRATIONPROP_E_C: "E_c",
+    HIDRATIONPROP_POISSON_C: "poisson_c",
+    HIDRATIONPROP_COHESION_C: "cohesion_c",
+}
+
 PROP_CEMENT = (
     "E_c,poisson_c,thermal_expansion_c,thermal_conductivity_c,volumetric_heat_capacity_c,friction_angle_c,cohesion_c"
 )
 PROP_FORMANTION = "E_f,poisson_f,thermal_expansion_f,thermal_conductivity_f,volumetric_heat_capacity_f"
-MATERIALS = (PROP_CEMENT + PROP_CEMENT).split(",")
+MATERIALS = (PROP_CEMENT + "," + PROP_FORMANTION).split(",")
 LINE_CEMENT_MATERIAL = 3
 LINE_FORMATION_MATERIAL = 4
 
@@ -38,6 +48,8 @@ LOADS = (
     LOADS_INTERNAL_PRESSURE,
     LOADS_INTERNAL_TEMPERATURE,
 )
+
+HIDRATIONPROP = "E_c,poisson_c,cohesion_c".split(",")
 
 
 def generate_materials_template(materials_str: str, mat_props: dict[str, float]) -> str:
@@ -77,8 +89,7 @@ def generate_materials_template(materials_str: str, mat_props: dict[str, float])
 
 def generate_loads_template(loads_str: str, loads_infos: dict[str, bool]) -> str:
     """
-    Gera o template jinja do conteudo loads.dat. As propriedades que serão add
-    estão definidads no dicionario loads_infos. O template gerado é da versão unitaria
+    Gera o template jinja do conteudo loads.dat. O template gerado é da versão unitaria
     do `FORM `.
 
     Parameters:
@@ -136,6 +147,55 @@ def generate_loads_template(loads_str: str, loads_infos: dict[str, bool]) -> str
     return "\n".join(new_lines)
 
 
+def generate_hidrationprop_template(hidrationprop_str: str, variables: dict) -> str:
+    """
+    Gera o template jinja do conteudo `hidrationprop.dat`. O template gerado é da versão
+    unitaria do `FORM `.
+
+    Parameters:
+        hidrationprop_str: Conteudo do arquivo de `hidrationprop.dat` no formato de `str`
+        variables: Propriedades que serão dinamicas no template
+
+    Returns:
+        Retorna o template jinja
+    """
+    lines = iter(hidrationprop_str.split("\n"))
+
+    new_lines = [next(lines)]
+    for line in lines:
+        new_lines.append(line)
+
+        if "end hidrprop" in line:
+            break
+
+        _, prop, npoints = map(int, line.split())
+
+        if prop == HIDRATIONPROP_E_C and variables.get(HIDRATIONPROP_MAP[prop]):
+            prop_name = HIDRATIONPROP_MAP[prop]
+            for _ in range(npoints):
+                words = next(lines).split()
+                new_lines.append(f'{float(words[0])} {{{{ "%.16e"|format({prop_name} * {words[1]}) }}}}')
+
+        elif prop == HIDRATIONPROP_POISSON_C and variables.get(HIDRATIONPROP_MAP[prop]):
+            prop_name = HIDRATIONPROP_MAP[prop]
+            for _ in range(npoints):
+                words = next(lines).split()
+                new_lines.append(f'{float(words[0])} {{{{ "%.16e"|format({prop_name} * {words[1]}) }}}}')
+
+        elif prop == HIDRATIONPROP_COHESION_C and variables.get(HIDRATIONPROP_MAP[prop]):
+            prop_name = HIDRATIONPROP_MAP[prop]
+            for _ in range(npoints):
+                words = next(lines).split()
+                new_lines.append(f'{float(words[0])} {{{{ "%.16e"|format({prop_name} * {words[1]}) }}}}')
+
+        else:
+            for _ in range(npoints):
+                new_lines.append(next(lines))
+
+    new_lines.append("return\n")
+    return "\n".join(new_lines)
+
+
 def generate_templates(task_id: UUID | None, base_folder: Path, config: dict):
     """
     Gera os templates jinja.
@@ -152,6 +212,7 @@ def generate_templates(task_id: UUID | None, base_folder: Path, config: dict):
 
     materials = base_folder / "materials.dat"
     loads = base_folder / "loads.dat"
+    hidrationprop = base_folder / "hidrationprop.dat"
 
     base_folder_template = base_folder / "templates"
     base_folder_template.mkdir(exist_ok=True)
@@ -170,6 +231,18 @@ def generate_templates(task_id: UUID | None, base_folder: Path, config: dict):
         )
         materials_jinja = base_folder_template / "materials.jinja"
         materials_jinja.write_text(jinja_str)
+
+    if at_least_one_key_in_the_list(variables_name, HIDRATIONPROP) and hidrationprop.exists():
+        logger.info(f"Task {task_id} - Generating hidrationprop.jinja ...")
+
+        variables = {name: True for name in variables_name}
+        hidrationprop_str = hidrationprop.read_text()
+        jinja_str = generate_hidrationprop_template(
+            hidrationprop_str,
+            variables,
+        )
+        hidrationprop_jinja = base_folder_template / "hidrationprop.jinja"
+        hidrationprop_jinja.write_text(jinja_str)
 
     if at_least_one_key_in_the_list(variables_name, LOADS):
         logger.info(f"Task {task_id} - Generating loads.jinja ...")
