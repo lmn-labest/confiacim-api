@@ -13,6 +13,12 @@ from confiacim_api.files_and_folders_handlers.core import (
     unzip_tencim_case,
     zip_generated_form_case,
 )
+from confiacim_api.files_and_folders_handlers.hidration import (
+    HidrationProp,
+    extract_hidration_infos,
+    extract_hidration_infos_from_blob,
+    read_hidration_file,
+)
 from confiacim_api.files_and_folders_handlers.loads import (
     LoadsInfos,
     extract_loads_infos,
@@ -51,4 +57,9 @@ __all__ = (
     "extract_loads_infos",
     "read_loads_file",
     "LoadsInfos",
+    # hidration props
+    "HidrationProp",
+    "extract_hidration_infos",
+    "read_hidration_file",
+    "extract_hidration_infos_from_blob",
 )

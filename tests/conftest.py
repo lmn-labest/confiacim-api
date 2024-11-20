@@ -15,6 +15,7 @@ from confiacim_api.models import (
     Base,
     Case,
     FormResult,
+    HidrationPropInfos,
     LoadsBaseCaseInfos,
     MaterialsBaseCaseAverageProps,
     ResultStatus,
@@ -67,6 +68,20 @@ class LoadsFactory(factory.Factory):
     thermal_istep = factory.List([1, 2], list_factory="tests.conftest.TupleFactory")
     thermal_h = factory.List([6.0, 5.0], list_factory="tests.conftest.TupleFactory")
     thermal_temperature = factory.List([20.0, 21.0], list_factory="tests.conftest.TupleFactory")
+
+
+class HidrationPropFactory(factory.Factory):
+    class Meta:
+        model = HidrationPropInfos
+
+    E_c_t = factory.List([6.0, 5.0], list_factory="tests.conftest.TupleFactory")
+    E_c_values = factory.List([60.0, 50.0], list_factory="tests.conftest.TupleFactory")
+
+    poisson_c_t = factory.List([1.0, 2.0, 3.0], list_factory="tests.conftest.TupleFactory")
+    poisson_c_values = factory.List([6.0, 5.0, 4.0], list_factory="tests.conftest.TupleFactory")
+
+    cohesion_c_t = factory.List([1.0], list_factory="tests.conftest.TupleFactory")
+    cohesion_c_values = factory.List([10.0], list_factory="tests.conftest.TupleFactory")
 
 
 @pytest.fixture(scope="session")
@@ -363,6 +378,14 @@ def loads(session: Session, case: Case):
     session.add(load)
     session.commit()
     return load
+
+
+@pytest.fixture
+def hidration_props(session: Session, case: Case):
+    hidration = HidrationPropFactory(case=case)
+    session.add(hidration)
+    session.commit()
+    return hidration
 
 
 @pytest.fixture

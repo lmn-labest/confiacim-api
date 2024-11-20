@@ -3,13 +3,13 @@ from io import BytesIO
 from pathlib import Path
 from zipfile import ZipFile
 
-from confiacim_api.errors import hidrationFileEmptyError
-from confiacim_api.generate_templates_form import (
+from confiacim_api.constants import (
     HIDRATIONPROP_COHESION_C,
     HIDRATIONPROP_E_C,
     HIDRATIONPROP_MAP,
     HIDRATIONPROP_POISSON_C,
 )
+from confiacim_api.errors import hidrationFileEmptyError
 from confiacim_api.logger import logger
 from confiacim_api.models import Case
 

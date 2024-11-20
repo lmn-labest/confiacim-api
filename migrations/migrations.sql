@@ -206,4 +206,24 @@ CREATE TABLE loads_base_case_infos (
 
 UPDATE alembic_version SET version_num='bf6ce47c0449' WHERE alembic_version.version_num = '1ab12ae567d7';
 
+-- Running upgrade bf6ce47c0449 -> 4e4afb61eb68
+
+CREATE TABLE hidration_prop_infos (
+    id SERIAL NOT NULL,
+    "E_c_t" FLOAT[],
+    "E_c_values" FLOAT[],
+    poisson_c_t FLOAT[],
+    poisson_c_values FLOAT[],
+    cohesion_c_t FLOAT[],
+    cohesion_c_values FLOAT[],
+    case_id INTEGER NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    PRIMARY KEY (id),
+    FOREIGN KEY(case_id) REFERENCES cases (id),
+    CONSTRAINT case_hidration_prop UNIQUE (case_id)
+);
+
+UPDATE alembic_version SET version_num='4e4afb61eb68' WHERE alembic_version.version_num = 'bf6ce47c0449';
+
 COMMIT;

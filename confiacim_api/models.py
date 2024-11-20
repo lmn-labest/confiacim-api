@@ -24,7 +24,7 @@ from sqlalchemy.orm import (
     relationship,
 )
 
-from confiacim_api.const import MAX_TAG_NAME_LENGTH
+from confiacim_api.constants import MAX_TAG_NAME_LENGTH
 
 
 class ResultStatus(enum.Enum):
@@ -96,6 +96,11 @@ class Case(TimestampMixin, Base):
     )
 
     loads: Mapped["LoadsBaseCaseInfos"] = relationship(
+        back_populates="case",
+        cascade="all, delete-orphan",
+    )
+
+    hidration_props: Mapped["HidrationPropInfos"] = relationship(
         back_populates="case",
         cascade="all, delete-orphan",
     )
@@ -211,3 +216,25 @@ class LoadsBaseCaseInfos(TimestampMixin, Base):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id}, case={self.case.tag}, nodalsource={self.nodalsource}, ...)"
+
+
+class HidrationPropInfos(TimestampMixin, Base):
+    __tablename__ = "hidration_prop_infos"
+    __table_args__ = (UniqueConstraint("case_id", name="case_hidration_prop"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    E_c_t: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    E_c_values: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+
+    poisson_c_t: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    poisson_c_values: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+
+    cohesion_c_t: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    cohesion_c_values: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+
+    case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
+    case: Mapped["Case"] = relationship(back_populates="hidration_props")
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(id={self.id}, case={self.case.tag}, ...)"
