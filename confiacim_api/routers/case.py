@@ -8,14 +8,16 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from slugify import slugify
 from sqlalchemy import select
 
-from confiacim_api.const import MAX_TAG_NAME_LENGTH, MIN_TAG_NAME_LENGTH
+from confiacim_api.constants import MAX_TAG_NAME_LENGTH, MIN_TAG_NAME_LENGTH
 from confiacim_api.database import ActiveSession
 from confiacim_api.files_and_folders_handlers import (
+    extract_hidration_infos_from_blob,
     extract_loads_infos_from_blob,
     extract_materials_infos_from_blob,
 )
 from confiacim_api.models import (
     Case,
+    HidrationPropInfos,
     LoadsBaseCaseInfos,
     MaterialsBaseCaseAverageProps,
 )
@@ -68,6 +70,7 @@ def case_create(
 
     mat_infos = extract_materials_infos_from_blob(new_case)
     loads_infos = extract_loads_infos_from_blob(new_case)
+    hidration_infos = extract_hidration_infos_from_blob(new_case)
 
     mat = MaterialsBaseCaseAverageProps(case=new_case, **asdict(mat_infos))
     loads = LoadsBaseCaseInfos(
@@ -82,6 +85,21 @@ def case_create(
         thermal_h=loads_infos.thermal_loads.h,
         thermal_temperature=loads_infos.thermal_loads.temperature,
     )
+    if hidration_infos:
+        hidration = HidrationPropInfos(
+            case=new_case,
+            # E_c
+            E_c_t=hidration_infos.E_c.t,
+            E_c_values=hidration_infos.E_c.values,
+            # poisson_c
+            poisson_c_t=hidration_infos.poisson_c.t,
+            poisson_c_values=hidration_infos.poisson_c.values,
+            # cohesion_c
+            cohesion_c_t=hidration_infos.cohesion_c.t,
+            cohesion_c_values=hidration_infos.cohesion_c.values,
+        )
+        session.add(hidration)
+
     session.add_all([new_case, mat, loads])
     session.commit()
     session.refresh(new_case)

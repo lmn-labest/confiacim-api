@@ -3,12 +3,12 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from confiacim_api.const import MAX_TAG_NAME_LENGTH, MIN_TAG_NAME_LENGTH
+from confiacim_api.constants import MAX_TAG_NAME_LENGTH, MIN_TAG_NAME_LENGTH
 from confiacim_api.schemes.tencim import TencimResultSummaryOut
 
 
 class MaterialsOut(BaseModel):
-    id: int
+    id: Optional[int] = None
     #
     E_c: float
     poisson_c: float
@@ -40,7 +40,7 @@ class ThermalLoads(BaseModel):
 
 
 class LoadInfosOut(BaseModel):
-    id: int
+    id: Optional[int] = None
     #
     nodalsource: float
     #
@@ -50,6 +50,22 @@ class LoadInfosOut(BaseModel):
     thermal_istep: tuple[int, ...]
     thermal_h: tuple[float, ...]
     thermal_temperature: tuple[float, ...]
+    #
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+
+class HidrationPropsOut(BaseModel):
+    id: Optional[int] = None
+    #
+    E_c_t: tuple[float, ...]
+    E_c_values: tuple[float, ...]
+    #
+    poisson_c_t: tuple[float, ...]
+    poisson_c_values: tuple[float, ...]
+    #
+    cohesion_c_t: tuple[float, ...]
+    cohesion_c_values: tuple[float, ...]
     #
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
@@ -67,6 +83,7 @@ class CaseCreateOut(BaseModel):
     description: Optional[str] = None
     materials: MaterialsOut
     loads: LoadInfosOut
+    hidration_props: Optional[HidrationPropsOut] = None
     created_at: datetime
     updated_at: datetime
 

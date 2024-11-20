@@ -62,6 +62,23 @@ def test_positive_create(client_auth: TestClient, session, user: User, payload):
     assert case_from_db.loads.thermal_h == (0.0,)
     assert case_from_db.loads.thermal_temperature == (329.362,)
 
+    assert case_from_db.hidration_props.E_c_t == (0.0, 0.04, 0.045, 0.08, 0.2, 0.49, 1.0)
+    assert case_from_db.hidration_props.E_c_values == (
+        2.200e08,
+        2.200e08,
+        8.592e08,
+        2.429e09,
+        4.858e09,
+        8.148e09,
+        1.190e10,
+    )
+
+    assert case_from_db.hidration_props.poisson_c_t == (0.0, 0.04, 0.08, 1.0)
+    assert case_from_db.hidration_props.poisson_c_values == (4.900e-01, 4.900e-01, 1.800e-01, 1.800e-01)
+
+    assert case_from_db.hidration_props.cohesion_c_t == (0.0, 0.04, 1.0)
+    assert case_from_db.hidration_props.cohesion_c_values == (8.000e05, 8.000e05, 1.970e07)
+
     body = resp.json()
 
     assert body["id"] == case_from_db.id
@@ -91,6 +108,91 @@ def test_positive_create(client_auth: TestClient, session, user: User, payload):
     assert body["loads"]["thermal_istep"] == list(case_from_db.loads.thermal_istep)
     assert body["loads"]["thermal_h"] == list(case_from_db.loads.thermal_h)
     assert body["loads"]["thermal_temperature"] == list(case_from_db.loads.thermal_temperature)
+
+    assert body["hidration_props"]["E_c_t"] == list(case_from_db.hidration_props.E_c_t)
+    assert body["hidration_props"]["E_c_values"] == list(case_from_db.hidration_props.E_c_values)
+
+    assert body["hidration_props"]["poisson_c_t"] == list(case_from_db.hidration_props.poisson_c_t)
+    assert body["hidration_props"]["poisson_c_values"] == list(case_from_db.hidration_props.poisson_c_values)
+
+    assert body["hidration_props"]["cohesion_c_t"] == list(case_from_db.hidration_props.cohesion_c_t)
+    assert body["hidration_props"]["cohesion_c_values"] == list(case_from_db.hidration_props.cohesion_c_values)
+
+
+@pytest.mark.integration
+def test_positive_create_case_without_hidration(client_auth: TestClient, session, user: User, payload):
+
+    with open("tests/fixtures/case_without_hidration.zip", mode="rb") as fp:
+        resp = client_auth.post(
+            app.url_path_for(ROUTE_VIEW_NAME),
+            data=payload | {"description": "Any description you want"},
+            files={"case_file": fp},
+        )
+
+    assert resp.status_code == status.HTTP_201_CREATED
+
+    case_from_db = session.scalars(select(Case)).first()
+
+    assert case_from_db.id
+    assert case_from_db.tag == payload["tag"]
+    assert case_from_db.user == user
+    assert case_from_db.description == "Any description you want"
+
+    assert case_from_db.materials.E_c == pytest.approx(1.096e10)
+    assert case_from_db.materials.poisson_c == pytest.approx(0.228)
+    assert case_from_db.materials.thermal_expansion_c == pytest.approx(1.0e-05)
+    assert case_from_db.materials.thermal_conductivity_c == pytest.approx(1.75)
+    assert case_from_db.materials.volumetric_heat_capacity_c == pytest.approx(1.869e06)
+    assert case_from_db.materials.friction_angle_c == pytest.approx(1.4e01)
+    assert case_from_db.materials.cohesion_c == pytest.approx(1.817e07)
+
+    assert case_from_db.materials.E_f == pytest.approx(3.792e10)
+    assert case_from_db.materials.poisson_f == pytest.approx(0.21)
+    assert case_from_db.materials.thermal_expansion_f == pytest.approx(4.14e-05)
+    assert case_from_db.materials.thermal_conductivity_f == pytest.approx(6.006e00)
+    assert case_from_db.materials.volumetric_heat_capacity_f == pytest.approx(1.929e06)
+
+    assert case_from_db.loads.nodalsource == pytest.approx(329.07)
+    assert case_from_db.loads.mechanical_istep == (0, 864_000)
+    assert case_from_db.loads.mechanical_force == (0, 0)
+
+    assert case_from_db.loads.thermal_istep == (864_000,)
+    assert case_from_db.loads.thermal_h == (0.0,)
+    assert case_from_db.loads.thermal_temperature == (329.362,)
+
+    assert case_from_db.hidration_props is None
+
+    body = resp.json()
+
+    assert body["id"] == case_from_db.id
+    assert body["tag"] == case_from_db.tag
+    assert body["user"] == case_from_db.user.id
+    assert body["description"] == case_from_db.description
+
+    assert body["materials"]["E_c"] == case_from_db.materials.E_c
+    assert body["materials"]["poisson_c"] == case_from_db.materials.poisson_c
+    assert body["materials"]["thermal_expansion_c"] == case_from_db.materials.thermal_expansion_c
+    assert body["materials"]["thermal_conductivity_c"] == case_from_db.materials.thermal_conductivity_c
+    assert body["materials"]["volumetric_heat_capacity_c"] == case_from_db.materials.volumetric_heat_capacity_c
+    assert body["materials"]["friction_angle_c"] == case_from_db.materials.friction_angle_c
+    assert body["materials"]["cohesion_c"] == case_from_db.materials.cohesion_c
+
+    assert body["materials"]["E_f"] == case_from_db.materials.E_f
+    assert body["materials"]["poisson_f"] == case_from_db.materials.poisson_f
+    assert body["materials"]["thermal_expansion_f"] == case_from_db.materials.thermal_expansion_f
+    assert body["materials"]["thermal_conductivity_f"] == case_from_db.materials.thermal_conductivity_f
+    assert body["materials"]["volumetric_heat_capacity_f"] == case_from_db.materials.volumetric_heat_capacity_f
+
+    assert body["loads"]["nodalsource"] == case_from_db.loads.nodalsource
+
+    assert body["loads"]["mechanical_istep"] == list(case_from_db.loads.mechanical_istep)
+    assert body["loads"]["mechanical_force"] == list(case_from_db.loads.mechanical_force)
+
+    assert body["loads"]["thermal_istep"] == list(case_from_db.loads.thermal_istep)
+    assert body["loads"]["thermal_h"] == list(case_from_db.loads.thermal_h)
+    assert body["loads"]["thermal_temperature"] == list(case_from_db.loads.thermal_temperature)
+
+    assert body["hidration_props"] is None
 
 
 @pytest.mark.integration
