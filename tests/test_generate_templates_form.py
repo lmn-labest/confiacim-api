@@ -169,7 +169,7 @@ end loads
 return
 """  # noqa: E501
 
-HIDRATIONPROP_STR = """\
+HIDRATION_STR = """\
 hidrprop
 3 1 7
 0.00 2.200e+08
@@ -201,7 +201,7 @@ return
 """  # noqa: E501
 
 
-HIDRATIONPROP_JINJA_ALL = """\
+HIDRATION_JINJA_ALL = """\
 hidrprop
 3 1 7
 0.0 {{ "%.16e"|format(E_c * 2.200e+08) }}
@@ -232,7 +232,7 @@ end hidrprop
 return
 """  # noqa: E501
 
-HIDRATIONPROP_JINJA_E_C = """\
+HIDRATION_JINJA_E_C = """\
 hidrprop
 3 1 7
 0.0 {{ "%.16e"|format(E_c * 2.200e+08) }}
@@ -263,7 +263,7 @@ end hidrprop
 return
 """  # noqa: E501
 
-HIDRATIONPROP_JINJA_STR = """\
+HIDRATION_JINJA_STR = """\
 hidrprop
 3 1 7
 0.0 {{ "%.16e"|format(E_c * 2.200e+08) }}
@@ -375,13 +375,13 @@ def test_generate_loads_template(loads_infos, expected_str):
                 "poisson_c": True,
                 "cohesion_c": True,
             },
-            HIDRATIONPROP_JINJA_ALL,
+            HIDRATION_JINJA_ALL,
         ),
         (
             {
                 "E_c": True,
             },
-            HIDRATIONPROP_JINJA_E_C,
+            HIDRATION_JINJA_E_C,
         ),
     ],
     ids=[
@@ -389,8 +389,8 @@ def test_generate_loads_template(loads_infos, expected_str):
         "E_c",
     ],
 )
-def test_generate_hidrationprop_template(mat_props, expected_str):
-    jinja_str = generate_hidrationprop_template(HIDRATIONPROP_STR, mat_props)
+def test_generate_hidration_template(mat_props, expected_str):
+    jinja_str = generate_hidrationprop_template(HIDRATION_STR, mat_props)
     assert jinja_str == expected_str
 
 
@@ -408,7 +408,7 @@ def test_generate_templates(tmp_path, form_case_config):
     loads_jinja_str = (tmp_path / "templates/loads.jinja").read_text()
 
     assert materials_jinja_str == MATERIALS_JINJA_STR
-    assert hidrprop_jinja_str == HIDRATIONPROP_JINJA_STR
+    assert hidrprop_jinja_str == HIDRATION_JINJA_STR
     assert loads_jinja_str == LOADS_JINJA_STR
 
 
@@ -482,7 +482,7 @@ def test_generate_templates_for_this_vars_must_generate_only_materials(tmp_path)
 
 
 @pytest.mark.integration
-def test_generate_templates_for_this_vars_must_generate_materials_and_hidratation(tmp_path):
+def test_generate_templates_for_this_vars_must_generate_materials_and_hidration(tmp_path):
 
     shutil.copy2("tests/fixtures/materials.dat", tmp_path)
     shutil.copy2("tests/fixtures/loads.dat", tmp_path)
