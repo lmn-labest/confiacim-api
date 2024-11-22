@@ -9,8 +9,11 @@ from slugify import slugify
 from sqlalchemy import select
 
 from confiacim_api.constants import MAX_TAG_NAME_LENGTH, MIN_TAG_NAME_LENGTH
-from confiacim_api.database import ActiveSession
+from confiacim_api.database import ActiveSession, Session
 from confiacim_api.files_and_folders_handlers import (
+    HidrationProp,
+    LoadsInfos,
+    MaterialsInfos,
     extract_hidration_infos_from_blob,
     extract_loads_infos_from_blob,
     extract_materials_infos_from_blob,
@@ -32,6 +35,92 @@ from confiacim_api.security import CurrentUser
 from confiacim_api.utils import file_case_is_zipfile
 
 router = APIRouter(prefix="/api/case", tags=["Case"])
+
+
+# TODO: Testar de forma unitaria
+def _create_or_update_materials(session: Session, case: Case, mat_infos: MaterialsInfos):
+    """
+    Cria ou atualiza materials
+
+    Parameters:
+        session: Secção aberta com o banco
+        case: Caso
+        mat_infos: Informação dos materials
+    """
+
+    if case.materials is None:
+        mat = MaterialsBaseCaseAverageProps(case=case, **asdict(mat_infos))
+        session.add(mat)
+    else:
+        for k, v in asdict(mat_infos).items():
+            setattr(case.materials, k, v)
+
+
+# TODO: Testar de forma unitaria
+def _create_or_update_loads(session: Session, case: Case, loads_infos: LoadsInfos):
+    """
+    Cria ou atualiza loads
+
+    Parameters:
+        session: Secção aberta com o banco
+        case: Caso
+        loads_infos: Informação dos carregamento
+    """
+
+    if case.loads is None:
+        loads = LoadsBaseCaseInfos(
+            case=case,
+            nodalsource=loads_infos.nodalsource,
+            mechanical_istep=loads_infos.mechanical_loads.istep,
+            mechanical_force=loads_infos.mechanical_loads.force,
+            thermal_istep=loads_infos.thermal_loads.istep,
+            thermal_h=loads_infos.thermal_loads.h,
+            thermal_temperature=loads_infos.thermal_loads.temperature,
+        )
+        session.add(loads)
+    else:
+        case.loads.nodalsource = loads_infos.nodalsource
+        case.loads.mechanical_istep = loads_infos.mechanical_loads.istep
+        case.loads.mechanical_force = loads_infos.mechanical_loads.force
+        case.loads.thermal_istep = loads_infos.thermal_loads.istep
+        case.loads.thermal_h = loads_infos.thermal_loads.h
+        case.loads.thermal_temperature = loads_infos.thermal_loads.temperature
+
+
+# TODO: Testar de forma unitaria
+def _create_or_update_hidrationprops(session: Session, case: Case, hidration_infos: HidrationProp | None):
+    """
+    Cria ou atualiza hidratação
+
+    Parameters:
+        session: Secção aberta com o banco
+        case: Caso
+        hidration_infos: Informação da hidratação
+    """
+
+    if case.hidration_props is None:
+        if hidration_infos:
+            hidration = HidrationPropInfos(
+                case=case,
+                # E_c
+                E_c_t=hidration_infos.E_c.t,
+                E_c_values=hidration_infos.E_c.values,
+                # poisson_c
+                poisson_c_t=hidration_infos.poisson_c.t,
+                poisson_c_values=hidration_infos.poisson_c.values,
+                # cohesion_c
+                cohesion_c_t=hidration_infos.cohesion_c.t,
+                cohesion_c_values=hidration_infos.cohesion_c.values,
+            )
+            session.add(hidration)
+    else:
+        if hidration_infos:
+            case.hidration_props.E_c_t = hidration_infos.E_c.t
+            case.hidration_props.E_c_values = hidration_infos.E_c.values
+            case.hidration_props.poisson_c_t = hidration_infos.poisson_c.t
+            case.hidration_props.poisson_c_values = hidration_infos.poisson_c.values
+            case.hidration_props.cohesion_c_t = hidration_infos.cohesion_c.t
+            case.hidration_props.cohesion_c_values = hidration_infos.cohesion_c.values
 
 
 @router.get("", response_model=Page[CaseOut])
@@ -72,35 +161,10 @@ def case_create(
     loads_infos = extract_loads_infos_from_blob(new_case)
     hidration_infos = extract_hidration_infos_from_blob(new_case)
 
-    mat = MaterialsBaseCaseAverageProps(case=new_case, **asdict(mat_infos))
-    loads = LoadsBaseCaseInfos(
-        case=new_case,
-        #
-        nodalsource=loads_infos.nodalsource,
-        #
-        mechanical_istep=loads_infos.mechanical_loads.istep,
-        mechanical_force=loads_infos.mechanical_loads.force,
-        #
-        thermal_istep=loads_infos.thermal_loads.istep,
-        thermal_h=loads_infos.thermal_loads.h,
-        thermal_temperature=loads_infos.thermal_loads.temperature,
-    )
-    if hidration_infos:
-        hidration = HidrationPropInfos(
-            case=new_case,
-            # E_c
-            E_c_t=hidration_infos.E_c.t,
-            E_c_values=hidration_infos.E_c.values,
-            # poisson_c
-            poisson_c_t=hidration_infos.poisson_c.t,
-            poisson_c_values=hidration_infos.poisson_c.values,
-            # cohesion_c
-            cohesion_c_t=hidration_infos.cohesion_c.t,
-            cohesion_c_values=hidration_infos.cohesion_c.values,
-        )
-        session.add(hidration)
+    _create_or_update_materials(session, new_case, mat_infos)
+    _create_or_update_loads(session, new_case, loads_infos)
+    _create_or_update_hidrationprops(session, new_case, hidration_infos)
 
-    session.add_all([new_case, mat, loads])
     session.commit()
     session.refresh(new_case)
 
@@ -177,14 +241,12 @@ def upload_case_file(
     case.base_file = case_file.file.read()
 
     mat_infos = extract_materials_infos_from_blob(case)
+    loads_infos = extract_loads_infos_from_blob(case)
+    hidration_infos = extract_hidration_infos_from_blob(case)
 
-    # Primeiro upload
-    if case.materials is None:
-        mat = MaterialsBaseCaseAverageProps(case=case, **asdict(mat_infos))
-        session.add(mat)
-    else:
-        for k, v in asdict(mat_infos).items():
-            setattr(case.materials, k, v)
+    _create_or_update_materials(session, case, mat_infos)
+    _create_or_update_loads(session, case, loads_infos)
+    _create_or_update_hidrationprops(session, case, hidration_infos)
 
     session.commit()
 
