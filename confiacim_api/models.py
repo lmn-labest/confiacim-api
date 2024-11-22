@@ -115,10 +115,10 @@ class TencimResult(TimestampMixin, Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     task_id: Mapped[Optional[UUID]]
-    istep: Mapped[Optional[tuple[int]]] = mapped_column(ARRAY(Integer, as_tuple=True), deferred=True)
-    t: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
-    rankine_rc: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
-    mohr_coulomb_rc: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    istep: Mapped[Optional[tuple[int, ...]]] = mapped_column(ARRAY(Integer, as_tuple=True), deferred=True)
+    t: Mapped[Optional[tuple[float, ...]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    rankine_rc: Mapped[Optional[tuple[float, ...]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    mohr_coulomb_rc: Mapped[Optional[tuple[float, ...]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
     error: Mapped[Optional[str]] = mapped_column(Text)
     status: Mapped[Optional[ResultStatus]] = mapped_column(
         Enum(ResultStatus, name="result_status"),
@@ -204,12 +204,12 @@ class LoadsBaseCaseInfos(TimestampMixin, Base):
 
     nodalsource: Mapped[Optional[float]]
 
-    mechanical_istep: Mapped[Optional[tuple[int]]] = mapped_column(ARRAY(Integer, as_tuple=True), deferred=True)
-    mechanical_force: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    mechanical_istep: Mapped[Optional[tuple[int, ...]]] = mapped_column(ARRAY(Integer, as_tuple=True), deferred=True)
+    mechanical_force: Mapped[Optional[tuple[float, ...]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
 
-    thermal_istep: Mapped[Optional[tuple[int]]] = mapped_column(ARRAY(Integer, as_tuple=True), deferred=True)
-    thermal_h: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
-    thermal_temperature: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    thermal_istep: Mapped[Optional[tuple[int, ...]]] = mapped_column(ARRAY(Integer, as_tuple=True), deferred=True)
+    thermal_h: Mapped[Optional[tuple[float, ...]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    thermal_temperature: Mapped[Optional[tuple[float, ...]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
 
     case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
     case: Mapped["Case"] = relationship(back_populates="loads")
@@ -224,14 +224,14 @@ class HidrationPropInfos(TimestampMixin, Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    E_c_t: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
-    E_c_values: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    E_c_t: Mapped[Optional[tuple[float, ...]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    E_c_values: Mapped[Optional[tuple[float, ...]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
 
-    poisson_c_t: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
-    poisson_c_values: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    poisson_c_t: Mapped[Optional[tuple[float, ...]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    poisson_c_values: Mapped[Optional[tuple[float, ...]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
 
-    cohesion_c_t: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
-    cohesion_c_values: Mapped[Optional[tuple[float]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    cohesion_c_t: Mapped[Optional[tuple[float, ...]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
+    cohesion_c_values: Mapped[Optional[tuple[float, ...]]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
 
     case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
     case: Mapped["Case"] = relationship(back_populates="hidration_props")
