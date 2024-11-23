@@ -8,18 +8,18 @@ from confiacim_api.errors import (
     LoadsFileNotFoundInZipError,
 )
 from confiacim_api.models import Case
-from confiacim_api.types import TArrayFloat, TArrayInt
+from confiacim_api.types import TArrayFloat
 
 
 @dataclass(frozen=True)
 class MechanicalLoads:
-    istep: TArrayInt
+    t: TArrayFloat
     force: TArrayFloat
 
 
 @dataclass(frozen=True)
 class ThermalLoads:
-    istep: TArrayInt
+    t: TArrayFloat
     h: TArrayFloat
     temperature: TArrayFloat
 
@@ -59,24 +59,24 @@ def extract_loads_infos(file_str: str) -> LoadsInfos:
 
         elif "loads" in line and "nodalloads" not in line and "nodalthermloads" not in line:
             words = next(lines_generator).split()
-            tmp1: list[tuple[int, float]] = []
+            tmp1: list[tuple[float, float]] = []
             for _ in range(int(words[-1])):
                 words = next(lines_generator).split()
-                tmp1.append((int(words[0]), float(words[1])))
+                tmp1.append((float(words[0]), float(words[1])))
 
             mechanical_loads = MechanicalLoads(
-                istep=tuple(x[0] for x in tmp1),
+                t=tuple(x[0] for x in tmp1),
                 force=tuple(x[1] for x in tmp1),
             )
 
             words = next(lines_generator).split()
-            tmp2: list[tuple[int, float, float]] = []
+            tmp2: list[tuple[float, float, float]] = []
             for _ in range(int(words[-1])):
                 words = next(lines_generator).split()
-                tmp2.append((int(words[0]), float(words[1]), float(words[2])))
+                tmp2.append((float(words[0]), float(words[1]), float(words[2])))
 
             therm_loads = ThermalLoads(
-                istep=tuple(x[0] for x in tmp2),
+                t=tuple(x[0] for x in tmp2),
                 h=tuple(x[1] for x in tmp2),
                 temperature=tuple(x[2] for x in tmp2),
             )

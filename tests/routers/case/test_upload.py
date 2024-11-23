@@ -61,11 +61,8 @@ def test_upload_case(
         "confiacim_api.routers.case.extract_loads_infos_from_blob",
         return_value=LoadsInfos(
             nodalsource=100.0,
-            mechanical_loads=MechanicalLoads(
-                istep=(1, 2),
-                force=(2.0, 3.0),
-            ),
-            thermal_loads=ThermalLoads(istep=(1, 2, 3), h=(5.0, 5.0, 5.0), temperature=(300.0, 300.0, 300.0)),
+            mechanical_loads=MechanicalLoads(t=(1, 2), force=(2.0, 3.0)),
+            thermal_loads=ThermalLoads(t=(1, 2, 3), h=(5.0, 5.0, 5.0), temperature=(300.0, 300.0, 300.0)),
         ),
     )
 
@@ -118,10 +115,10 @@ def test_upload_case(
     assert case_from_db.materials.volumetric_heat_capacity_f == pytest.approx(0.4)
 
     assert case_from_db.loads.nodalsource == pytest.approx(100.0)
-    assert case_from_db.loads.mechanical_istep == (1, 2)
+    assert case_from_db.loads.mechanical_t == (1, 2)
     assert case_from_db.loads.mechanical_force == (2.0, 3.0)
 
-    assert case_from_db.loads.thermal_istep == (1, 2, 3)
+    assert case_from_db.loads.thermal_t == (1, 2, 3)
     assert case_from_db.loads.thermal_h == (5.0, 5.0, 5.0)
     assert case_from_db.loads.thermal_temperature == (300.0, 300.0, 300.0)
 
@@ -162,10 +159,10 @@ def test_upload_case_real_file(
     assert case_from_db.materials.poisson_f == pytest.approx(0.21)
 
     assert case_from_db.loads.nodalsource == pytest.approx(329.07)
-    assert case_from_db.loads.mechanical_istep == (0, 864000)
+    assert case_from_db.loads.mechanical_t == (0, 864000)
     assert case_from_db.loads.mechanical_force == (0.0, 0.0)
 
-    assert case_from_db.loads.thermal_istep == (864000,)
+    assert case_from_db.loads.thermal_t == (864000,)
     assert case_from_db.loads.thermal_h == (0.0,)
     assert case_from_db.loads.thermal_temperature == (329.362,)
 
@@ -212,10 +209,10 @@ def test_upload_case_already_have_materials_but_without_hidration(
     assert case_from_db.materials.poisson_f == pytest.approx(0.21)
 
     assert case_from_db.loads.nodalsource == pytest.approx(329.07)
-    assert case_from_db.loads.mechanical_istep == (0, 864000)
+    assert case_from_db.loads.mechanical_t == (0, 864000)
     assert case_from_db.loads.mechanical_force == (0.0, 0.0)
 
-    assert case_from_db.loads.thermal_istep == (864000,)
+    assert case_from_db.loads.thermal_t == (864000,)
     assert case_from_db.loads.thermal_h == (0.0,)
     assert case_from_db.loads.thermal_temperature == (329.362,)
 

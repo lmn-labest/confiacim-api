@@ -205,10 +205,10 @@ class LoadsBaseCaseInfos(TimestampMixin, Base):
 
     nodalsource: Mapped[Optional[float]]
 
-    mechanical_istep: Mapped[Optional[TArrayInt]] = mapped_column(ARRAY(Integer, as_tuple=True), deferred=True)
+    mechanical_t: Mapped[Optional[TArrayFloat]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
     mechanical_force: Mapped[Optional[TArrayFloat]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
 
-    thermal_istep: Mapped[Optional[TArrayInt]] = mapped_column(ARRAY(Integer, as_tuple=True), deferred=True)
+    thermal_t: Mapped[Optional[TArrayFloat]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
     thermal_h: Mapped[Optional[TArrayFloat]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
     thermal_temperature: Mapped[Optional[TArrayFloat]] = mapped_column(ARRAY(Float, as_tuple=True), deferred=True)
 

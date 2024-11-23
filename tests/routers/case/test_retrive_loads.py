@@ -23,11 +23,11 @@ def test_positive_retrive(client_auth: TestClient, case_with_loads_info: Case):
     assert body["nodalsource"] == loads.nodalsource
 
     for i in range(3):
-        assert body["mechanical_istep"][i] == loads.mechanical_istep[i] if loads.mechanical_istep else None
+        assert body["mechanical_t"][i] == loads.mechanical_t[i] if loads.mechanical_t else None
         assert body["mechanical_force"][i] == loads.mechanical_force[i] if loads.mechanical_force else None
 
     for i in range(2):
-        assert body["thermal_istep"][i] == loads.thermal_istep[i] if loads.thermal_istep else None
+        assert body["thermal_t"][i] == loads.thermal_t[i] if loads.thermal_t else None
         assert body["thermal_h"][i] == loads.thermal_h[i] if loads.thermal_h else None
         assert body["thermal_temperature"][i] == loads.thermal_temperature[i] if loads.thermal_temperature else None
 
