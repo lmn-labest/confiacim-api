@@ -5,9 +5,7 @@ from uuid import UUID
 from pydantic import BaseModel, PositiveInt
 
 from confiacim_api.models import ResultStatus
-
-TArrayInt = tuple[int, ...]
-TArrayFloat = tuple[float, ...]
+from confiacim_api.types import TArrayFloat, TArrayInt
 
 
 class TencimResultSummaryOut(BaseModel):

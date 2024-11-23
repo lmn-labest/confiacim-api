@@ -8,19 +8,20 @@ from confiacim_api.errors import (
     LoadsFileNotFoundInZipError,
 )
 from confiacim_api.models import Case
+from confiacim_api.types import TArrayFloat, TArrayInt
 
 
 @dataclass(frozen=True)
 class MechanicalLoads:
-    istep: tuple[int, ...]
-    force: tuple[float, ...]
+    istep: TArrayInt
+    force: TArrayFloat
 
 
 @dataclass(frozen=True)
 class ThermalLoads:
-    istep: tuple[int, ...]
-    h: tuple[float, ...]
-    temperature: tuple[float, ...]
+    istep: TArrayInt
+    h: TArrayFloat
+    temperature: TArrayFloat
 
 
 @dataclass(frozen=True)

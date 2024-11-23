@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 
 from confiacim_api.constants import MAX_TAG_NAME_LENGTH, MIN_TAG_NAME_LENGTH
 from confiacim_api.schemes.tencim import TencimResultSummaryOut
+from confiacim_api.types import TArrayFloat, TArrayInt
 
 
 class MaterialsOut(BaseModel):
@@ -29,14 +30,14 @@ class MaterialsOut(BaseModel):
 
 
 class MechanicalLoads(BaseModel):
-    istep: tuple[int, ...]
-    force: tuple[float, ...]
+    istep: TArrayInt
+    force: TArrayFloat
 
 
 class ThermalLoads(BaseModel):
-    istep: tuple[int, ...]
-    h: tuple[float, ...]
-    temperature: tuple[float, ...]
+    istep: TArrayInt
+    h: TArrayFloat
+    temperature: TArrayFloat
 
 
 class LoadInfosOut(BaseModel):
@@ -44,12 +45,12 @@ class LoadInfosOut(BaseModel):
     #
     nodalsource: float
     #
-    mechanical_istep: tuple[int, ...]
-    mechanical_force: tuple[float, ...]
+    mechanical_istep: TArrayInt
+    mechanical_force: TArrayFloat
     #
-    thermal_istep: tuple[int, ...]
-    thermal_h: tuple[float, ...]
-    thermal_temperature: tuple[float, ...]
+    thermal_istep: TArrayInt
+    thermal_h: TArrayFloat
+    thermal_temperature: TArrayFloat
     #
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
@@ -58,14 +59,14 @@ class LoadInfosOut(BaseModel):
 class HidrationPropsOut(BaseModel):
     id: Optional[int] = None
     #
-    E_c_t: tuple[float, ...]
-    E_c_values: tuple[float, ...]
+    E_c_t: TArrayFloat
+    E_c_values: TArrayFloat
     #
-    poisson_c_t: tuple[float, ...]
-    poisson_c_values: tuple[float, ...]
+    poisson_c_t: TArrayFloat
+    poisson_c_values: TArrayFloat
     #
-    cohesion_c_t: tuple[float, ...]
-    cohesion_c_values: tuple[float, ...]
+    cohesion_c_t: TArrayFloat
+    cohesion_c_values: TArrayFloat
     #
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
