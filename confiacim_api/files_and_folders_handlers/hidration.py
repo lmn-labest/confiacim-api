@@ -12,12 +12,13 @@ from confiacim_api.constants import (
 from confiacim_api.errors import hidrationFileEmptyError
 from confiacim_api.logger import logger
 from confiacim_api.models import Case
+from confiacim_api.types import TArrayFloat
 
 
 @dataclass(frozen=True)
 class TimeSeries:
-    t: tuple[float, ...]
-    values: tuple[float, ...]
+    t: TArrayFloat
+    values: TArrayFloat
 
 
 @dataclass(frozen=True)
