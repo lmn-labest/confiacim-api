@@ -13,10 +13,10 @@ def test_create_loads(session: Session, case: Case):
         case=case,
         nodalsource=1.0,
         #
-        mechanical_istep=(1, 2, 3),
+        mechanical_t=(1, 2, 3),
         mechanical_force=(10.0, 20.0, 30.0),
         #
-        thermal_istep=(1, 2),
+        thermal_t=(1, 2),
         thermal_h=(5.0, 5.0),
         thermal_temperature=(35.0, 45.0),
     )
@@ -37,10 +37,10 @@ def test_create_loads(session: Session, case: Case):
 
     assert from_db.nodalsource == 1.0
 
-    assert from_db.mechanical_istep == (1, 2, 3)
+    assert from_db.mechanical_t == (1, 2, 3)
     assert from_db.mechanical_force == (10.0, 20.0, 30.0)
 
-    assert from_db.thermal_istep == (1, 2)
+    assert from_db.thermal_t == (1, 2)
     assert from_db.thermal_h == (5.0, 5.0)
     assert from_db.thermal_temperature == (35.0, 45.0)
 

@@ -55,10 +55,10 @@ def test_positive_create(client_auth: TestClient, session, user: User, payload):
     assert case_from_db.materials.volumetric_heat_capacity_f == pytest.approx(1.929e06)
 
     assert case_from_db.loads.nodalsource == pytest.approx(329.07)
-    assert case_from_db.loads.mechanical_istep == (0, 864_000)
+    assert case_from_db.loads.mechanical_t == (0, 864_000)
     assert case_from_db.loads.mechanical_force == (0, 0)
 
-    assert case_from_db.loads.thermal_istep == (864_000,)
+    assert case_from_db.loads.thermal_t == (864_000,)
     assert case_from_db.loads.thermal_h == (0.0,)
     assert case_from_db.loads.thermal_temperature == (329.362,)
 
@@ -102,10 +102,10 @@ def test_positive_create(client_auth: TestClient, session, user: User, payload):
 
     assert body["loads"]["nodalsource"] == case_from_db.loads.nodalsource
 
-    assert body["loads"]["mechanical_istep"] == list(case_from_db.loads.mechanical_istep)
+    assert body["loads"]["mechanical_t"] == list(case_from_db.loads.mechanical_t)
     assert body["loads"]["mechanical_force"] == list(case_from_db.loads.mechanical_force)
 
-    assert body["loads"]["thermal_istep"] == list(case_from_db.loads.thermal_istep)
+    assert body["loads"]["thermal_t"] == list(case_from_db.loads.thermal_t)
     assert body["loads"]["thermal_h"] == list(case_from_db.loads.thermal_h)
     assert body["loads"]["thermal_temperature"] == list(case_from_db.loads.thermal_temperature)
 
@@ -153,10 +153,10 @@ def test_positive_create_case_without_hidration(client_auth: TestClient, session
     assert case_from_db.materials.volumetric_heat_capacity_f == pytest.approx(1.929e06)
 
     assert case_from_db.loads.nodalsource == pytest.approx(329.07)
-    assert case_from_db.loads.mechanical_istep == (0, 864_000)
+    assert case_from_db.loads.mechanical_t == (0, 864_000)
     assert case_from_db.loads.mechanical_force == (0, 0)
 
-    assert case_from_db.loads.thermal_istep == (864_000,)
+    assert case_from_db.loads.thermal_t == (864_000,)
     assert case_from_db.loads.thermal_h == (0.0,)
     assert case_from_db.loads.thermal_temperature == (329.362,)
 
@@ -185,10 +185,10 @@ def test_positive_create_case_without_hidration(client_auth: TestClient, session
 
     assert body["loads"]["nodalsource"] == case_from_db.loads.nodalsource
 
-    assert body["loads"]["mechanical_istep"] == list(case_from_db.loads.mechanical_istep)
+    assert body["loads"]["mechanical_t"] == list(case_from_db.loads.mechanical_t)
     assert body["loads"]["mechanical_force"] == list(case_from_db.loads.mechanical_force)
 
-    assert body["loads"]["thermal_istep"] == list(case_from_db.loads.thermal_istep)
+    assert body["loads"]["thermal_t"] == list(case_from_db.loads.thermal_t)
     assert body["loads"]["thermal_h"] == list(case_from_db.loads.thermal_h)
     assert body["loads"]["thermal_temperature"] == list(case_from_db.loads.thermal_temperature)
 

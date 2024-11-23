@@ -226,4 +226,16 @@ CREATE TABLE hidration_prop_infos (
 
 UPDATE alembic_version SET version_num='4e4afb61eb68' WHERE alembic_version.version_num = 'bf6ce47c0449';
 
+-- Running upgrade 4e4afb61eb68 -> 374345143513
+
+ALTER TABLE loads_base_case_infos ADD COLUMN mechanical_t FLOAT[];
+
+ALTER TABLE loads_base_case_infos ADD COLUMN thermal_t FLOAT[];
+
+ALTER TABLE loads_base_case_infos DROP COLUMN mechanical_istep;
+
+ALTER TABLE loads_base_case_infos DROP COLUMN thermal_istep;
+
+UPDATE alembic_version SET version_num='374345143513' WHERE alembic_version.version_num = '4e4afb61eb68';
+
 COMMIT;

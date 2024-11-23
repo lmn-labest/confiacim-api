@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 from confiacim_api.constants import MAX_TAG_NAME_LENGTH, MIN_TAG_NAME_LENGTH
 from confiacim_api.schemes.tencim import TencimResultSummaryOut
-from confiacim_api.types import TArrayFloat, TArrayInt
+from confiacim_api.types import TArrayFloat
 
 
 class MaterialsOut(BaseModel):
@@ -30,12 +30,12 @@ class MaterialsOut(BaseModel):
 
 
 class MechanicalLoads(BaseModel):
-    istep: TArrayInt
+    t: TArrayFloat
     force: TArrayFloat
 
 
 class ThermalLoads(BaseModel):
-    istep: TArrayInt
+    t: TArrayFloat
     h: TArrayFloat
     temperature: TArrayFloat
 
@@ -45,10 +45,10 @@ class LoadInfosOut(BaseModel):
     #
     nodalsource: float
     #
-    mechanical_istep: TArrayInt
+    mechanical_t: TArrayFloat
     mechanical_force: TArrayFloat
     #
-    thermal_istep: TArrayInt
+    thermal_t: TArrayFloat
     thermal_h: TArrayFloat
     thermal_temperature: TArrayFloat
     #

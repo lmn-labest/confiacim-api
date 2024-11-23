@@ -22,10 +22,10 @@ def test_positive_read_loads():
     loads = read_loads_file(path)
 
     assert loads.nodalsource == 291.639
-    assert loads.mechanical_loads.istep == (0, 600, 1200, 1800)
+    assert loads.mechanical_loads.t == (0, 600, 1200, 1800)
     assert loads.mechanical_loads.force == (0, 0, 6.8947e07, 6.8947e07)
 
-    assert loads.thermal_loads.istep == (600, 1200, 1800)
+    assert loads.thermal_loads.t == (600, 1200, 1800)
     assert loads.thermal_loads.h == (0, 0, 0)
     assert loads.thermal_loads.temperature == (299.073, 299.073, 299.073)
 
@@ -36,10 +36,10 @@ def test_positive_extract_loads_infos():
     loads = extract_loads_infos(LOADS_FILE)
 
     assert loads.nodalsource == 291.639
-    assert loads.mechanical_loads.istep == (0, 600, 1200, 1800)
+    assert loads.mechanical_loads.t == (0, 600, 1200, 1800)
     assert loads.mechanical_loads.force == (0, 0, 6.8947e07, 6.8947e07)
 
-    assert loads.thermal_loads.istep == (600, 1200, 1800)
+    assert loads.thermal_loads.t == (600, 1200, 1800)
     assert loads.thermal_loads.h == (15, 15, 15)
     assert loads.thermal_loads.temperature == (299.073, 299.073, 299.073)
 
@@ -57,10 +57,10 @@ def test_positive_extract_loads_infos_from_blob(case_with_real_file):
     loads = extract_loads_infos_from_blob(case_with_real_file)
 
     assert loads.nodalsource == 329.07
-    assert loads.mechanical_loads.istep == (0, 864_000)
+    assert loads.mechanical_loads.t == (0, 864_000)
     assert loads.mechanical_loads.force == (0, 0)
 
-    assert loads.thermal_loads.istep == (864_000,)
+    assert loads.thermal_loads.t == (864_000,)
     assert loads.thermal_loads.h == (0.0,)
     assert loads.thermal_loads.temperature == (329.362,)
 

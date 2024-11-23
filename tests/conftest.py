@@ -62,10 +62,10 @@ class LoadsFactory(factory.Factory):
 
     nodalsource = factory.fuzzy.FuzzyFloat(low=1e6, high=1e10)
 
-    mechanical_istep = factory.List([1, 2, 3], list_factory="tests.conftest.TupleFactory")
+    mechanical_t = factory.List([1, 2, 3], list_factory="tests.conftest.TupleFactory")
     mechanical_force = factory.List([20.0, 21.0, 22.0], list_factory="tests.conftest.TupleFactory")
 
-    thermal_istep = factory.List([1, 2], list_factory="tests.conftest.TupleFactory")
+    thermal_t = factory.List([1, 2], list_factory="tests.conftest.TupleFactory")
     thermal_h = factory.List([6.0, 5.0], list_factory="tests.conftest.TupleFactory")
     thermal_temperature = factory.List([20.0, 21.0], list_factory="tests.conftest.TupleFactory")
 

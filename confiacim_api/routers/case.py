@@ -71,18 +71,18 @@ def _create_or_update_loads(session: Session, case: Case, loads_infos: LoadsInfo
         loads = LoadsBaseCaseInfos(
             case=case,
             nodalsource=loads_infos.nodalsource,
-            mechanical_istep=loads_infos.mechanical_loads.istep,
+            mechanical_t=loads_infos.mechanical_loads.t,
             mechanical_force=loads_infos.mechanical_loads.force,
-            thermal_istep=loads_infos.thermal_loads.istep,
+            thermal_t=loads_infos.thermal_loads.t,
             thermal_h=loads_infos.thermal_loads.h,
             thermal_temperature=loads_infos.thermal_loads.temperature,
         )
         session.add(loads)
     else:
         case.loads.nodalsource = loads_infos.nodalsource
-        case.loads.mechanical_istep = loads_infos.mechanical_loads.istep
+        case.loads.mechanical_t = loads_infos.mechanical_loads.t
         case.loads.mechanical_force = loads_infos.mechanical_loads.force
-        case.loads.thermal_istep = loads_infos.thermal_loads.istep
+        case.loads.thermal_t = loads_infos.thermal_loads.t
         case.loads.thermal_h = loads_infos.thermal_loads.h
         case.loads.thermal_temperature = loads_infos.thermal_loads.temperature
 
