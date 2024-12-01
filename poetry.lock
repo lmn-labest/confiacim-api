@@ -600,7 +600,7 @@ description = "Calculo probabilistico de confiabilidade de poços."
 optional = false
 python-versions = "<3.12,>=3.11"
 files = [
-    {file = "confiacim-0.16.0a0-py3-none-any.whl", hash = "sha256:c2b6e2483459de7e2c75878b63b37b23aa4c0fe6025ebad87f9519554b2d51a3"},
+    {file = "confiacim-0.16.0a0-py3-none-any.whl", hash = "sha256:8b9e7ce4eca5cc601749dd99d0f560f7498ddfc0987d9a65e65f8c6329fe8ebb"},
 ]
 
 [package.dependencies]
