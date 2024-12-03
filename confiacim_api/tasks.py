@@ -203,12 +203,15 @@ def form_run(self, result_id: int):
         run_form_core(input_dir=input_base_dir, output_dir=None, verbose_level=0)
 
         result_form = json.load((base_folder / "output/form/results.json").open())
+        iteration_form = json.load((base_folder / "output/form/form_iteration_log.json").open())
+
         result.beta = result_form["beta"]
         result.resid = result_form["resid"]
         result.it = result_form["it"]
         result.Pf = result_form["Pf"]
         result.status = ResultStatus.SUCCESS
         result.variables_stats = result_form["variables"]
+        result.iteration_infos = iteration_form
 
         logger.info(f"Task {task_id} - Analysis completed.")
 

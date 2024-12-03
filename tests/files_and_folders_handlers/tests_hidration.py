@@ -45,7 +45,7 @@ def test_positive_extract_hidration_infos():
 @pytest.mark.unit
 def test_negative_extract_extract__hidration_infos_empty_file():
 
-    with pytest.raises(hidrationFileEmptyError, match="Empty HidrationProp file."):
+    with pytest.raises(hidrationFileEmptyError, match="Empty hidrationprop file."):
         extract_hidration_infos("")
 
 

@@ -238,4 +238,10 @@ ALTER TABLE loads_base_case_infos DROP COLUMN thermal_istep;
 
 UPDATE alembic_version SET version_num='374345143513' WHERE alembic_version.version_num = '4e4afb61eb68';
 
+-- Running upgrade 374345143513 -> d2684f3b1df2
+
+ALTER TABLE form_results ADD COLUMN iteration_infos JSON;
+
+UPDATE alembic_version SET version_num='d2684f3b1df2' WHERE alembic_version.version_num = '374345143513';
+
 COMMIT;

@@ -43,6 +43,7 @@ def test_create_form_result(session: Session, case: Case):
 
     assert result_from_db.config is None
     assert result_from_db.variables_stats is None
+    assert result_from_db.iteration_infos is None
 
     assert result_from_db.created_at is not None
     assert isinstance(result_from_db.created_at, datetime)
