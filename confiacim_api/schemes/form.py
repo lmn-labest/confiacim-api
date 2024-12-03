@@ -82,6 +82,7 @@ class FormResultDetailOut(BaseModel):
     error: Optional[str] = None
     config: Optional[dict] = None
     variables_stats: Optional[dict] = None
+    iteration_infos: Optional[dict] = None
     description: Optional[str] = None
     status: ResultStatus
     created_at: datetime

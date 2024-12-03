@@ -61,6 +61,7 @@ def test_positive_unzip_file(tmp_path):
         "mesh.dat",
         "initialstress.dat",
         "materials.dat",
+        "hidrationprop.dat",
     }
 
     assert list_dir == expected
@@ -76,7 +77,7 @@ def test_positive_create_unzip_and_clean_simulation_folder(tmp_path):
 
     list_dir = list(Path(tmp_dir.name).iterdir())
 
-    assert len(list_dir) == 7
+    assert len(list_dir) == 8
 
     clean_temporary_simulation_folder(tmp_dir)
 
@@ -102,7 +103,7 @@ def test_unzip_tencim_case_from_db(session, user, tmp_path):
 
     list_dir = {d.name for d in Path(tmp_dir.name).iterdir()}
 
-    assert len(list_dir) == 7
+    assert len(list_dir) == 8
 
     expected = {
         "loads.dat",
@@ -112,6 +113,7 @@ def test_unzip_tencim_case_from_db(session, user, tmp_path):
         "mesh.dat",
         "initialstress.dat",
         "materials.dat",
+        "hidrationprop.dat",
     }
 
     assert list_dir == expected

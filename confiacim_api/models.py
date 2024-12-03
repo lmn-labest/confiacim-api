@@ -160,6 +160,7 @@ class FormResult(TimestampMixin, Base):
 
     config: Mapped[dict] = mapped_column(JSON, nullable=True)
     variables_stats: Mapped[dict] = mapped_column(JSON, nullable=True)
+    iteration_infos: Mapped[dict] = mapped_column(JSON, nullable=True)
 
     case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
     case: Mapped["Case"] = relationship(back_populates="form_results")

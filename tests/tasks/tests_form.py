@@ -80,6 +80,30 @@ def test_positive_form_run(
         assert result_from_db.variables_stats["internal_temperature"]["importance_factor"] == pytest.approx(0.0)
         assert result_from_db.variables_stats["internal_temperature"]["omission_factor"] == pytest.approx(1.0)
 
+        expected_values = (1.1336004085260278, 1.0746925408708417, 1.0745444487743427)
+        for db, expected in zip(result_from_db.iteration_infos["beta"], expected_values):
+            assert db == pytest.approx(expected)
+
+        expected_values = (1.0, 0.05481369360529118, 0.00013781849291374292)
+        for db, expected in zip(result_from_db.iteration_infos["resid"], expected_values):
+            assert db == pytest.approx(expected)
+
+        expected_values = (1.0519945182826513, 1.0495651093155107, 1.0495254852408304)
+        for db, expected in zip(result_from_db.iteration_infos["E_c"], expected_values):
+            assert db == pytest.approx(expected)
+
+        expected_values = (0.9771881579989782, 0.9787658380499211, 0.9787290075346774)
+        for db, expected in zip(result_from_db.iteration_infos["poisson_c"], expected_values):
+            assert db == pytest.approx(expected)
+
+        expected_values = (1.0961184932516412, 1.0903894385880526, 1.0903871605051194)
+        for db, expected in zip(result_from_db.iteration_infos["internal_pressure"], expected_values):
+            assert db == pytest.approx(expected)
+
+        expected_values = (0.9950371902099893, 0.9950371902099893, 0.9950371902099893)
+        for db, expected in zip(result_from_db.iteration_infos["internal_temperature"], expected_values):
+            assert db == pytest.approx(expected)
+
         assert result_from_db.generated_case_files is not None
 
 
