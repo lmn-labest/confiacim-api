@@ -408,8 +408,8 @@ def form_case_config():
                 "dist": {
                     "name": "lognormal",
                     "params": {
-                        "mean": 1.0,
-                        "cov": 0.1,
+                        "param1": 1.0,
+                        "param2": 0.1,
                     },
                 },
             },
@@ -418,8 +418,8 @@ def form_case_config():
                 "dist": {
                     "name": "lognormal",
                     "params": {
-                        "mean": 1.0,
-                        "cov": 0.1,
+                        "param1": 1.0,
+                        "param2": 0.1,
                     },
                 },
             },
@@ -428,8 +428,8 @@ def form_case_config():
                 "dist": {
                     "name": "lognormal",
                     "params": {
-                        "mean": 1.0,
-                        "cov": 0.1,
+                        "param1": 1.0,
+                        "param2": 0.1,
                     },
                 },
             },
@@ -438,8 +438,8 @@ def form_case_config():
                 "dist": {
                     "name": "lognormal",
                     "params": {
-                        "mean": 1.0,
-                        "cov": 0.1,
+                        "param1": 1.0,
+                        "param2": 0.1,
                     },
                 },
             },
