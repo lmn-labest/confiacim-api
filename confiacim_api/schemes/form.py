@@ -37,9 +37,7 @@ class RandomDistributionEnum(str, Enum):
     gumbel_r = "gumbel_r"
     weibull_min = "weibull_min"
     triang = "triang"
-    sgld = "sgld"
-    sgld_lower_t = "sgld_lower_t"
-    sgld_lower_upper_t = "sgld_lower_upper_t"
+    sgld_t = "sgld_t"
 
 
 class RandomDistribution(BaseModel):
@@ -58,7 +56,11 @@ class FormConfig(BaseModel):
 
 FORM_CONFIG_EXAMPLE = {
     "variables": [
-        {"name": "E_c", "dist": {"name": "lognormal", "params": {"mean": 1.0, "cov": 0.1}}},
+        {"name": "E_c", "dist": {"name": "lognormal", "params": {"param1": 1.0, "param2": 0.1}}},
+        {
+            "name": "poisson_c",
+            "dist": {"name": "sgld", "params": {"param1": 1.0, "param2": 0.1, "param3": 0.2, "param4": 0.3}},
+        },
     ],
 }
 

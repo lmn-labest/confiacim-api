@@ -26,6 +26,7 @@ from sqlalchemy.orm import defer, joinedload
 
 from confiacim_api.celery import celery_app
 from confiacim_api.database import SessionFactory
+from confiacim_api.dist_params_conversor import convert_variable_web_to_core
 from confiacim_api.errors import ResultNotFound, TaskFileCaseNotFound
 from confiacim_api.files_and_folders_handlers import (
     clean_temporary_simulation_folder,
@@ -150,29 +151,41 @@ def form_run(self, result_id: int):
     if not base_dir.exists():
         base_dir.mkdir(parents=True)
 
-    logger.info(f"Task {task_id} - Extracting case files ...")
-    tmp_dir = temporary_simulation_folder(base_dir)
-    base_folder = Path(tmp_dir.name)
-    unzip_tencim_case(result.case, tmp_dir)
-    logger.info(f"Task {task_id} - Extract.")
+    try:
+        logger.info(f"Task {task_id} - Extracting case files ...")
+        tmp_dir = temporary_simulation_folder(base_dir)
+        base_folder = Path(tmp_dir.name)
+        unzip_tencim_case(result.case, tmp_dir)
+        logger.info(f"Task {task_id} - Extract.")
 
-    logger.info(f"Task {task_id} - Writing case file ...")
-    rewrite_case_file(
-        task_id=task_id,
-        case_path=base_folder / "case.dat",
-        setpnode_and_setptime=True,
-        critical_point=result.critical_point,
-    )
-    logger.info(f"Task {task_id} - Write.")
+        logger.info(f"Task {task_id} - Writing case file ...")
+        rewrite_case_file(
+            task_id=task_id,
+            case_path=base_folder / "case.dat",
+            setpnode_and_setptime=True,
+            critical_point=result.critical_point,
+        )
+        logger.info(f"Task {task_id} - Write.")
 
-    logger.info(f"Task {task_id} - Writing templates ...")
-    generate_templates(task_id, base_folder, result.config)
-    logger.info(f"Task {task_id} - Write.")
+        logger.info(f"Task {task_id} - Writing templates ...")
+        generate_templates(task_id, base_folder, result.config)
+        logger.info(f"Task {task_id} - Write.")
 
-    logger.info(f"Task {task_id} - Create case.yml ...")
-    with open(base_folder / "case.yml", "w", encoding="utf-8") as yaml_file:
-        yaml.dump(result.config, yaml_file, encoding="utf-8")
-    logger.info(f"Task {task_id} - Create.")
+        logger.info(f"Task {task_id} - Create case.yml ...")
+        with open(base_folder / "case.yml", "w", encoding="utf-8") as yaml_file:
+            varibales_form_core = convert_variable_web_to_core(result.config["variables"])
+            new_config = result.config.copy()
+            new_config["variables"] = varibales_form_core
+            yaml.dump(new_config, yaml_file, encoding="utf-8")
+        logger.info(f"Task {task_id} - Create.")
+
+    except Exception as e:
+        logger.warning(f"Task {task_id} - Generic error.")
+        result.error = str(e)
+        result.status = ResultStatus.FAILED
+        session.add(result)
+        session.commit()
+        raise e
 
     input_base_dir = Path(tmp_dir.name)
 

@@ -23,8 +23,8 @@ def payload():
                     "dist": {
                         "name": "lognormal",
                         "params": {
-                            "mean": 1.0,
-                            "cov": 0.1,
+                            "param1": 1.0,
+                            "param2": 0.1,
                         },
                     },
                 },
@@ -33,8 +33,8 @@ def payload():
                     "dist": {
                         "name": "lognormal",
                         "params": {
-                            "mean": 1.0,
-                            "cov": 0.1,
+                            "param1": 1.0,
+                            "param2": 0.1,
                         },
                     },
                 },
@@ -130,20 +130,20 @@ def test_positive_form_run_with_description(
                 "dist": {
                     "name": "lognormal",
                     "params": {
-                        "mean": "not_number",
+                        "param1": "not_number",
                     },
                 },
             },
             "Input should be a valid number, unable to parse string as a number",
             "float_parsing",
-            ["body", "form", "variables", 0, "dist", "params", "mean"],
+            ["body", "form", "variables", 0, "dist", "params", "param1"],
         ),
         (
             {
                 "name": "E_c",
                 "dist": {
                     "params": {
-                        "mean": "not_number",
+                        "param1": 0.1,
                     },
                 },
             },
@@ -156,7 +156,7 @@ def test_positive_form_run_with_description(
                 "dist": {
                     "name": "lognormal",
                     "params": {
-                        "mean": "not_number",
+                        "mean": 0.1,
                     },
                 },
             },
@@ -232,8 +232,8 @@ def test_negative_form_run_invalid_variables(
                             "dist": {
                                 "name": "lognormal",
                                 "params": {
-                                    "mean": 1.0,
-                                    "cov": 0.1,
+                                    "param1": 1.0,
+                                    "param2": 0.1,
                                 },
                             },
                         },
@@ -254,8 +254,8 @@ def test_negative_form_run_invalid_variables(
                             "dist": {
                                 "name": "lognormal",
                                 "params": {
-                                    "mean": 1.0,
-                                    "cov": 0.1,
+                                    "param1": 1.0,
+                                    "param2": 0.1,
                                 },
                             },
                         },
@@ -275,8 +275,8 @@ def test_negative_form_run_invalid_variables(
                             "dist": {
                                 "name": "lognormal",
                                 "params": {
-                                    "mean": 1.0,
-                                    "cov": 0.1,
+                                    "param1": 1.0,
+                                    "param2": 0.1,
                                 },
                             },
                         },
@@ -326,8 +326,7 @@ def test_negative_form_run_invalid_distribution_name(
 
     assert detail["loc"] == ["body", "form", "variables", 0, "dist", "name"]
     assert detail["msg"] == (
-        "Input should be 'normal', 'lognormal', 'gumbel_r', "
-        "'weibull_min', 'triang', 'sgld', 'sgld_lower_t' or 'sgld_lower_upper_t'"
+        "Input should be 'normal', 'lognormal', 'gumbel_r', " "'weibull_min', 'triang' or 'sgld_t'"
     )
     assert detail["type"] == "enum"
 

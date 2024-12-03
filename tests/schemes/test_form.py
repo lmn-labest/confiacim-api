@@ -63,9 +63,7 @@ def test_invalid_choice_form_variables_name():
         "gumbel_r",
         "weibull_min",
         "triang",
-        "sgld",
-        "sgld_lower_t",
-        "sgld_lower_upper_t",
+        "sgld_t",
     ],
 )
 def test_valid_distribution_name(name):
@@ -87,10 +85,7 @@ def test_valid_distribution_name(name):
 @pytest.mark.unit
 def test_invalid_choice_distribution_name():
 
-    msg = (
-        "Input should be 'normal', 'lognormal', 'gumbel_r', 'weibull_min', "
-        "'triang', 'sgld', 'sgld_lower_t' or 'sgld_lower_upper_t'"
-    )
+    msg = "Input should be 'normal', 'lognormal', 'gumbel_r', 'weibull_min', " "'triang' or 'sgld_t'"
 
     with pytest.raises(ValidationError, match=msg):
         FormVariables(
