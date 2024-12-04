@@ -21,6 +21,7 @@ from confiacim_api.models import (
     ResultStatus,
     TencimResult,
     User,
+    VariableGroup,
 )
 from confiacim_api.security import create_access_token, get_password_hash
 
@@ -507,6 +508,66 @@ def form_results_with_critical_point(
     session.refresh(new_result)
 
     return new_result
+
+
+@pytest.fixture(scope="session")
+def variables_form():
+    return [
+        {
+            "name": "E_c",
+            "dist": {
+                "name": "lognormal",
+                "params": {
+                    "param1": 1.0,
+                    "param2": 0.1,
+                },
+            },
+        },
+        {
+            "name": "poisson_c",
+            "dist": {
+                "name": "lognormal",
+                "params": {
+                    "param1": 1.0,
+                    "param2": 0.1,
+                },
+            },
+        },
+        {
+            "name": "internal_pressure",
+            "dist": {
+                "name": "lognormal",
+                "params": {
+                    "param1": 1.0,
+                    "param2": 0.1,
+                },
+            },
+        },
+    ]
+
+
+@pytest.fixture(scope="session")
+def correlations_form():
+    return {
+        "E_c, poisson_c": 0.5,
+        "E_c, internal_pressure": 0.2,
+    }
+
+
+@pytest.fixture
+def variable_group(session: Session, case: Case, variables_form: list, correlations_form: dict):
+    variable_group = VariableGroup(
+        tag="group_a",
+        case=case,
+        variables=variables_form,
+        correlations=correlations_form,
+    )
+
+    session.add(variable_group)
+    session.commit()
+    session.refresh(variable_group)
+
+    return variable_group
 
 
 @pytest.fixture

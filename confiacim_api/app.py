@@ -19,6 +19,7 @@ from confiacim_api.routers import (
     form_router,
     tencim_router,
     user_router,
+    variable_group_router,
 )
 
 app = FastAPI(
@@ -49,6 +50,7 @@ app.include_router(case_router)
 app.include_router(user_router)
 app.include_router(tencim_router)
 app.include_router(form_router)
+app.include_router(variable_group_router)
 
 
 @app.exception_handler(RequestValidationError)

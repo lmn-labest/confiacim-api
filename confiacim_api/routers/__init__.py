@@ -5,6 +5,7 @@ from confiacim_api.routers.case import router as case_router
 from confiacim_api.routers.form import router as form_router
 from confiacim_api.routers.tencim import router as tencim_router
 from confiacim_api.routers.users import router as user_router
+from confiacim_api.routers.variable_group import router as variable_group_router
 
 __all__ = (
     "auth_router",
@@ -14,4 +15,5 @@ __all__ = (
     "admin_router",
     "tencim_router",
     "form_router",
+    "variable_group_router",
 )
