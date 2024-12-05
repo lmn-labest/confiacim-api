@@ -256,7 +256,7 @@ class VariableGroup(TimestampMixin, Base):
     tag: Mapped[str] = mapped_column(String(MAX_TAG_NAME_LENGTH))
     description: Mapped[str] = mapped_column(Text, nullable=True)
 
-    variables: Mapped[dict] = mapped_column(JSON)
+    variables: Mapped[list[dict]] = mapped_column(JSON)
     correlations: Mapped[dict] = mapped_column(JSON, nullable=True)
 
     case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))

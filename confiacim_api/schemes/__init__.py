@@ -9,6 +9,7 @@ from confiacim_api.schemes.case import (
     CaseCreateIn,
     CaseCreateOut,
     CaseOut,
+    HidrationPropsOut,
     LoadInfosOut,
     MaterialsOut,
 )
@@ -49,6 +50,7 @@ __all__ = (
     "CaseOut",
     "MaterialsOut",
     "LoadInfosOut",
+    "HidrationPropsOut",
     "TencimResultDetailOut",
     "TencimResultStatusOut",
     "TencimResultSummaryOut",

@@ -28,6 +28,7 @@ from confiacim_api.schemes import (
     CaseCreateIn,
     CaseCreateOut,
     CaseOut,
+    HidrationPropsOut,
     LoadInfosOut,
     MaterialsOut,
 )
@@ -329,3 +330,28 @@ def loads_case_retrive(
         )
 
     return case.loads
+
+
+@router.get("/{case_id}/hidration_props", response_model=HidrationPropsOut)
+def hidration_props_case_retrieve(
+    session: ActiveSession,
+    case_id: int,
+    user: CurrentUser,
+):
+    """Retorno a informações da propriedades de hidratação do caso `case_id`"""
+
+    case = session.scalar(select(Case).filter(Case.id == case_id, Case.user == user))
+
+    if not case:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Case not found",
+        )
+
+    if not case.hidration_props:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The case not have registered hidration props",
+        )
+
+    return case.hidration_props
