@@ -149,8 +149,12 @@ def generate_hidrationprop_template(hidrationprop_str: str, variables: dict) -> 
         elif prop == HIDRATIONPROP_POISSON_C and variables.get(HIDRATIONPROP_MAP[prop]):
             prop_name = HIDRATIONPROP_MAP[prop]
             for _ in range(npoints):
-                words = next(lines).split()
-                new_lines.append(f'{float(words[0])} {{{{ "%.16e"|format({prop_name} * {words[1]}) }}}}')
+                line_str = next(lines)
+                words = line_str.split()
+                if float(words[0]) <= 0.04:
+                    new_lines.append(line_str)
+                else:
+                    new_lines.append(f'{float(words[0])} {{{{ "%.16e"|format({prop_name} * {words[1]}) }}}}')
 
         elif prop == HIDRATIONPROP_COHESION_C and variables.get(HIDRATIONPROP_MAP[prop]):
             prop_name = HIDRATIONPROP_MAP[prop]
