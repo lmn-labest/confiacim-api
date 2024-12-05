@@ -9,6 +9,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi_pagination import add_pagination
 
+from confiacim_api import __version__
 from confiacim_api.conf import settings
 from confiacim_api.errors import UploadCaseBaseError
 from confiacim_api.routers import (
@@ -24,6 +25,7 @@ from confiacim_api.routers import (
 
 app = FastAPI(
     title="Confiacim API",
+    version=__version__,
     description="Backend da aplicação do confiacim",
     redoc_url=None,
     docs_url=None,
