@@ -1,10 +1,14 @@
+import re
+
+from confiacim.controllers.base import version as core_versions
 from fastapi import APIRouter
 from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
 
+from confiacim_api import __version__
 from confiacim_api.celery import celery_app
 from confiacim_api.database import ActiveSession
-from confiacim_api.schemes import HealthOut, Message
+from confiacim_api.schemes import HealthOut, Message, VersionOut
 from confiacim_api.system_stats import (
     count_case_with_simulation_success,
     count_tasks,
@@ -43,4 +47,18 @@ def system_stats(session: ActiveSession):
         "runnings_simulation": count_tasks(inspector.active()),
         "total_simulation": total_success_simulations(session),
         "total_projects_with_simulations": count_case_with_simulation_success(session),
+    }
+
+
+VERSION_CORE_REGEX = re.compile(r"\d{1,2}.\d{2}.\d{1,2}")
+
+
+@router.get("/versions", response_model=VersionOut)
+def versions():
+    """Rota que retorna a versões da `api`, `core` e `tencim1D`"""
+    core, tencim = re.findall(VERSION_CORE_REGEX, core_versions())
+    return {
+        "api": __version__,
+        "core": core,
+        "tencim1D": tencim,
     }

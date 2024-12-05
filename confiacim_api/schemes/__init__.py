@@ -1,4 +1,10 @@
-from confiacim_api.schemes.base import HealthOut, Message, ResultCeleryTaskOut, Token
+from confiacim_api.schemes.base import (
+    HealthOut,
+    Message,
+    ResultCeleryTaskOut,
+    Token,
+    VersionOut,
+)
 from confiacim_api.schemes.case import (
     CaseCreateIn,
     CaseCreateOut,
@@ -37,6 +43,7 @@ __all__ = (
     "Message",
     "Token",
     "ResultCeleryTaskOut",
+    "VersionOut",
     "CaseCreateIn",
     "CaseCreateOut",
     "CaseOut",
