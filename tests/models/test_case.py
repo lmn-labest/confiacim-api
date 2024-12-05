@@ -12,6 +12,7 @@ from confiacim_api.models import (
     MaterialsBaseCaseAverageProps,
     TencimResult,
     User,
+    VariableGroup,
 )
 
 
@@ -136,7 +137,7 @@ def test_case_can_have_one_materials(session: Session, case: Case, materials: Ma
 def test_deleting_the_case_should_delete_the_materials(
     session: Session, case: Case, materials: MaterialsBaseCaseAverageProps
 ):
-    """Testa a configuracao do cascate"""
+    """Testa a configuracao do cascade"""
 
     session.delete(case)
     session.commit()
@@ -147,7 +148,7 @@ def test_deleting_the_case_should_delete_the_materials(
 
 @pytest.mark.integration
 def test_deleting_the_case_should_delete_the_form_results(session: Session, case: Case):
-    """Testa a configuracao do cascate"""
+    """Testa a configuracao do cascade"""
 
     session.add(FormResult(case=case))
     session.commit()
@@ -160,7 +161,7 @@ def test_deleting_the_case_should_delete_the_form_results(session: Session, case
 
 @pytest.mark.integration
 def test_deleting_the_case_should_delete_the_tencim_results(session: Session, case: Case):
-    """Testa a configuracao do cascate"""
+    """Testa a configuracao do cascade"""
 
     values = {
         "istep": (1, 2, 3),
@@ -180,10 +181,21 @@ def test_deleting_the_case_should_delete_the_tencim_results(session: Session, ca
 
 @pytest.mark.integration
 def test_deleting_the_case_should_delete_the_loads(session: Session, loads: LoadsBaseCaseInfos):
-    """Testa a configuracao do cascate"""
+    """Testa a configuracao do cascade"""
 
     case = loads.case
     session.delete(case)
     session.commit()
 
     assert session.scalar(select(func.count()).select_from(LoadsBaseCaseInfos)) == 0
+
+
+@pytest.mark.integration
+def test_deleting_the_case_should_delete_the_variable_groups(session: Session, variable_group: VariableGroup):
+    """Testa a configuracao do cascade"""
+
+    case = variable_group.case
+    session.delete(case)
+    session.commit()
+
+    assert session.scalar(select(func.count()).select_from(VariableGroup)) == 0
