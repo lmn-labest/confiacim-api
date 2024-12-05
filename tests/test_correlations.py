@@ -1,7 +1,7 @@
 import pytest
 
-from confiacim_api.errors import CorrelationsInvalidError
 from confiacim_api.correlations import validation_correlations
+from confiacim_api.errors import CorrelationsInvalidError
 
 
 @pytest.fixture

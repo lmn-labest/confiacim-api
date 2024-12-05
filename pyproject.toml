@@ -89,6 +89,7 @@ markers=[
 ]
 
 [tool.ruff]
+
 line-length = 120
 
 exclude = [
@@ -105,6 +106,10 @@ select = [
     "C",  # flake8-comprehensions
     "B",  # flake8-bugbear
 ]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 11
+
 
 [tool.mypy]
 warn_return_any = true

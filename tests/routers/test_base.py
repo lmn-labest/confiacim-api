@@ -2,8 +2,8 @@ import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from confiacim_api.app import app
 from confiacim_api import __version__
+from confiacim_api.app import app
 
 
 @pytest.mark.integration

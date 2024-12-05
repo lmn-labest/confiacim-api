@@ -212,8 +212,8 @@ hidrprop
 0.49 {{ "%.16e"|format(E_c * 8.148e+09) }}
 1.0 {{ "%.16e"|format(E_c * 1.190e+10) }}
 3 2 4
-0.0 {{ "%.16e"|format(poisson_c * 4.900e-01) }}
-0.04 {{ "%.16e"|format(poisson_c * 4.900e-01) }}
+0.00 4.900e-01
+0.04 4.900e-01
 0.08 {{ "%.16e"|format(poisson_c * 1.800e-01) }}
 1.0 {{ "%.16e"|format(poisson_c * 1.800e-01) }}
 3 7 3
@@ -274,8 +274,8 @@ hidrprop
 0.49 {{ "%.16e"|format(E_c * 8.148e+09) }}
 1.0 {{ "%.16e"|format(E_c * 1.190e+10) }}
 3 2 4
-0.0 {{ "%.16e"|format(poisson_c * 4.900e-01) }}
-0.04 {{ "%.16e"|format(poisson_c * 4.900e-01) }}
+0.0 4.900e-01
+0.04 4.900e-01
 0.08 {{ "%.16e"|format(poisson_c * 1.800e-01) }}
 1.0 {{ "%.16e"|format(poisson_c * 1.800e-01) }}
 3 7 3
