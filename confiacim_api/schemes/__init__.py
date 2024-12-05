@@ -26,6 +26,11 @@ from confiacim_api.schemes.users import (
     UserCreateIn,
     UserOut,
 )
+from confiacim_api.schemes.variable_group import (
+    VariableGroupIn,
+    VariableGroupOut,
+    VariableGroupPatch,
+)
 
 __all__ = (
     "HealthOut",
@@ -51,4 +56,7 @@ __all__ = (
     "FormResultStatusOut",
     "FormVariables",
     "RandomDistribution",
+    "VariableGroupOut",
+    "VariableGroupIn",
+    "VariableGroupPatch",
 )

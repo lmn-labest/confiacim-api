@@ -151,7 +151,6 @@ def test_positive_form_run_with_critical_point(
     assert "critical_point=160" in str(rewrite_case_file_mocker.call_args)
 
 
-@pytest.mark.slow
 @pytest.mark.integration
 def test_negative_form_run_file_not_found(session_factory, case: Case):
 

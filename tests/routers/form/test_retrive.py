@@ -35,7 +35,7 @@ def test_positive_retrive(
     assert body["Pf"] == form_results_with_critical_point.Pf
     assert body["config"] == form_results_with_critical_point.config
     assert body["variables_stats"] == form_results_with_critical_point.variables_stats
-    assert body["iteration_infos"] == form_results_with_critical_point.variables_stats
+    assert body["iteration_infos"] == form_results_with_critical_point.iteration_infos
     assert body["description"] == form_results_with_critical_point.description
 
     assert body["error"] == form_results_with_critical_point.error

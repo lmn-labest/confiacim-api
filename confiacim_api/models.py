@@ -106,6 +106,11 @@ class Case(TimestampMixin, Base):
         cascade="all, delete-orphan",
     )
 
+    variable_groups: Mapped["VariableGroup"] = relationship(
+        back_populates="case",
+        cascade="all, delete-orphan",
+    )
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id}, case={self.tag})"
 
@@ -240,3 +245,22 @@ class HidrationPropInfos(TimestampMixin, Base):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id}, case={self.case.tag}, ...)"
+
+
+class VariableGroup(TimestampMixin, Base):
+    __tablename__ = "variable_groups"
+    __table_args__ = (UniqueConstraint("tag", "case_id", name="case_task_variable_groups"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    tag: Mapped[str] = mapped_column(String(MAX_TAG_NAME_LENGTH))
+    description: Mapped[str] = mapped_column(Text, nullable=True)
+
+    variables: Mapped[dict] = mapped_column(JSON)
+    correlations: Mapped[dict] = mapped_column(JSON, nullable=True)
+
+    case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
+    case: Mapped["Case"] = relationship(back_populates="variable_groups")
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(id={self.id}, tag={self.tag})"
