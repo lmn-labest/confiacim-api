@@ -34,7 +34,7 @@ app = FastAPI(
 
 add_pagination(app)
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/api/static", StaticFiles(directory="static"), name="static")
 
 if settings.CORS:
     app.add_middleware(
@@ -80,8 +80,8 @@ async def custom_swagger_ui_html():
         openapi_url=app.openapi_url,
         title=app.title + " - Swagger UI",
         oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
-        swagger_js_url="/static/js/swagger-ui-bundle.js",
-        swagger_css_url="/static/css/swagger-ui.css",
+        swagger_js_url="/api/static/js/swagger-ui-bundle.js",
+        swagger_css_url="/api/static/css/swagger-ui.css",
     )
 
 
