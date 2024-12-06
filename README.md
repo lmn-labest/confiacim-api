@@ -163,3 +163,13 @@ No ambiente Petrobras não podemos usar o `Almebic` para aplicar as migrações.
 ```bash
 alembic upgrade head --sql > migrations/migrations.sql
 ```
+
+```sql
+GRANT USAGE ON SCHEMA "a17790" TO "a17790_aplicacao";
+GRANT SELECT ON ALL TABLES IN SCHEMA "a17790" TO "a17790_aplicacao";
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA "a17790" TO "a17790_aplicacao";
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA "a17790" TO "a17790_aplicacao";
+GRANT UPDATE ON ALL SEQUENCES IN SCHEMA "a17790" TO "a17790_aplicacao";
+GRANT INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA "a17790" TO "a17790_aplicacao";
+GRANT CONNECT ON DATABASE "a17790t" TO "a17790_aplicacao";
+```

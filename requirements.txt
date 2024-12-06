@@ -65,8 +65,8 @@ click==8.1.7 ; python_version >= "3.11" and python_version < "3.12" \
 colorama==0.4.6 ; python_version >= "3.11" and python_version < "3.12" and (sys_platform == "win32" or platform_system == "Windows") \
     --hash=sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44 \
     --hash=sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6
-confiacim @ file:///home/henrique/Desenvolvimento/repo/lab/confiacim-api/packages/confiacim-0.12.0a0-py3-none-any.whl ; python_version >= "3.11" and python_version < "3.12" \
-    --hash=sha256:7f80a2fd1a25dc807c6f0db7f47f2dd2f8afb2cf5c3056ee93a9cfe4c19a5bfa
+confiacim @ file:packages/confiacim-0.16.0-py3-none-any.whl ; python_version >= "3.11" and python_version < "3.12" \
+    --hash=sha256:11cacbcdfdbb7081c8c91b7f7b267bf968bba0f2d95ca9515b9bda006ac852cc
 dnspython==2.7.0 ; python_version >= "3.11" and python_version < "3.12" \
     --hash=sha256:b4c34b7d10b51bcc3a5071e7b8dee77939f1e878477eeecc965e9835f63c6c86 \
     --hash=sha256:ce9c432eda0dc91cf618a5cedf1a4e142651196bbcd2c80e89ed5a907e5cfaf1
