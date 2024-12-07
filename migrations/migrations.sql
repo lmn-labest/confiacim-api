@@ -244,4 +244,22 @@ ALTER TABLE form_results ADD COLUMN iteration_infos JSON;
 
 UPDATE alembic_version SET version_num='d2684f3b1df2' WHERE alembic_version.version_num = '374345143513';
 
+-- Running upgrade d2684f3b1df2 -> 78513c2da84f
+
+CREATE TABLE variable_groups (
+    id SERIAL NOT NULL,
+    tag VARCHAR(30) NOT NULL,
+    description TEXT,
+    variables JSON NOT NULL,
+    correlations JSON,
+    case_id INTEGER NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    PRIMARY KEY (id),
+    FOREIGN KEY(case_id) REFERENCES cases (id),
+    CONSTRAINT case_task_variable_groups UNIQUE (tag, case_id)
+);
+
+UPDATE alembic_version SET version_num='78513c2da84f' WHERE alembic_version.version_num = 'd2684f3b1df2';
+
 COMMIT;
