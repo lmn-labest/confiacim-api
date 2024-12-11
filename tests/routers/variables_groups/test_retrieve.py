@@ -57,7 +57,7 @@ def test_negative_view_user_can_only_see_owns_cases(
 
 
 @pytest.mark.integration
-def test_negative_retrive_variable_group_not_found(client_auth: TestClient, variable_group: VariableGroup):
+def test_negative_retrieve_variable_group_not_found(client_auth: TestClient, variable_group: VariableGroup):
 
     resp = client_auth.get(
         app.url_path_for(
@@ -75,7 +75,7 @@ def test_negative_retrive_variable_group_not_found(client_auth: TestClient, vari
 
 
 @pytest.mark.integration
-def test_negative_retrive_case_not_found(client_auth: TestClient, variable_group: VariableGroup):
+def test_negative_retrieve_case_not_found(client_auth: TestClient, variable_group: VariableGroup):
 
     resp = client_auth.get(
         app.url_path_for(
@@ -93,7 +93,7 @@ def test_negative_retrive_case_not_found(client_auth: TestClient, variable_group
 
 
 @pytest.mark.integration
-def test_negative_retrive_need_have_token(client: TestClient):
+def test_negative_retrieve_need_have_token(client: TestClient):
 
     resp = client.get(app.url_path_for(ROUTE_NAME, case_id=1, variable_group_id=1))
 

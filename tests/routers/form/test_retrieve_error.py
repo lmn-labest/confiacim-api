@@ -3,36 +3,55 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from confiacim_api.app import app
-from confiacim_api.models import TencimResult
+from confiacim_api.models import Case, FormResult, ResultStatus
 
-ROUTE_NAME = "tencim_result_retrive_csv"
-CSV_FILE = b"istep,t,rc_rankine,mohr_coulomb_rc\r\n1,1.0,100.0,100.0\r\n2,2.0,90.0,80.0\r\n3,3.0,10.0,30.0\r\n"
+ROUTE_NAME = "form_result_error_retrieve"
+
+
+@pytest.fixture
+def form_results_with_error(
+    session,
+    case_form_with_real_file: Case,
+    form_case_config: dict,
+):
+
+    new_result = FormResult(
+        case=case_form_with_real_file,
+        status=ResultStatus.CREATED,
+        config=form_case_config,
+        description="Descrição do caso",
+        error="Algum erro",
+    )
+    session.add(new_result)
+    session.commit()
+    session.refresh(new_result)
+
+    return new_result
 
 
 @pytest.mark.integration
-def test_positive_csv_download(client_auth: TestClient, tencim_results: TencimResult):
+def test_positive_retrieve(client_auth: TestClient, form_results_with_error: FormResult):
 
     url = app.url_path_for(
         ROUTE_NAME,
-        case_id=tencim_results.case_id,
-        result_id=tencim_results.id,
+        case_id=form_results_with_error.case_id,
+        result_id=form_results_with_error.id,
     )
 
     resp = client_auth.get(url)
 
     assert resp.status_code == status.HTTP_200_OK
 
-    assert resp.headers["content-disposition"] == f"attachment;filename={tencim_results.case.tag}.csv"
-    assert resp.headers["content-type"] == "text/csv; charset=utf-8"
-    assert resp.content == CSV_FILE
+    body = resp.json()
+    assert body["error"] == "Algum erro"
 
 
 @pytest.mark.integration
-def test_negative_csv_download_result_not_found(client_auth: TestClient, tencim_results: TencimResult):
+def test_negative_retrieve_result_not_found(client_auth: TestClient, form_results_with_error: FormResult):
 
     url = app.url_path_for(
         ROUTE_NAME,
-        case_id=tencim_results.case_id,
+        case_id=form_results_with_error.case_id,
         result_id=404,
     )
 
@@ -43,12 +62,12 @@ def test_negative_csv_download_result_not_found(client_auth: TestClient, tencim_
 
 
 @pytest.mark.integration
-def test_negative_csv_download_case_not_found(client_auth: TestClient, tencim_results: TencimResult):
+def test_negative_retrieve_case_not_found(client_auth: TestClient, form_results_with_error: FormResult):
 
     url = app.url_path_for(
         ROUTE_NAME,
         case_id=404,
-        result_id=tencim_results.id,
+        result_id=form_results_with_error.id,
     )
 
     resp = client_auth.get(url)
@@ -58,16 +77,16 @@ def test_negative_csv_download_case_not_found(client_auth: TestClient, tencim_re
 
 
 @pytest.mark.integration
-def test_negative_csv_download_user_can_download_results_only_their_own_cases(
+def test_negative_retrieve_user_can_access_only_their_own_cases(
     client: TestClient,
-    tencim_results: TencimResult,
+    form_results: FormResult,
     other_user_token: str,
 ):
 
     url = app.url_path_for(
         ROUTE_NAME,
-        case_id=tencim_results.case.id,
-        result_id=tencim_results.id,
+        case_id=form_results.case.id,
+        result_id=form_results.id,
     )
 
     resp = client.get(
@@ -80,7 +99,7 @@ def test_negative_csv_download_user_can_download_results_only_their_own_cases(
 
 
 @pytest.mark.integration
-def test_negative_csv_download_result_must_have_token(client: TestClient):
+def test_negative_retrieve_result_must_have_token(client: TestClient):
 
     url = app.url_path_for(ROUTE_NAME, case_id=1, result_id=1)
 

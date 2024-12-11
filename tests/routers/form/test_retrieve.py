@@ -5,11 +5,11 @@ from fastapi.testclient import TestClient
 from confiacim_api.app import app
 from confiacim_api.models import FormResult
 
-ROUTE_NAME = "form_result_retrive"
+ROUTE_NAME = "form_result_retrieve"
 
 
 @pytest.mark.integration
-def test_positive_retrive(
+def test_positive_retrieve(
     client_auth: TestClient,
     form_results_with_critical_point: FormResult,
 ):
@@ -87,7 +87,7 @@ def test_positive_check_fields(client_auth: TestClient, form_results: FormResult
 
 
 @pytest.mark.integration
-def test_negative_retrive_result_not_found(client_auth: TestClient, form_results: FormResult):
+def test_negative_retrieve_result_not_found(client_auth: TestClient, form_results: FormResult):
 
     url = app.url_path_for(
         ROUTE_NAME,
@@ -102,7 +102,7 @@ def test_negative_retrive_result_not_found(client_auth: TestClient, form_results
 
 
 @pytest.mark.integration
-def test_negative_retrive_case_not_found(client_auth: TestClient, form_results: FormResult):
+def test_negative_retrieve_case_not_found(client_auth: TestClient, form_results: FormResult):
 
     url = app.url_path_for(
         ROUTE_NAME,
@@ -117,7 +117,7 @@ def test_negative_retrive_case_not_found(client_auth: TestClient, form_results: 
 
 
 @pytest.mark.integration
-def test_negative_retrive_user_can_access_only_their_own_cases(
+def test_negative_retrieve_user_can_access_only_their_own_cases(
     client: TestClient,
     form_results: FormResult,
     other_user_token: str,
@@ -139,7 +139,7 @@ def test_negative_retrive_user_can_access_only_their_own_cases(
 
 
 @pytest.mark.integration
-def test_negative_retrive_result_must_have_token(client: TestClient):
+def test_negative_retrieve_result_must_have_token(client: TestClient):
 
     url = app.url_path_for(ROUTE_NAME, case_id=1, result_id=1)
 

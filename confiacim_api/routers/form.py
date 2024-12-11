@@ -92,7 +92,7 @@ def form_run(
     "/{case_id}/form/results/{result_id}",
     response_model=FormResultDetailOut,
 )
-def form_result_retrive(
+def form_result_retrieve(
     session: ActiveSession,
     user: CurrentUser,
     case_id: int,
@@ -154,7 +154,7 @@ def form_result_delete(
 
 
 @router.get("/{case_id}/form/results/{result_id}/error", response_model=FormResultErrorOut)
-def form_result_error_retrive(
+def form_result_error_retrieve(
     session: ActiveSession,
     case_id: int,
     result_id: int,
@@ -182,7 +182,7 @@ def form_result_error_retrive(
 
 
 @router.get("/{case_id}/form/results/{result_id}/status", response_model=FormResultStatusOut)
-def form_result_status_retrive(
+def form_result_status_retrieve(
     session: ActiveSession,
     case_id: int,
     result_id: int,
