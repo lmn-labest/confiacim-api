@@ -5,11 +5,12 @@ from fastapi.testclient import TestClient
 from confiacim_api.app import app
 from confiacim_api.models import TencimResult
 
-ROUTE_NAME = "tencim_result_status_retrive"
+ROUTE_NAME = "tencim_result_retrieve_csv"
+CSV_FILE = b"istep,t,rc_rankine,mohr_coulomb_rc\r\n1,1.0,100.0,100.0\r\n2,2.0,90.0,80.0\r\n3,3.0,10.0,30.0\r\n"
 
 
 @pytest.mark.integration
-def test_positive_retrive(client_auth: TestClient, tencim_results: TencimResult):
+def test_positive_csv_download(client_auth: TestClient, tencim_results: TencimResult):
 
     url = app.url_path_for(
         ROUTE_NAME,
@@ -21,13 +22,13 @@ def test_positive_retrive(client_auth: TestClient, tencim_results: TencimResult)
 
     assert resp.status_code == status.HTTP_200_OK
 
-    body = resp.json()
-
-    assert body["status"] == tencim_results.status.value if tencim_results.status else None
+    assert resp.headers["content-disposition"] == f"attachment;filename={tencim_results.case.tag}.csv"
+    assert resp.headers["content-type"] == "text/csv; charset=utf-8"
+    assert resp.content == CSV_FILE
 
 
 @pytest.mark.integration
-def test_negative_retrive_result_not_found(client_auth: TestClient, tencim_results: TencimResult):
+def test_negative_csv_download_result_not_found(client_auth: TestClient, tencim_results: TencimResult):
 
     url = app.url_path_for(
         ROUTE_NAME,
@@ -42,7 +43,7 @@ def test_negative_retrive_result_not_found(client_auth: TestClient, tencim_resul
 
 
 @pytest.mark.integration
-def test_negative_retrive_case_not_found(client_auth: TestClient, tencim_results: TencimResult):
+def test_negative_csv_download_case_not_found(client_auth: TestClient, tencim_results: TencimResult):
 
     url = app.url_path_for(
         ROUTE_NAME,
@@ -57,7 +58,7 @@ def test_negative_retrive_case_not_found(client_auth: TestClient, tencim_results
 
 
 @pytest.mark.integration
-def test_negative_retrive_user_can_access_only_their_own_cases(
+def test_negative_csv_download_user_can_download_results_only_their_own_cases(
     client: TestClient,
     tencim_results: TencimResult,
     other_user_token: str,
@@ -79,7 +80,7 @@ def test_negative_retrive_user_can_access_only_their_own_cases(
 
 
 @pytest.mark.integration
-def test_negative_retrive_result_must_have_token(client: TestClient):
+def test_negative_csv_download_result_must_have_token(client: TestClient):
 
     url = app.url_path_for(ROUTE_NAME, case_id=1, result_id=1)
 

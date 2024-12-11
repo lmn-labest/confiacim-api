@@ -3,39 +3,18 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from confiacim_api.app import app
-from confiacim_api.models import Case, FormResult, ResultStatus
+from confiacim_api.models import FormResult
 
-ROUTE_NAME = "form_result_error_retrive"
-
-
-@pytest.fixture
-def form_results_with_error(
-    session,
-    case_form_with_real_file: Case,
-    form_case_config: dict,
-):
-
-    new_result = FormResult(
-        case=case_form_with_real_file,
-        status=ResultStatus.CREATED,
-        config=form_case_config,
-        description="Descrição do caso",
-        error="Algum erro",
-    )
-    session.add(new_result)
-    session.commit()
-    session.refresh(new_result)
-
-    return new_result
+ROUTE_NAME = "form_result_status_retrieve"
 
 
 @pytest.mark.integration
-def test_positive_retrive(client_auth: TestClient, form_results_with_error: FormResult):
+def test_positive_retrieve(client_auth: TestClient, form_results: FormResult):
 
     url = app.url_path_for(
         ROUTE_NAME,
-        case_id=form_results_with_error.case_id,
-        result_id=form_results_with_error.id,
+        case_id=form_results.case_id,
+        result_id=form_results.id,
     )
 
     resp = client_auth.get(url)
@@ -43,15 +22,16 @@ def test_positive_retrive(client_auth: TestClient, form_results_with_error: Form
     assert resp.status_code == status.HTTP_200_OK
 
     body = resp.json()
-    assert body["error"] == "Algum erro"
+
+    assert body["status"] == form_results.status.value if form_results.status else None
 
 
 @pytest.mark.integration
-def test_negative_retrive_result_not_found(client_auth: TestClient, form_results_with_error: FormResult):
+def test_negative_retrieve_result_not_found(client_auth: TestClient, form_results: FormResult):
 
     url = app.url_path_for(
         ROUTE_NAME,
-        case_id=form_results_with_error.case_id,
+        case_id=form_results.case_id,
         result_id=404,
     )
 
@@ -62,12 +42,12 @@ def test_negative_retrive_result_not_found(client_auth: TestClient, form_results
 
 
 @pytest.mark.integration
-def test_negative_retrive_case_not_found(client_auth: TestClient, form_results_with_error: FormResult):
+def test_negative_retrieve_case_not_found(client_auth: TestClient, form_results: FormResult):
 
     url = app.url_path_for(
         ROUTE_NAME,
         case_id=404,
-        result_id=form_results_with_error.id,
+        result_id=form_results.id,
     )
 
     resp = client_auth.get(url)
@@ -77,7 +57,7 @@ def test_negative_retrive_case_not_found(client_auth: TestClient, form_results_w
 
 
 @pytest.mark.integration
-def test_negative_retrive_user_can_access_only_their_own_cases(
+def test_negative_retrieve_user_can_access_only_their_own_cases(
     client: TestClient,
     form_results: FormResult,
     other_user_token: str,
@@ -99,7 +79,7 @@ def test_negative_retrive_user_can_access_only_their_own_cases(
 
 
 @pytest.mark.integration
-def test_negative_retrive_result_must_have_token(client: TestClient):
+def test_negative_retrieve_result_must_have_token(client: TestClient):
 
     url = app.url_path_for(ROUTE_NAME, case_id=1, result_id=1)
 

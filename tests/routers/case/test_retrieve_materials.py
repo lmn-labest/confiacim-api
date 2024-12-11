@@ -5,13 +5,13 @@ from fastapi.testclient import TestClient
 from confiacim_api.app import app
 from confiacim_api.models import Case
 
-ROUTE_RETRIVE_NAME = "material_case_retrive"
+ROUTE_retrieve_NAME = "material_case_retrieve"
 
 
 @pytest.mark.integration
-def test_positive_retrive(client_auth: TestClient, case_with_materials_info: Case):
+def test_positive_retrieve(client_auth: TestClient, case_with_materials_info: Case):
 
-    resp = client_auth.get(app.url_path_for(ROUTE_RETRIVE_NAME, case_id=case_with_materials_info.id))
+    resp = client_auth.get(app.url_path_for(ROUTE_retrieve_NAME, case_id=case_with_materials_info.id))
 
     materials = case_with_materials_info.materials
 
@@ -41,7 +41,7 @@ def test_positive_retrive(client_auth: TestClient, case_with_materials_info: Cas
 @pytest.mark.integration
 def test_negative_case_without_materials(client_auth: TestClient, case_with_file: Case):
 
-    resp = client_auth.get(app.url_path_for(ROUTE_RETRIVE_NAME, case_id=case_with_file.id))
+    resp = client_auth.get(app.url_path_for(ROUTE_retrieve_NAME, case_id=case_with_file.id))
 
     assert resp.status_code == status.HTTP_404_NOT_FOUND
 
@@ -56,7 +56,7 @@ def test_negative_user_can_only_see_owns_cases(
 ):
 
     resp = client.get(
-        app.url_path_for(ROUTE_RETRIVE_NAME, case_id=case.id),
+        app.url_path_for(ROUTE_retrieve_NAME, case_id=case.id),
         headers={"Authorization": f"Bearer {other_user_token}"},
     )
 
@@ -66,10 +66,10 @@ def test_negative_user_can_only_see_owns_cases(
 
 
 @pytest.mark.integration
-def test_negative_retrive_not_found(client: TestClient, token: str):
+def test_negative_retrieve_not_found(client: TestClient, token: str):
 
     resp = client.get(
-        app.url_path_for(ROUTE_RETRIVE_NAME, case_id=404),
+        app.url_path_for(ROUTE_retrieve_NAME, case_id=404),
         headers={"Authorization": f"Bearer {token}"},
     )
 
@@ -81,9 +81,9 @@ def test_negative_retrive_not_found(client: TestClient, token: str):
 
 
 @pytest.mark.integration
-def test_negative_retrive_need_have_token(client: TestClient):
+def test_negative_retrieve_need_have_token(client: TestClient):
 
-    resp = client.get(app.url_path_for(ROUTE_RETRIVE_NAME, case_id=1))
+    resp = client.get(app.url_path_for(ROUTE_retrieve_NAME, case_id=1))
 
     assert resp.status_code == status.HTTP_401_UNAUTHORIZED
 

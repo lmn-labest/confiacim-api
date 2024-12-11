@@ -50,7 +50,7 @@ def tencim_result_list(session: ActiveSession, user: CurrentUser, case_id: int):
     "/{case_id}/tencim/results/{result_id}",
     response_model=TencimResultDetailOut,
 )
-def tencim_result_retrive(
+def tencim_result_retrieve(
     session: ActiveSession,
     user: CurrentUser,
     case_id: int,
@@ -161,7 +161,7 @@ def tencim_standalone_run(
 
 
 @router.get("/{case_id}/tencim/results/{result_id}/status", response_model=TencimResultStatusOut)
-def tencim_result_status_retrive(
+def tencim_result_status_retrieve(
     session: ActiveSession,
     case_id: int,
     result_id: int,
@@ -199,7 +199,7 @@ def tencim_result_status_retrive(
 
 
 @router.get("/{case_id}/tencim/results/{result_id}/error", response_model=TencimResultErrorOut)
-def tencim_result_error_retrive(
+def tencim_result_error_retrieve(
     session: ActiveSession,
     case_id: int,
     result_id: int,
@@ -227,7 +227,7 @@ def tencim_result_error_retrive(
 
 
 @router.get("/{case_id}/tencim/results/{result_id}/csv")
-def tencim_result_retrive_csv(
+def tencim_result_retrieve_csv(
     session: ActiveSession,
     case_id: int,
     result_id: int,

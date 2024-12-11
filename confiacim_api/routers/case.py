@@ -173,7 +173,7 @@ def case_create(
 
 
 @router.get("/{case_id}", response_model=CaseOut)
-def case_retrive(session: ActiveSession, case_id: int, user: CurrentUser):
+def case_retrieve(session: ActiveSession, case_id: int, user: CurrentUser):
     """Retorna o caso `case_id`"""
 
     db_case = session.scalar(
@@ -283,7 +283,7 @@ def download_case_file(
 
 
 @router.get("/{case_id}/materials", response_model=MaterialsOut)
-def material_case_retrive(
+def material_case_retrieve(
     session: ActiveSession,
     case_id: int,
     user: CurrentUser,
@@ -308,7 +308,7 @@ def material_case_retrive(
 
 
 @router.get("/{case_id}/loads_infos", response_model=LoadInfosOut)
-def loads_case_retrive(
+def loads_case_retrieve(
     session: ActiveSession,
     case_id: int,
     user: CurrentUser,
