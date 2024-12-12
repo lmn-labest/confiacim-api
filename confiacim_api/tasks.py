@@ -91,7 +91,7 @@ def tencim_standalone_run(self, result_id: int, **options):
         logger.info(f"Task {task_id} - Running task ...")
         run_tencim_core(input_dir=input_base_dir, output_dir=None, verbose_level=0)
 
-        result_tencim = read_rc_file(input_base_dir / "output/case_RC.txt", stride=10)
+        result_tencim = read_rc_file(input_base_dir / "output/case_RC.txt")
 
         result.istep = result_tencim.istep.tolist()
         result.t = result_tencim.t.tolist()

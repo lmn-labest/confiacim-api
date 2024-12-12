@@ -37,7 +37,7 @@ RUN set -eux; \
     && rm -rf /var/cache/apk/*
 
 COPY --from=requirements-stage /tmp/requirements.txt .
-COPY --from=requirements-stage /tmp/packages/confiacim-0.16.0a0-py3-none-any.whl /tmp/packages/confiacim-0.16.0a0-py3-none-any.whl
+COPY --from=requirements-stage /tmp/packages/confiacim-0.16.0-py3-none-any.whl /tmp/packages/confiacim-0.16.0-py3-none-any.whl
 
 # copy project
 RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir -r requirements.txt
